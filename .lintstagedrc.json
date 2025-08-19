@@ -1,9 +1,6 @@
 {
-  "packages/**/*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
-    "prettier --write",
-    "pnpm test --filter=mdx-craft"
-  ],
+  "packages/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+  "packages/mdx-craft/**/*.{js,jsx,ts,tsx}": "bash -c 'cd packages/mdx-craft && npm test'",
   "apps/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
   "*.{json,md,mdx,css,html,yml,yaml}": ["prettier --write"]
 }
