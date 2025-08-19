@@ -2,7 +2,7 @@
   "packages/**/*.{js,jsx,ts,tsx}": [
     "eslint --fix",
     "prettier --write",
-    "jest --bail --findRelatedTests --passWithNoTests"
+    "pnpm test --filter=mdx-craft"
   ],
   "apps/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
   "*.{json,md,mdx,css,html,yml,yaml}": ["prettier --write"]
