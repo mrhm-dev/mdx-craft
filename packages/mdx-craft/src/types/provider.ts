@@ -25,7 +25,7 @@ export type MDXViewerContextValue = {
   registerComponent: (name: string, component: MDXComponent) => void
   unregisterComponent: (name: string) => void
   getComponentClasses: (
-    variant: keyof Theme['components']['callout'],
+    componentType: keyof Theme['components'],
     additionalClasses?: string
   ) => string
   getTypographyClasses: (additionalClasses?: string) => string

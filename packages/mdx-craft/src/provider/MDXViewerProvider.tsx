@@ -40,8 +40,8 @@ export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
   const componentClassBuilder = useMemo(() => createComponentClasses(theme), [theme])
 
   const getComponentClasses = useCallback(
-    (variant: keyof Theme['components']['callout'], additionalClasses?: string) =>
-      componentClassBuilder.buildCalloutClasses(variant, additionalClasses),
+    (componentType: keyof Theme['components'], additionalClasses?: string) =>
+      componentClassBuilder.buildComponentClasses(componentType, additionalClasses),
     [componentClassBuilder]
   )
 
