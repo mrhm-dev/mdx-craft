@@ -1,13 +1,13 @@
 import React from 'react'
-import { MDXEditorProps } from '../types'
-import { MDXPreview } from './MDXPreview'
+import { MDXEditorProps } from '../types/index.js'
+import { MDXPreview } from './MDXPreview.js'
 
-export const MDXEditor: React.FC<MDXEditorProps> = ({ 
-  value, 
-  onChange, 
-  className = '', 
-  placeholder = 'Write your MDX content here...', 
-  preview = false 
+export const MDXEditor: React.FC<MDXEditorProps> = ({
+  value,
+  onChange,
+  className = '',
+  placeholder = 'Write your MDX content here...',
+  preview = false,
 }) => {
   return (
     <div className={`mdx-editor-container flex gap-4 ${className}`}>

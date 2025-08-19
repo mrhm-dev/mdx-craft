@@ -1,16 +1,14 @@
 import React from 'react'
-import { MDXPreviewProps } from '../types'
+import { MDXPreviewProps } from '../types/index.js'
 
-export const MDXPreview: React.FC<MDXPreviewProps> = ({ 
-  content, 
-  components: _components = {}, 
-  className = '' 
+export const MDXPreview: React.FC<MDXPreviewProps> = ({
+  content,
+  components: _components = {},
+  className = '',
 }) => {
   return (
     <div className={`mdx-preview ${className}`}>
-      <div className="prose prose-slate max-w-none">
-        {content}
-      </div>
+      <div className="prose prose-slate max-w-none">{content}</div>
     </div>
   )
 }
