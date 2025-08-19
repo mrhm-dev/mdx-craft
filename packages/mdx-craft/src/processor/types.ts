@@ -1,6 +1,7 @@
 import { type PluggableList } from 'unified'
 import { type ReactElement } from 'react'
 import { type ComponentRegistry, type HeadingMetadata } from '../theme/index.js'
+import { evaluate } from '@mdx-js/mdx'
 
 /**
  * Compiler Options
@@ -11,7 +12,7 @@ import { type ComponentRegistry, type HeadingMetadata } from '../theme/index.js'
  * @generateTOC - Whether to generate a table of contents
  * @development - Whether to use the development environment
  */
-export type CompileOptions = {
+export type CompilerOptions = {
   source: string
   components: ComponentRegistry
   remarkPlugins?: PluggableList
@@ -31,7 +32,7 @@ export type CompilationResult = {
   metadata: {
     headings: HeadingMetadata[]
     duration: number
-    cachedHit: boolean
+    cacheHit: boolean
     componentCount: number
   }
   error?: Error
@@ -43,7 +44,11 @@ export type CompilationResult = {
  * @metadata - The metadata of the compilation
  */
 export type CacheEntry = {
-  content: ReactElement | null // TODO: It may need to be changed to any
+  /**
+   * Intentional any type to allow for any type of content to be cached
+   */
+
+  content: MDXModule
   metadata: {
     headings: HeadingMetadata[]
     timestamp: number
@@ -57,7 +62,7 @@ export type CacheEntry = {
  * @cacheTTL - The time to live for the cache in milliseconds
  */
 export type ProcessorConfig = {
-  cachedEnabled?: boolean
+  cacheEnabled?: boolean
   cacheMaxSize: number // in MB
   cacheTTL: number // in milliseconds
 }
@@ -85,3 +90,5 @@ export type HeadingNode = {
     }
   }
 }
+
+export type MDXModule = Awaited<ReturnType<typeof evaluate>>

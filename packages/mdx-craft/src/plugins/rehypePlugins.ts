@@ -369,6 +369,22 @@ export const getDefaultRehypePlugins = (): PluggableList => {
 }
 
 /**
+ * Sync-safe rehype plugins configuration (no async plugins)
+ */
+export const getSyncRehypePlugins = (): PluggableList => {
+  return getRehypePlugins({
+    shiki: false, // Shiki is async, use highlight instead
+    highlight: true,
+    math: true,
+    mermaid: false, // Mermaid is async
+    slugs: true,
+    autolinkHeadings: true,
+    raw: false,
+    sanitize: false,
+  })
+}
+
+/**
  * Minimal rehype plugins configuration
  */
 export const getMinimalRehypePlugins = (): PluggableList => {

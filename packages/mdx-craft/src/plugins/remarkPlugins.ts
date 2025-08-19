@@ -17,7 +17,7 @@ interface DirectiveNode extends Node {
   type: 'textDirective' | 'leafDirective' | 'containerDirective'
   name: string
   attributes?: Record<string, string>
-  data?: {
+  data?: Node['data'] & {
     hast?: {
       tagName?: string
       properties?: Record<string, unknown>
