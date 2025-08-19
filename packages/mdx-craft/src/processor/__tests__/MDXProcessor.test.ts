@@ -1,5 +1,5 @@
 import { MDXProcessor } from '../MDXProcessor.js'
-import type { CompilerOptions } from '../types.js'
+import type { CompilerOptions } from '../../types/processor.js'
 import React from 'react'
 
 // Mock components for testing

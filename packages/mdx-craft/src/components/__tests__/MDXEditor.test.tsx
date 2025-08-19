@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MDXEditor } from '../MDXEditor'
+import { userEvent } from '@testing-library/user-event'
+import { MDXEditor } from '../MDXEditor.js'
 
 describe('MDXEditor', () => {
   const defaultProps = {
@@ -25,30 +25,22 @@ describe('MDXEditor', () => {
 
   it('calls onChange when content is modified', () => {
     const onChangeMock = jest.fn()
-    
+
     render(<MDXEditor {...defaultProps} onChange={onChangeMock} />)
-    
+
     const textarea = screen.getByRole('textbox')
     fireEvent.change(textarea, { target: { value: 'New content' } })
-    
+
     expect(onChangeMock).toHaveBeenCalledWith('New content')
   })
 
   it('applies custom className', () => {
-    const { container } = render(
-      <MDXEditor {...defaultProps} className="custom-class" />
-    )
+    const { container } = render(<MDXEditor {...defaultProps} className="custom-class" />)
     expect(container.firstChild).toHaveClass('mdx-editor-container', 'custom-class')
   })
 
   it('shows placeholder when provided', () => {
-    render(
-      <MDXEditor
-        {...defaultProps}
-        value=""
-        placeholder="Enter your MDX here..."
-      />
-    )
+    render(<MDXEditor {...defaultProps} value="" placeholder="Enter your MDX here..." />)
     expect(screen.getByPlaceholderText('Enter your MDX here...')).toBeInTheDocument()
   })
 
@@ -58,23 +50,17 @@ describe('MDXEditor', () => {
   })
 
   it('does not show preview pane when preview is false', () => {
-    const { container } = render(
-      <MDXEditor {...defaultProps} preview={false} />
-    )
+    const { container } = render(<MDXEditor {...defaultProps} preview={false} />)
     expect(container.querySelector('.mdx-preview-pane')).not.toBeInTheDocument()
   })
 
   it('shows preview pane when preview is true', () => {
-    const { container } = render(
-      <MDXEditor {...defaultProps} preview={true} />
-    )
+    const { container } = render(<MDXEditor {...defaultProps} preview={true} />)
     expect(container.querySelector('.mdx-preview-pane')).toBeInTheDocument()
   })
 
   it('renders preview with current value', () => {
-    render(
-      <MDXEditor {...defaultProps} value="# Preview Content" preview={true} />
-    )
+    render(<MDXEditor {...defaultProps} value="# Preview Content" preview={true} />)
     // Check that preview pane exists and contains the content
     const previewPane = document.querySelector('.mdx-preview-pane')
     expect(previewPane).toBeInTheDocument()
@@ -83,39 +69,31 @@ describe('MDXEditor', () => {
 
   it('updates preview when value changes', () => {
     const onChangeMock = jest.fn()
-    
-    render(
-      <MDXEditor
-        value="Initial"
-        onChange={onChangeMock}
-        preview={true}
-      />
-    )
-    
+
+    render(<MDXEditor value="Initial" onChange={onChangeMock} preview={true} />)
+
     const textarea = screen.getByRole('textbox')
     fireEvent.change(textarea, { target: { value: 'Updated' } })
-    
+
     expect(onChangeMock).toHaveBeenCalledWith('Updated')
   })
 
   it('has correct CSS classes for layout', () => {
-    const { container } = render(
-      <MDXEditor {...defaultProps} preview={true} />
-    )
-    
+    const { container } = render(<MDXEditor {...defaultProps} preview={true} />)
+
     const container_ = container.querySelector('.mdx-editor-container')
     expect(container_).toHaveClass('flex', 'gap-4')
-    
+
     const editor = container.querySelector('.mdx-editor')
     expect(editor).toHaveClass('flex-1')
-    
+
     const previewPane = container.querySelector('.mdx-preview-pane')
     expect(previewPane).toHaveClass('flex-1')
   })
 
   it('textarea has correct styling classes', () => {
     render(<MDXEditor {...defaultProps} />)
-    
+
     const textarea = screen.getByRole('textbox')
     expect(textarea).toHaveClass(
       'w-full',
@@ -150,13 +128,13 @@ describe('MDXEditor', () => {
 
   it('maintains focus when typing', async () => {
     const user = userEvent.setup()
-    
+
     render(<MDXEditor {...defaultProps} />)
-    
+
     const textarea = screen.getByRole('textbox')
     await user.click(textarea)
     expect(textarea).toHaveFocus()
-    
+
     await user.type(textarea, ' additional text')
     expect(textarea).toHaveFocus()
   })

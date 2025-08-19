@@ -94,7 +94,7 @@ describe('MDX Craft Integration Tests', () => {
         ),
       }
 
-      render(<MDXPreview content="# Custom Heading" components={customComponents} />)
+      render(<MDXPreview content="# Custom Heading" components={customComponents as any} />)
 
       // The component prop is accepted (actual MDX parsing would use it)
       expect(screen.getByText('# Custom Heading')).toBeInTheDocument()

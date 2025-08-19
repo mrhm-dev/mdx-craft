@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { MDXPreview } from '../MDXPreview'
+import { MDXPreview } from '../MDXPreview.js'
 
 describe('MDXPreview', () => {
   it('renders without crashing', () => {
@@ -9,9 +9,7 @@ describe('MDXPreview', () => {
   })
 
   it('applies custom className', () => {
-    const { container } = render(
-      <MDXPreview content="# Test" className="custom-class" />
-    )
+    const { container } = render(<MDXPreview content="# Test" className="custom-class" />)
     expect(container.firstChild).toHaveClass('mdx-preview', 'custom-class')
   })
 
@@ -37,11 +35,9 @@ describe('MDXPreview', () => {
         <h1 data-testid="custom-h1">{children}</h1>
       ),
     }
-    
-    render(
-      <MDXPreview content="# Custom Header" components={customComponents} />
-    )
-    
+
+    render(<MDXPreview content="# Custom Header" components={customComponents as any} />)
+
     // Since we're not actually parsing MDX yet, this tests the prop is accepted
     expect(screen.getByText('# Custom Header')).toBeInTheDocument()
   })

@@ -1,6 +1,6 @@
 import { type PluggableList } from 'unified'
 import { type ReactElement } from 'react'
-import { type ComponentRegistry, type HeadingMetadata } from '../theme/index.js'
+import { type ComponentRegistry, type HeadingMetadata } from './theme.js'
 import { evaluate } from '@mdx-js/mdx'
 
 /**
@@ -48,7 +48,7 @@ export type CacheEntry = {
    * Intentional any type to allow for any type of content to be cached
    */
 
-  content: MDXModule
+  content: MDXModule | null
   metadata: {
     headings: HeadingMetadata[]
     timestamp: number

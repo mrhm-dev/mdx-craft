@@ -1,5 +1,5 @@
 import { MDXCache, getGlobalCache, clearGlobalCache } from '../cache.js'
-import type { CacheEntry } from '../types.js'
+import type { CacheEntry } from '../../types/processor.js'
 
 describe('MDXCache', () => {
   let cache: MDXCache

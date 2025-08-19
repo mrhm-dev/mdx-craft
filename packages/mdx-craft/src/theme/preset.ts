@@ -1,4 +1,4 @@
-import type { Theme } from './types.js'
+import type { Theme } from '../types/theme.js'
 
 /**
  * Default theme for the MDX Craft

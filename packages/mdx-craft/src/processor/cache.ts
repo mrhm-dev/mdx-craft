@@ -1,4 +1,4 @@
-import { type CacheEntry } from './types.js'
+import { type CacheEntry } from '../types/processor.js'
 
 export class MDXCache {
   private cache: Map<string, CacheEntry>

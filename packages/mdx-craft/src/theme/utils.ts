@@ -1,5 +1,5 @@
 import { defaultTheme } from './preset.js'
-import { CreateTheme, PartialTheme, Theme } from './types.js'
+import { CreateTheme, PartialTheme, Theme } from '../types/theme.js'
 
 /**
  * Deep merge utility for combining theme objects

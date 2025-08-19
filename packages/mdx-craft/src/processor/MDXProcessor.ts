@@ -1,7 +1,12 @@
 import { getDefaultRemarkPlugins } from '../plugins/remarkPlugins.js'
-import { HeadingMetadata } from '../theme/types.js'
+import { HeadingMetadata } from '../types/theme.js'
 import { MDXCache } from './cache.js'
-import type { CompilationResult, CompilerOptions, MDXModule, ProcessorConfig } from './types.js'
+import type {
+  CompilationResult,
+  CompilerOptions,
+  MDXModule,
+  ProcessorConfig,
+} from '../types/processor.js'
 import { evaluate, evaluateSync } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 import * as devRuntime from 'react/jsx-dev-runtime'
@@ -10,7 +15,7 @@ import React from 'react'
 import type { PluggableList } from 'unified'
 
 // Type for the compilation context
-interface CompilationContext {
+export interface CompilationContext {
   startTime: number
   cacheKey: string
   headings: HeadingMetadata[]
@@ -95,7 +100,9 @@ export class MDXProcessor {
         return {
           context: null,
           cachedResult: {
-            content: this.renderMDX(cachedEntry.content, options.components),
+            content: cachedEntry.content
+              ? this.renderMDX(cachedEntry.content, options.components)
+              : null,
             metadata: {
               headings: cachedEntry.metadata.headings,
               duration,
