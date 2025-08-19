@@ -7,8 +7,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 export default [
   js.configs.recommended,
   {
-    files: ['pages/**/*.{js,jsx,ts,tsx}', '**/*.{js,jsx,ts,tsx}'],
-    ignores: ['**/*.mdx'],
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -17,6 +16,8 @@ export default [
         },
         ecmaVersion: 'latest',
         sourceType: 'module',
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         console: 'readonly',
@@ -43,6 +44,50 @@ export default [
       react: {
         version: 'detect',
       },
+    },
+  },
+  // Test files configuration
+  {
+    files: [
+      'src/**/*.test.{js,jsx,ts,tsx}',
+      'src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+      'src/test-setup.{js,ts}',
+    ],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+        global: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        React: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescript,
+      react,
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-undef': 'off',
     },
   },
 ]

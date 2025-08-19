@@ -1,0 +1,7 @@
+node_modules
+dist
+.next
+.turbo
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

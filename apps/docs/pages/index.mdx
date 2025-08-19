@@ -1,0 +1,38 @@
+# MDX Craft
+
+Welcome to MDX Craft - a powerful package for previewing and writing MDX content in any React application.
+
+## Features
+
+- Live MDX preview
+- Syntax highlighting
+- Customizable components
+- TypeScript support
+- Tailwind CSS styling
+
+## Quick Start
+
+```bash
+npm install mdx-craft
+```
+
+```jsx
+import { MDXEditor, MDXPreview } from 'mdx-craft'
+import 'mdx-craft/styles.css'
+
+function App() {
+  const [content, setContent] = useState('# Hello MDX')
+  
+  return (
+    <MDXEditor
+      value={content}
+      onChange={setContent}
+      preview={true}
+    />
+  )
+}
+```
+
+## Documentation
+
+Explore our comprehensive documentation to learn more about MDX Craft's features and capabilities.

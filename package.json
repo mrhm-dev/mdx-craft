@@ -1,15 +1,48 @@
 {
-  "name": "mdx-craft",
+  "name": "mdx-craft-monorepo",
   "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mdx-craft.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/mdx-craft/issues"
+  },
+  "homepage": "https://github.com/yourusername/mdx-craft#readme",
+  "license": "MIT",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test:coverage",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.8.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.3.0",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.2.5",
     "turbo": "^2.5.6",
     "typescript": "5.9.2"
   },

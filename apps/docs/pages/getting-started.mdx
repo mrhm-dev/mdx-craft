@@ -1,0 +1,62 @@
+# Getting Started
+
+## Installation
+
+Install MDX Craft in your React project:
+
+```bash
+npm install mdx-craft
+# or
+yarn add mdx-craft
+# or
+pnpm add mdx-craft
+```
+
+## Basic Usage
+
+Import the components and styles:
+
+```jsx
+import { MDXEditor, MDXPreview } from 'mdx-craft'
+import 'mdx-craft/styles.css'
+```
+
+### Using MDXEditor
+
+The MDXEditor component provides a text editor with optional live preview:
+
+```jsx
+import React, { useState } from 'react'
+import { MDXEditor } from 'mdx-craft'
+
+function MyEditor() {
+  const [content, setContent] = useState('# Hello World')
+  
+  return (
+    <MDXEditor
+      value={content}
+      onChange={setContent}
+      preview={true}
+      className="h-96"
+    />
+  )
+}
+```
+
+### Using MDXPreview
+
+The MDXPreview component renders MDX content:
+
+```jsx
+import { MDXPreview } from 'mdx-craft'
+
+function MyPreview() {
+  const mdxContent = `
+# Welcome
+
+This is **MDX** content with React components!
+  `
+  
+  return <MDXPreview content={mdxContent} />
+}
+```
