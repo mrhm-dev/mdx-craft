@@ -1,10 +1,13 @@
 export default {
   displayName: 'mdx-craft',
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   testEnvironment: 'jsdom',
+  injectGlobals: true,
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -17,10 +20,14 @@ export default {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
+        useESM: true,
         tsconfig: 'tsconfig.json',
       },
     ],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@testing-library)/)',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',

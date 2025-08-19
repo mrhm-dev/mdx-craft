@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { MDXEditor, MDXPreview } from '../index'
+import { MDXEditor, MDXPreview } from '../index.js'
 
 describe('MDX Craft Integration Tests', () => {
   describe('MDXEditor and MDXPreview Integration', () => {
@@ -10,17 +10,11 @@ describe('MDX Craft Integration Tests', () => {
         currentValue = value
       }
 
-      render(
-        <MDXEditor
-          value={currentValue}
-          onChange={handleChange}
-          preview={true}
-        />
-      )
+      render(<MDXEditor value={currentValue} onChange={handleChange} preview={true} />)
 
       // Check initial content is displayed in editor
       expect(screen.getByDisplayValue('# Initial Content')).toBeInTheDocument()
-      
+
       // Check preview pane exists and contains content
       const previewPane = document.querySelector('.mdx-preview-pane')
       expect(previewPane).toBeInTheDocument()
@@ -41,13 +35,7 @@ describe('MDX Craft Integration Tests', () => {
         currentValue = value
       }
 
-      render(
-        <MDXEditor
-          value={currentValue}
-          onChange={handleChange}
-          preview={true}
-        />
-      )
+      render(<MDXEditor value={currentValue} onChange={handleChange} preview={true} />)
 
       const textarea = screen.getByRole('textbox')
       fireEvent.change(textarea, { target: { value: complexContent } })
@@ -79,16 +67,10 @@ describe('MDX Craft Integration Tests', () => {
     it('MDXEditor handles edge cases', () => {
       const onChange = jest.fn()
 
-      render(
-        <MDXEditor
-          value=""
-          onChange={onChange}
-          placeholder="Custom placeholder"
-        />
-      )
+      render(<MDXEditor value="" onChange={onChange} placeholder="Custom placeholder" />)
 
       const textarea = screen.getByPlaceholderText('Custom placeholder')
-      
+
       // Test empty input
       expect(textarea).toHaveValue('')
 
@@ -112,12 +94,7 @@ describe('MDX Craft Integration Tests', () => {
         ),
       }
 
-      render(
-        <MDXPreview
-          content="# Custom Heading"
-          components={customComponents}
-        />
-      )
+      render(<MDXPreview content="# Custom Heading" components={customComponents} />)
 
       // The component prop is accepted (actual MDX parsing would use it)
       expect(screen.getByText('# Custom Heading')).toBeInTheDocument()
@@ -125,18 +102,11 @@ describe('MDX Craft Integration Tests', () => {
 
     it('applies custom styling classes correctly', () => {
       const { container: editorContainer } = render(
-        <MDXEditor
-          value="test"
-          onChange={jest.fn()}
-          className="custom-editor"
-        />
+        <MDXEditor value="test" onChange={jest.fn()} className="custom-editor" />
       )
 
       const { container: previewContainer } = render(
-        <MDXPreview
-          content="test"
-          className="custom-preview"
-        />
+        <MDXPreview content="test" className="custom-preview" />
       )
 
       expect(editorContainer.firstChild).toHaveClass('custom-editor')
@@ -151,7 +121,7 @@ describe('MDX Craft Integration Tests', () => {
       render(<MDXEditor value="" onChange={onChange} />)
 
       const textarea = screen.getByRole('textbox')
-      
+
       // Simulate multiple rapid changes
       fireEvent.change(textarea, { target: { value: '1' } })
       fireEvent.change(textarea, { target: { value: '12' } })
@@ -173,7 +143,7 @@ describe('MDX Craft Integration Tests', () => {
 
     it('handles very large content', () => {
       const largeContent = 'Large content '.repeat(100) // Reduced size for test
-      
+
       expect(() => {
         render(<MDXPreview content={largeContent} />)
       }).not.toThrow()

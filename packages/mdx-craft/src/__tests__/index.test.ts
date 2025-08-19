@@ -1,4 +1,4 @@
-import { MDXPreview, MDXEditor } from '../index'
+import { MDXPreview, MDXEditor } from '../index.js'
 
 describe('Package Exports', () => {
   it('exports MDXPreview component', () => {
