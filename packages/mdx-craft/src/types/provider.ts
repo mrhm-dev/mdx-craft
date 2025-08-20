@@ -33,6 +33,7 @@ export type MDXViewerContextValue = {
   remarkPlugins: PluggableList
   rehypePlugins: PluggableList
   metadata?: CompilationMetadata
+  updateTheme: (newTheme: PartialTheme) => void
 }
 
 export type TOCContextValue = {
