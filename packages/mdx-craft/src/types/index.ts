@@ -1,5 +1,11 @@
 import React from 'react'
 
+export * from './processor.js'
+export * from './provider.js'
+export * from './registry.js'
+export * from './theme.js'
+export * from './viewer.js'
+
 export interface MDXPreviewProps {
   content: string
   components?: Record<string, React.ComponentType<unknown>>

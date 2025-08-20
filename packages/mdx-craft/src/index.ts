@@ -1,3 +1,7 @@
 export { MDXPreview } from './components/MDXPreview.js'
 export { MDXEditor } from './components/MDXEditor.js'
 export type { MDXPreviewProps, MDXEditorProps } from './types/index.js'
+export { MDXViewer } from './MDXViewer.js'
+export * from './types/index.js'
+export * from './hooks/index.js'
+export * from './provider/MDXViewerProvider.js'

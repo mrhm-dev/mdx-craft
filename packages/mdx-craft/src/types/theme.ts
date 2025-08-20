@@ -222,16 +222,16 @@ export type TOCItem = {
 /**
  * TOC context value
  */
-export type TOCContextValue = {
-  /** Hierarchical TOC items */
-  items: TOCItem[]
-  /** Currently active heading ID */
-  activeId: string | null
-  /** Function to scroll to a heading */
-  scrollToHeading: (id: string) => void
-  /** Flat list of all TOC items */
-  flatItems: TOCItem[]
-}
+// export type TOCContextValue = {
+//   /** Hierarchical TOC items */
+//   items: TOCItem[]
+//   /** Currently active heading ID */
+//   activeId: string | null
+//   /** Function to scroll to a heading */
+//   scrollToHeading: (id: string) => void
+//   /** Flat list of all TOC items */
+//   flatItems: TOCItem[]
+// }
 
 /**
  * Cache configuration
