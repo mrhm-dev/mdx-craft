@@ -3,7 +3,6 @@ import type { Options as AutolinkOptions } from 'rehype-autolink-headings'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeKatex from 'rehype-katex'
-import rehypeMermaid from 'rehype-mermaid'
 import rehypePrismPlus from 'rehype-prism-plus'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
@@ -22,14 +21,6 @@ export type ShikiOptions = {
   defaultColor?: boolean | 'light' | 'dark'
 }
 
-export type MermaidOptions = {
-  strategy?: 'img-svg' | 'img-png' | 'pre-mermaid'
-  mermaidConfig?: {
-    theme?: string
-    themeVariables?: Record<string, string>
-  }
-}
-
 export type RehypePluginConfig = {
   /** Enable syntax highlighting with Shiki (recommended) */
   shiki?: boolean | ShikiOptions
@@ -39,8 +30,6 @@ export type RehypePluginConfig = {
   prismPlus?: boolean
   /** Enable Math rendering with KaTeX */
   math?: boolean
-  /** Enable Mermaid diagram rendering */
-  mermaid?: boolean | MermaidOptions
   /** Enable raw HTML processing */
   raw?: boolean
   /** Enable HTML sanitization */
@@ -149,29 +138,6 @@ const defaultAutolinkConfig: AutolinkOptions = {
 }
 
 /**
- * Default Mermaid configuration
- */
-const defaultMermaidConfig: MermaidOptions = {
-  strategy: 'img-svg',
-  mermaidConfig: {
-    theme: 'default',
-    themeVariables: {
-      primaryColor: '#10b981',
-      primaryTextColor: '#ffffff',
-      primaryBorderColor: '#059669',
-      lineColor: '#71717a',
-      sectionBkgColor: '#f3f4f6',
-      altSectionBkgColor: '#e5e7eb',
-      gridColor: '#d1d5db',
-      background: '#ffffff',
-      mainBkg: '#ffffff',
-      secondBkg: '#f9fafb',
-      tertiaryColor: '#f3f4f6',
-    },
-  },
-}
-
-/**
  * Get configured rehype plugins based on options
  */
 export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList => {
@@ -252,15 +218,6 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
         ignoreMissing: true,
       },
     ])
-  }
-
-  // Mermaid diagram rendering
-  if (config.mermaid !== false) {
-    const mermaidOptions =
-      typeof config.mermaid === 'object'
-        ? { ...defaultMermaidConfig, ...config.mermaid }
-        : defaultMermaidConfig
-    plugins.push([rehypeMermaid, mermaidOptions])
   }
 
   // Math rendering with KaTeX
@@ -360,11 +317,10 @@ export const getDefaultRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     shiki: true,
     math: true,
-    mermaid: true,
     slugs: true,
     autolinkHeadings: true,
     raw: false,
-    sanitize: false,
+    sanitize: true,
   })
 }
 
@@ -376,7 +332,6 @@ export const getSyncRehypePlugins = (): PluggableList => {
     shiki: false, // Shiki is async, use highlight instead
     highlight: true,
     math: true,
-    mermaid: false, // Mermaid is async
     slugs: true,
     autolinkHeadings: true,
     raw: false,
@@ -392,7 +347,6 @@ export const getMinimalRehypePlugins = (): PluggableList => {
     shiki: true,
     slugs: true,
     math: false,
-    mermaid: false,
     autolinkHeadings: false,
   })
 }
@@ -404,7 +358,6 @@ export const getSafeRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     shiki: true,
     math: true,
-    mermaid: true,
     slugs: true,
     autolinkHeadings: true,
     raw: true,
@@ -425,7 +378,6 @@ export const getBlogRehypePlugins = (): PluggableList => {
       },
     },
     math: true,
-    mermaid: true,
     slugs: true,
     autolinkHeadings: {
       ...defaultAutolinkConfig,
@@ -460,23 +412,6 @@ export const getDocsRehypePlugins = (): PluggableList => {
       },
     },
     math: true,
-    mermaid: {
-      ...defaultMermaidConfig,
-      mermaidConfig: {
-        ...defaultMermaidConfig.mermaidConfig,
-        theme: 'base',
-        themeVariables: {
-          primaryColor: '#3b82f6',
-          primaryTextColor: '#ffffff',
-          primaryBorderColor: '#2563eb',
-          lineColor: '#71717a',
-          sectionBkgColor: '#f8fafc',
-          altSectionBkgColor: '#f1f5f9',
-          gridColor: '#e2e8f0',
-          background: '#ffffff',
-        },
-      },
-    },
     slugs: true,
     autolinkHeadings: true,
     prismPlus: false,
@@ -488,7 +423,6 @@ export {
   rehypeAutolinkHeadings,
   rehypeHighlight,
   rehypeKatex,
-  rehypeMermaid,
   rehypePrismPlus,
   rehypeRaw,
   rehypeSanitize,

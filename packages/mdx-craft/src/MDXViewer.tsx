@@ -216,7 +216,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     return () => {
       cancelled = true
     }
-  }) // No dependency array. We handle the state updates in the compile function.
+  }, []) // No dependency array. We handle the state updates in the compile function.
 
   const tocItems: TOCItem[] = useMemo(() => {
     return headings.map((heading) => ({
