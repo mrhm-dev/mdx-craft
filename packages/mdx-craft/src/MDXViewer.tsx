@@ -11,6 +11,7 @@ import * as CoreComponents from './components/viewer/core/index.js'
 import { Pluggable } from 'unified'
 import { CompilationResult } from './types/processor.js'
 import { TOC } from './components/viewer/navigation/TOC.js'
+import { HTMLComponents } from './components/viewer/html/index.js'
 
 const DefaultLoader: FC = () => {
   return (
@@ -97,6 +98,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
   const mergedComponents = useMemo(() => {
     return {
+      ...HTMLComponents,
       ...globalContext.components,
       ...registry.getAll(),
       ...instanceComponents,
