@@ -15,7 +15,7 @@ export const H1: FC<HeadingProps> = ({ children, className, ...props }) => {
     <h1
       {...props}
       className={cn(
-        'text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100',
+        'text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans',
         'mb-8 mt-10 pb-4 border-b border-slate-200 dark:border-slate-700',
         'scroll-mt-16',
         className

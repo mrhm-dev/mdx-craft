@@ -247,7 +247,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       style={style}
     >
       {/* Main Content */}
-      <div className={cn('mdx-viewer__content flex-grow min-w-0', typographyClasses)}>
+      <div className={cn('mdx-viewer__content font-sans flex-grow min-w-0', typographyClasses)}>
         <MDXProvider components={mergedComponents}>
           <article className="mdx-article">{compiledContent}</article>
         </MDXProvider>

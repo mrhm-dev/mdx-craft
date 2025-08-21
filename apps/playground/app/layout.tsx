@@ -1,15 +1,30 @@
 import type { Metadata } from 'next'
-import localFont from 'next/font/local'
+// import localFont from 'next/font/local'
 import './globals.css'
 import { MDXViewerProvider } from 'mdx-craft'
+import { Inter, Fira_Mono } from 'next/font/google'
 
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
+// const geistSans = localFont({
+//   src: './fonts/GeistVF.woff',
+//   variable: '--font-geist-sans',
+// })
+// const geistMono = localFont({
+//   src: './fonts/GeistMonoVF.woff',
+//   variable: '--font-geist-mono',
+// })
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
 })
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
+const firaMono = Fira_Mono({
+  subsets: ['latin'],
+  variable: '--font-fira-mono',
+  display: 'swap',
+  weight: ['400', '500', '700'],
 })
 
 export const metadata: Metadata = {
@@ -24,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${firaMono.className} ${inter.className} `}>
         <MDXViewerProvider>{children}</MDXViewerProvider>
       </body>
     </html>

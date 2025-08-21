@@ -1,228 +1,92 @@
 import type { Theme } from '../types/theme.js'
 
 /**
- * Default theme for the MDX Craft
+ * Mintlify-inspired theme for MDX Craft
+ * Based on Mintlify's design system with proper typography, colors, and spacing
  */
 export const defaultTheme: Theme = {
   typography: {
-    base: 'prose prose-gray dark:prose-invert',
-    size: 'prose-base sm:prose-lg',
+    base: 'prose prose-gray dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:tracking-tight prose-h1:text-3xl prose-h1:font-bold prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-medium prose-h4:text-lg prose-h4:font-medium prose-h5:text-base prose-h5:font-medium prose-h6:text-sm prose-h6:font-medium prose-p:text-base prose-p:leading-7 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:text-base prose-li:leading-7 prose-strong:font-semibold prose-code:text-sm prose-code:font-mono prose-code:font-medium prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-a:text-emerald-600 dark:prose-a:text-emerald-400 prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400',
+    size: 'prose-base md:prose-lg',
     maxWidth: 'max-w-none',
   },
   colors: {
     primary: 'text-emerald-600 dark:text-emerald-400',
-    secondary: 'text-slate-600 dark:text-slate-400',
-    background: 'bg-white dark:bg-zinc-900',
-    foreground: 'text-zinc-900 dark:text-zinc-50',
-    muted: 'text-zinc-500 dark:text-zinc-400',
-    border: 'border-zinc-200 dark:border-zinc-700',
+    secondary: 'text-gray-600 dark:text-gray-400',
+    background: 'bg-white dark:bg-gray-900',
+    foreground: 'text-gray-900 dark:text-gray-100',
+    muted: 'text-gray-500 dark:text-gray-400',
+    border: 'border-gray-200 dark:border-gray-700',
     error: 'text-red-600 dark:text-red-400',
     warning: 'text-amber-600 dark:text-amber-400',
-    success: 'text-green-600 dark:text-green-400',
+    success: 'text-emerald-600 dark:text-emerald-400',
     info: 'text-blue-600 dark:text-blue-400',
   },
   components: {
-    // Interactive card with hover effects
-    card: 'not-prose bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-slate-800/50 transition-all duration-200 cursor-pointer group',
+    // Interactive card with enhanced Mintlify-style hover effects and spacing
+    card: 'not-prose bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-gray-900/40 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 ease-out cursor-pointer group',
 
-    // Code block with syntax highlighting container
+    // Code block with improved contrast and rounded corners
     codeBlock:
-      'not-prose bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden',
+      'not-prose bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm',
 
-    // Collapsible accordion sections
-    accordion: 'not-prose border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden',
+    // Accordion with clean borders and hover states
+    accordion:
+      'not-prose border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200',
 
-    // Tabbed interface styling
-    tabs: 'not-prose',
+    // Tabbed interface with subtle styling
+    tabs: 'not-prose bg-gray-50 dark:bg-gray-800/30 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden',
 
     callout: {
-      // Base callout with proper spacing and borders
-      base: 'not-prose border rounded-lg p-4 my-6 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
+      // Enhanced base callout with better spacing and typography
+      base: 'not-prose border rounded-xl p-5 my-6 shadow-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p]:text-sm [&>p]:leading-6 [&>ul]:text-sm [&>ul]:leading-6 [&>ol]:text-sm [&>ol]:leading-6',
 
-      // Info callout - blue theme
-      info: 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50 [&_[data-callout-icon]]:text-blue-600 dark:[&_[data-callout-icon]]:text-blue-400',
+      // Info callout with better visual hierarchy
+      info: 'border-blue-200 bg-blue-50/80 dark:border-blue-800/60 dark:bg-blue-950/30 [&_[data-callout-icon]]:text-blue-600 dark:[&_[data-callout-icon]]:text-blue-400 [&>p]:text-blue-900 dark:[&>p]:text-blue-100',
 
-      // Warning callout - amber theme
+      // Warning callout with amber accents
       warning:
-        'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50 [&_[data-callout-icon]]:text-amber-600 dark:[&_[data-callout-icon]]:text-amber-400',
+        'border-amber-200 bg-amber-50/80 dark:border-amber-800/60 dark:bg-amber-950/30 [&_[data-callout-icon]]:text-amber-600 dark:[&_[data-callout-icon]]:text-amber-400 [&>p]:text-amber-900 dark:[&>p]:text-amber-100',
 
-      // Tip callout - emerald theme
-      tip: 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/50 [&_[data-callout-icon]]:text-emerald-600 dark:[&_[data-callout-icon]]:text-emerald-400',
+      // Tip callout with emerald theme matching primary color
+      tip: 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-800/60 dark:bg-emerald-950/30 [&_[data-callout-icon]]:text-emerald-600 dark:[&_[data-callout-icon]]:text-emerald-400 [&>p]:text-emerald-900 dark:[&>p]:text-emerald-100',
 
-      // Note callout - gray theme
-      note: 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 [&_[data-callout-icon]]:text-slate-600 dark:[&_[data-callout-icon]]:text-slate-400',
+      // Note callout with neutral gray theme
+      note: 'border-gray-200 bg-gray-50/80 dark:border-gray-600/60 dark:bg-gray-800/30 [&_[data-callout-icon]]:text-gray-600 dark:[&_[data-callout-icon]]:text-gray-400 [&>p]:text-gray-900 dark:[&>p]:text-gray-100',
 
-      // Important callout - purple theme
+      // Important callout with purple theme
       important:
-        'border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/50 [&_[data-callout-icon]]:text-purple-600 dark:[&_[data-callout-icon]]:text-purple-400',
+        'border-purple-200 bg-purple-50/80 dark:border-purple-800/60 dark:bg-purple-950/30 [&_[data-callout-icon]]:text-purple-600 dark:[&_[data-callout-icon]]:text-purple-400 [&>p]:text-purple-900 dark:[&>p]:text-purple-100',
 
-      // Caution callout - red theme
+      // Caution callout with red theme
       caution:
-        'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50 [&_[data-callout-icon]]:text-red-600 dark:[&_[data-callout-icon]]:text-red-400',
+        'border-red-200 bg-red-50/80 dark:border-red-800/60 dark:bg-red-950/30 [&_[data-callout-icon]]:text-red-600 dark:[&_[data-callout-icon]]:text-red-400 [&>p]:text-red-900 dark:[&>p]:text-red-100',
     },
 
     toc: {
-      // Desktop TOC container with sticky positioning
-      container: 'hidden lg:block w-64 shrink-0',
+      // Desktop TOC with sticky positioning and proper spacing
+      container:
+        'hidden lg:block w-64 shrink-0 sticky top-20 self-start max-h-[calc(100vh-5rem)] overflow-y-auto',
 
-      // Mobile TOC container
-      mobile: 'lg:hidden',
+      // Mobile TOC with full-width design
+      mobile: 'lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700',
 
-      // Mobile toggle button
+      // Enhanced mobile toggle button with better positioning
       button:
-        'fixed bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200',
+        'fixed bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-full p-3.5 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95',
 
-      // TOC list styling
-      list: 'space-y-1',
+      // TOC list with improved spacing
+      list: 'space-y-0.5 text-sm',
 
-      // TOC item styling
-      item: 'block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors duration-150',
+      // TOC item with better hover states and typography
+      item: 'block py-2.5 px-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-all duration-150 font-medium',
 
-      // Active TOC item styling
+      // Active TOC item with enhanced visual feedback
       activeItem:
-        'block py-2 px-3 text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border-l-2 border-emerald-600 dark:border-emerald-400 font-medium',
+        'block py-2.5 px-3 text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border-l-3 border-emerald-500 dark:border-emerald-400 font-semibold rounded-lg',
 
-      // TOC heading styling
-      heading: 'font-semibold text-slate-900 dark:text-slate-100 text-sm mb-3',
+      // TOC heading with proper typography hierarchy
+      heading: 'font-semibold text-gray-900 dark:text-gray-100 text-sm mb-4 px-3',
     },
   },
 }
-
-/**
- * Utility classes for common patterns
- */
-export const utilityClasses = {
-  // Common transition patterns
-  transitions: {
-    fast: 'transition-all duration-150 ease-in-out',
-    normal: 'transition-all duration-200 ease-in-out',
-    slow: 'transition-all duration-300 ease-in-out',
-  },
-
-  // Focus ring patterns for accessibility
-  focusRing:
-    'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
-
-  // Interactive states
-  interactive: {
-    clickable: 'cursor-pointer select-none',
-    hoverable: 'hover:bg-slate-50 dark:hover:bg-slate-800/50',
-    pressed: 'active:scale-[0.98] active:transition-transform active:duration-75',
-  },
-
-  // Typography enhancements
-  typography: {
-    // Custom heading styles that work with prose
-    heading: 'scroll-mt-20', // Offset for sticky headers
-    code: 'font-mono text-sm', // Inline code styling
-    kbd: 'px-1.5 py-0.5 text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded',
-  },
-
-  // Layout helpers
-  layout: {
-    container: 'mx-auto px-4 sm:px-6 lg:px-8',
-    section: 'py-8 sm:py-12 lg:py-16',
-    grid: 'grid gap-6 sm:gap-8 lg:gap-12',
-  },
-
-  // Mobile-specific classes
-  mobile: {
-    hidden: 'lg:hidden',
-    shown: 'hidden lg:block',
-    touchTarget: 'min-h-[44px] min-w-[44px]', // iOS touch target guidelines
-  },
-}
-
-/**
- * Breakpoint-specific utility classes
- */
-export const breakpoints = {
-  mobile: 'lg:hidden', // Hide on desktop (show on mobile)
-  desktop: 'hidden lg:block', // Hide on mobile (show on desktop)
-  tablet: 'hidden md:block lg:hidden', // Tablet-specific
-  small: 'sm:block', // Small screens and up
-  medium: 'md:block', // Medium screens and up
-  large: 'lg:block', // Large screens and up
-} as const
-
-/**
- * Component size variants
- */
-export const sizeVariants = {
-  xs: 'text-xs px-2 py-1',
-  sm: 'text-sm px-3 py-2',
-  md: 'text-base px-4 py-3',
-  lg: 'text-lg px-6 py-4',
-  xl: 'text-xl px-8 py-5',
-} as const
-
-/**
- * Color palette for components
- */
-export const colorPalette = {
-  // Neutral grays
-  neutral: {
-    50: 'slate-50',
-    100: 'slate-100',
-    200: 'slate-200',
-    300: 'slate-300',
-    400: 'slate-400',
-    500: 'slate-500',
-    600: 'slate-600',
-    700: 'slate-700',
-    800: 'slate-800',
-    900: 'slate-900',
-    950: 'slate-950',
-  },
-
-  // Primary emerald
-  primary: {
-    50: 'emerald-50',
-    100: 'emerald-100',
-    200: 'emerald-200',
-    300: 'emerald-300',
-    400: 'emerald-400',
-    500: 'emerald-500',
-    600: 'emerald-600',
-    700: 'emerald-700',
-    800: 'emerald-800',
-    900: 'emerald-900',
-    950: 'emerald-950',
-  },
-
-  // Semantic colors
-  semantic: {
-    info: {
-      light: 'blue-500',
-      dark: 'blue-400',
-      bg: 'blue-50',
-      bgDark: 'blue-950/50',
-      border: 'blue-200',
-      borderDark: 'blue-800',
-    },
-    success: {
-      light: 'green-500',
-      dark: 'green-400',
-      bg: 'green-50',
-      bgDark: 'green-950/50',
-      border: 'green-200',
-      borderDark: 'green-800',
-    },
-    warning: {
-      light: 'amber-500',
-      dark: 'amber-400',
-      bg: 'amber-50',
-      bgDark: 'amber-950/50',
-      border: 'amber-200',
-      borderDark: 'amber-800',
-    },
-    error: {
-      light: 'red-500',
-      dark: 'red-400',
-      bg: 'red-50',
-      bgDark: 'red-950/50',
-      border: 'red-200',
-      borderDark: 'red-800',
-    },
-  },
-} as const

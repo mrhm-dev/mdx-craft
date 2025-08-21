@@ -1,6 +1,6 @@
 import { deepMerge, createTheme, cn, getThemeClasses, createComponentClasses } from '../utils.js'
 import { defaultTheme } from '../preset.js'
-import type { Theme, PartialTheme } from '../types.js'
+import type { Theme, PartialTheme } from '../../types/theme.js'
 
 describe('deepMerge', () => {
   it('should merge simple objects', () => {
