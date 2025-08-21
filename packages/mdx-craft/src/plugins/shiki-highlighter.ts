@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHighlighter, type BundledLanguage, type BundledTheme, type Highlighter } from 'shiki'
+import { useMemo } from 'react'
 
 export const SUPPORTED_LANGUAGES: BundledLanguage[] = [
   'typescript',
@@ -352,11 +353,14 @@ export const highlightCode = async (
 export const useShiki = () => {
   const highlighter = getShikiHighlighter()
 
-  return {
-    highlight: (code: string, options: HighlightOptions) => highlighter.highlight(code, options),
-    getSupportedLanguages: () => highlighter.getSupportedLanguages(),
-    getSupportedThemes: () => highlighter.getSupportedThemes(),
-    clearCache: () => highlighter.clearCache(),
-    getCacheStats: () => highlighter.getCacheStats(),
-  }
+  return useMemo(
+    () => ({
+      highlight: (code: string, options: HighlightOptions) => highlighter.highlight(code, options),
+      getSupportedLanguages: () => highlighter.getSupportedLanguages(),
+      getSupportedThemes: () => highlighter.getSupportedThemes(),
+      clearCache: () => highlighter.clearCache(),
+      getCacheStats: () => highlighter.getCacheStats(),
+    }),
+    [highlighter]
+  )
 }

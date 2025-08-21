@@ -1,15 +1,11 @@
-import rehypeShiki from '@shikijs/rehype'
-import type { Options as AutolinkOptions } from 'rehype-autolink-headings'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypeHighlight from 'rehype-highlight'
-import rehypeKatex from 'rehype-katex'
-import rehypePrismPlus from 'rehype-prism-plus'
-import rehypeRaw from 'rehype-raw'
-import rehypeSanitize from 'rehype-sanitize'
 import rehypeSlug from 'rehype-slug'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeShiki from '@shikijs/rehype'
+import rehypeKatex from 'rehype-katex'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import type { PluggableList } from 'unified'
+import type { Options as AutolinkOptions } from 'rehype-autolink-headings'
 
-// Define types locally since they may not be exported
 export type ShikiOptions = {
   themes?:
     | {
@@ -18,30 +14,47 @@ export type ShikiOptions = {
       }
     | string
   langs?: string[]
-  defaultColor?: boolean | 'light' | 'dark'
 }
 
 export type RehypePluginConfig = {
-  /** Enable syntax highlighting with Shiki (recommended) */
-  shiki?: boolean | ShikiOptions
-  /** Enable fallback syntax highlighting with rehype-highlight */
-  highlight?: boolean
-  /** Enable enhanced syntax highlighting with Prism+ */
-  prismPlus?: boolean
-  /** Enable Math rendering with KaTeX */
-  math?: boolean
-  /** Enable raw HTML processing */
-  raw?: boolean
-  /** Enable HTML sanitization */
-  sanitize?: boolean
   /** Enable heading slugs */
   slugs?: boolean
+  /** Enable HTML sanitization */
+  sanitize?: boolean
+  /** Enable syntax highlighting with Shiki */
+  shiki?: boolean | ShikiOptions
+  /** Enable Math rendering with KaTeX */
+  math?: boolean
   /** Enable autolink headings */
   autolinkHeadings?: boolean | AutolinkOptions
 }
 
 /**
- * Default Shiki configuration with popular themes and languages
+ * Default autolink headings configuration
+ */
+const defaultAutolinkConfig: AutolinkOptions = {
+  behavior: 'append',
+  properties: {
+    className: ['anchor'],
+    ariaLabel: 'Link to this section',
+  },
+  content: {
+    type: 'element',
+    tagName: 'span',
+    properties: {
+      className: ['anchor-icon'],
+    },
+    children: [
+      {
+        type: 'text',
+        value: '#',
+      },
+    ],
+  },
+}
+
+/**
+ * Default Shiki configuration
  */
 const defaultShikiConfig: ShikiOptions = {
   themes: {
@@ -64,77 +77,15 @@ const defaultShikiConfig: ShikiOptions = {
     'ruby',
     'swift',
     'kotlin',
-    'scala',
     'sql',
     'html',
     'css',
-    'scss',
-    'sass',
-    'less',
     'json',
     'yaml',
-    'toml',
-    'xml',
     'markdown',
     'bash',
     'shell',
-    'dockerfile',
-    'graphql',
-    'vue',
-    'svelte',
-    'astro',
-    'solidity',
-    'dart',
-    'elixir',
-    'haskell',
-    'lua',
-    'r',
-    'matlab',
-    'latex',
   ],
-  defaultColor: false,
-}
-
-/**
- * Default autolink headings configuration
- */
-const defaultAutolinkConfig: AutolinkOptions = {
-  behavior: 'append',
-  properties: {
-    className: [
-      'mdx-heading-anchor',
-      'ml-2',
-      'text-zinc-400',
-      'dark:text-zinc-500',
-      'hover:text-emerald-600',
-      'dark:hover:text-emerald-400',
-      'opacity-0',
-      'group-hover:opacity-100',
-      'transition-opacity',
-      'duration-150',
-      'no-underline',
-      'focus:opacity-100',
-      'focus:outline-none',
-      'focus:ring-2',
-      'focus:ring-emerald-500',
-      'focus:ring-offset-2',
-      'rounded',
-    ],
-    ariaLabel: 'Link to this section',
-  },
-  content: {
-    type: 'element',
-    tagName: 'span',
-    properties: {
-      className: ['mdx-heading-anchor-icon', 'text-xs', 'font-mono', 'select-none'],
-    },
-    children: [
-      {
-        type: 'text',
-        value: '#',
-      },
-    ],
-  },
 }
 
 /**
@@ -143,81 +94,25 @@ const defaultAutolinkConfig: AutolinkOptions = {
 export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList => {
   const plugins: PluggableList = []
 
-  // Raw HTML processing (should come first if enabled)
-  if (config.raw !== false) {
-    plugins.push(rehypeRaw)
-  }
-
-  // Add IDs to headings
+  // Add IDs to headings (must come before autolink headings)
   if (config.slugs !== false) {
     plugins.push(rehypeSlug)
   }
 
-  // Add links to headings
+  // Add links to headings (must come after slugs)
   if (config.autolinkHeadings !== false) {
     const autolinkOptions =
       typeof config.autolinkHeadings === 'object' ? config.autolinkHeadings : defaultAutolinkConfig
     plugins.push([rehypeAutolinkHeadings, autolinkOptions])
   }
 
-  // Syntax highlighting with Shiki (preferred)
+  // Syntax highlighting with Shiki
   if (config.shiki !== false) {
     const shikiOptions =
       typeof config.shiki === 'object'
         ? { ...defaultShikiConfig, ...config.shiki }
         : defaultShikiConfig
     plugins.push([rehypeShiki, shikiOptions])
-  }
-  // Fallback to rehype-highlight if Shiki is disabled
-  else if (config.highlight) {
-    plugins.push([
-      rehypeHighlight,
-      {
-        detect: true,
-        ignoreMissing: true,
-        subset: [
-          'javascript',
-          'typescript',
-          'jsx',
-          'tsx',
-          'python',
-          'rust',
-          'go',
-          'java',
-          'c',
-          'cpp',
-          'csharp',
-          'php',
-          'ruby',
-          'swift',
-          'kotlin',
-          'scala',
-          'sql',
-          'html',
-          'css',
-          'scss',
-          'json',
-          'yaml',
-          'toml',
-          'markdown',
-          'bash',
-          'shell',
-          'dockerfile',
-          'graphql',
-        ],
-      },
-    ])
-  }
-
-  // Enhanced syntax highlighting with Prism+
-  if (config.prismPlus) {
-    plugins.push([
-      rehypePrismPlus,
-      {
-        showLineNumbers: true,
-        ignoreMissing: true,
-      },
-    ])
   }
 
   // Math rendering with KaTeX
@@ -237,7 +132,7 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
     plugins.push([
       rehypeSanitize,
       {
-        // Allow common HTML elements and attributes
+        // Allow common HTML elements and custom MDX components
         tagNames: [
           'div',
           'span',
@@ -245,10 +140,6 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
           'br',
           'strong',
           'em',
-          'u',
-          's',
-          'sub',
-          'sup',
           'h1',
           'h2',
           'h3',
@@ -258,13 +149,9 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
           'ul',
           'ol',
           'li',
-          'dl',
-          'dt',
-          'dd',
           'table',
           'thead',
           'tbody',
-          'tfoot',
           'tr',
           'th',
           'td',
@@ -273,35 +160,16 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
           'code',
           'a',
           'img',
-          'video',
-          'audio',
-          'source',
-          'details',
-          'summary',
-          'figure',
-          'figcaption',
-          'svg',
-          'path',
-          'g',
-          'circle',
-          'rect',
-          'line',
-          'polygon',
-          'polyline',
-          'text',
-          'tspan',
-          'defs',
-          'clipPath',
-          'mask',
+          // Custom MDX components
+          'Card',
+          'Tabs',
+          'Accordion',
+          'CodeBlock',
         ],
         attributes: {
           '*': ['className', 'id', 'style', 'title', 'role', 'aria*', 'data*'],
           a: ['href', 'target', 'rel'],
-          img: ['src', 'alt', 'width', 'height', 'loading'],
-          video: ['src', 'controls', 'width', 'height', 'poster'],
-          audio: ['src', 'controls'],
-          source: ['src', 'type'],
-          svg: ['viewBox', 'xmlns', 'width', 'height', 'fill', 'stroke'],
+          img: ['src', 'alt', 'width', 'height'],
         },
       },
     ])
@@ -311,15 +179,27 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
 }
 
 /**
- * Default rehype plugins configuration for most use cases
+ * Default rehype plugins configuration - minimal setup
  */
 export const getDefaultRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
-    shiki: true,
-    math: true,
     slugs: true,
     autolinkHeadings: true,
-    raw: false,
+    shiki: true,
+    math: true,
+    sanitize: false, // Disable sanitization to allow custom components
+  })
+}
+
+/**
+ * Safe rehype plugins configuration with sanitization
+ */
+export const getSafeRehypePlugins = (): PluggableList => {
+  return getRehypePlugins({
+    slugs: true,
+    autolinkHeadings: true,
+    shiki: true,
+    math: true,
     sanitize: true,
   })
 }
@@ -329,12 +209,10 @@ export const getDefaultRehypePlugins = (): PluggableList => {
  */
 export const getSyncRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
-    shiki: false, // Shiki is async, use highlight instead
-    highlight: true,
-    math: true,
     slugs: true,
     autolinkHeadings: true,
-    raw: false,
+    shiki: false, // Shiki is async, disable for sync mode
+    math: true,
     sanitize: false,
   })
 }
@@ -344,91 +222,16 @@ export const getSyncRehypePlugins = (): PluggableList => {
  */
 export const getMinimalRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
-    shiki: true,
-    slugs: true,
-    math: false,
+    slugs: false,
     autolinkHeadings: false,
-  })
-}
-
-/**
- * Safe rehype plugins configuration with sanitization
- */
-export const getSafeRehypePlugins = (): PluggableList => {
-  return getRehypePlugins({
-    shiki: true,
-    math: true,
-    slugs: true,
-    autolinkHeadings: true,
-    raw: true,
-    sanitize: true,
-  })
-}
-
-/**
- * Blog-optimized rehype plugins configuration
- */
-export const getBlogRehypePlugins = (): PluggableList => {
-  return getRehypePlugins({
-    shiki: {
-      ...defaultShikiConfig,
-      themes: {
-        light: 'github-light',
-        dark: 'github-dark-dimmed',
-      },
-    },
-    math: true,
-    slugs: true,
-    autolinkHeadings: {
-      ...defaultAutolinkConfig,
-      behavior: 'prepend',
-      properties: {
-        ...defaultAutolinkConfig.properties,
-        className: [
-          'mdx-heading-anchor',
-          'mr-2',
-          'text-slate-400',
-          'hover:text-emerald-600',
-          'opacity-0',
-          'group-hover:opacity-100',
-          'transition-opacity',
-          'no-underline',
-        ],
-      },
-    },
-  })
-}
-
-/**
- * Documentation-optimized rehype plugins configuration
- */
-export const getDocsRehypePlugins = (): PluggableList => {
-  return getRehypePlugins({
-    shiki: {
-      ...defaultShikiConfig,
-      themes: {
-        light: 'github-light',
-        dark: 'github-dark',
-      },
-    },
-    math: true,
-    slugs: true,
-    autolinkHeadings: true,
-    prismPlus: false,
+    shiki: false,
+    math: false,
+    sanitize: false,
   })
 }
 
 // Export individual plugins for custom configurations
-export {
-  rehypeAutolinkHeadings,
-  rehypeHighlight,
-  rehypeKatex,
-  rehypePrismPlus,
-  rehypeRaw,
-  rehypeSanitize,
-  rehypeShiki,
-  rehypeSlug,
-}
+export { rehypeSlug, rehypeSanitize, rehypeShiki, rehypeKatex, rehypeAutolinkHeadings }
 
-// Export plugin types
+// Export types
 export type { AutolinkOptions }

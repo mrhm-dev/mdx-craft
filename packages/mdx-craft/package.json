@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
+    "dev": "tsup --watch --dts",
     "lint": "eslint src/",
     "check-types": "tsc --noEmit",
     "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",

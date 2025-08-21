@@ -81,8 +81,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     const reg = getGlobalRegistry()
 
     if (!reg.has('Card')) {
-      console.log('Registering built in components...')
-
       // Core components
       reg.registerBatch({
         Accordion: CoreComponents.Accordion,
@@ -98,13 +96,11 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   }, [])
 
   const mergedComponents = useMemo(() => {
-    const merged = {
+    return {
       ...globalContext.components,
       ...registry.getAll(),
       ...instanceComponents,
     }
-    console.log('Merged components:', Object.keys(merged))
-    return merged
   }, [globalContext.components, instanceComponents, registry])
 
   const mergedRemarkPlugins = useMemo(() => {
@@ -176,7 +172,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       setCompilationError(null)
 
       try {
-        console.log('Started compiling...')
         const result = await processor.compile({
           source,
           components: mergedComponents,
@@ -189,11 +184,9 @@ export const MDXViewer: FC<MDXViewerProps> = ({
         if (cancelled) return
 
         if (result.error) {
-          console.error('Compilation Error:', result.error)
           setCompilationError(result.error)
           stableOnError(result.error)
         } else {
-          console.log('Compilation successful:', result.metadata.duration, 'ms')
           setCompiledContent(result.content)
           setHeadings(result.metadata.headings)
           stableOnCompile(result.metadata)
@@ -201,7 +194,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       } catch (error) {
         if (cancelled) return
         const err = error instanceof Error ? error : new Error(String(error))
-        console.error('Unexpected error during compilation:', err)
         setCompilationError(err)
         stableOnError(err)
       } finally {
@@ -216,7 +208,8 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     return () => {
       cancelled = true
     }
-  }, []) // No dependency array. We handle the state updates in the compile function.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source])
 
   const tocItems: TOCItem[] = useMemo(() => {
     return headings.map((heading) => ({
@@ -238,6 +231,8 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
   const displayTOC = showTOC && tocItems.length > 0
   const tocPosition = tocConfig.position || 'right'
+
+  console.log('UseEffect')
 
   return (
     <div

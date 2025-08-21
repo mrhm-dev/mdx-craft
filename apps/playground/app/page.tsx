@@ -325,15 +325,7 @@ export default function PlaygroundPage() {
       </header>
 
       <main className={styles.main}>
-        <MDXViewer
-          source={comprehensiveSource}
-          components={{}}
-          theme={{}}
-          onCompile={() => {}}
-          onError={() => {}}
-          loadingComponent={() => <div>Loading...</div>}
-          errorComponent={({ error }) => <div>Error: {error.message}</div>}
-        />
+        <MDXViewer source={comprehensiveSource} />
       </main>
 
       <footer className={styles.footer}>

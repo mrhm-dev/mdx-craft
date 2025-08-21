@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { useMDXViewer } from '../../../hooks/useMDXViewer.js'
 import { useShiki, type HighlightOptions } from '../../../plugins/shiki-highlighter.js'
 import { cn } from '../../../theme/utils.js'
+import { BundledTheme } from 'shiki'
 
 /**
  * CodeBlock component props
@@ -163,132 +164,131 @@ const CodeSkeleton: FC = () => (
  * </CodeBlock>
  * ```
  */
-export const CodeBlock: FC<CodeBlockProps> = ({
-  children,
-  language = 'text',
-  filename,
-  showLineNumbers = false,
-  highlightLines,
-  startingLineNumber = 1,
-  wordWrap = false,
-  className,
-  showCopy = true,
-  theme,
-}) => {
-  const { getComponentClasses } = useMDXViewer()
-  const { highlight } = useShiki()
-
-  const [highlightedCode, setHighlightedCode] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Get code content as string
-  const codeContent =
-    typeof children === 'string' ? children.trim() : children?.toString()?.trim() || ''
-
-  // Get base code block classes from theme
-  const codeBlockClasses = getComponentClasses('codeBlock')
-
-  // Highlight code with Shiki
-  useEffect(() => {
-    if (!codeContent) {
-      setIsLoading(false)
-      return
-    }
-
-    const highlightCode = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const options: HighlightOptions = {
-          language,
-          theme: theme as any,
-          showLineNumbers,
-          highlightLines,
-          startingLineNumber,
-          wordWrap,
-        }
-
-        const result = await highlight(codeContent, options)
-        setHighlightedCode(result.html)
-      } catch (err) {
-        console.error('Failed to highlight code:', err)
-        setError('Failed to highlight code')
-
-        // Fallback to plain text
-        const escapedCode = codeContent
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-        setHighlightedCode(`<pre><code>${escapedCode}</code></pre>`)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    highlightCode()
-  }, [
-    codeContent,
-    language,
-    theme,
-    showLineNumbers,
+export const CodeBlock: FC<CodeBlockProps> = React.memo(
+  ({
+    children,
+    language = 'text',
+    filename,
+    showLineNumbers = false,
     highlightLines,
-    startingLineNumber,
-    wordWrap,
-    highlight,
-  ])
+    startingLineNumber = 1,
+    wordWrap = false,
+    className,
+    showCopy = true,
+    theme,
+  }) => {
+    const { getComponentClasses } = useMDXViewer()
+    const { highlight } = useShiki()
 
-  return (
-    <div className={cn(codeBlockClasses, 'relative', className)}>
-      {/* Header with filename and language */}
-      {(filename || language !== 'text') && (
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-          <div className="flex items-center gap-3">
-            {filename && (
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300 font-mono">
-                {filename}
-              </span>
-            )}
-            {language !== 'text' && (
-              <span className="px-2 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded">
-                {language}
-              </span>
-            )}
+    const [highlightedCode, setHighlightedCode] = useState<string>('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    // Memoize code content to prevent unnecessary recalculations
+    const codeContent = useMemo(() => {
+      return typeof children === 'string' ? children.trim() : children?.toString()?.trim() || ''
+    }, [children])
+
+    // Get base code block classes from theme
+    const codeBlockClasses = getComponentClasses('codeBlock')
+
+    // Memoize highlight options to prevent unnecessary re-highlighting
+    const highlightOptions = useMemo(
+      (): HighlightOptions => ({
+        language,
+        theme: theme as BundledTheme | undefined,
+        showLineNumbers,
+        highlightLines,
+        startingLineNumber,
+        wordWrap,
+      }),
+      [language, theme, showLineNumbers, highlightLines, startingLineNumber, wordWrap]
+    )
+
+    // Highlight code with Shiki
+    useEffect(() => {
+      if (!codeContent) {
+        setIsLoading(false)
+        return
+      }
+
+      const highlightCode = async () => {
+        setIsLoading(true)
+        setError(null)
+
+        try {
+          const result = await highlight(codeContent, highlightOptions)
+          setHighlightedCode(result.html)
+        } catch {
+          setError('Failed to highlight code')
+
+          // Fallback to plain text
+          const escapedCode = codeContent
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+          setHighlightedCode(`<pre><code>${escapedCode}</code></pre>`)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      highlightCode()
+    }, [codeContent, highlightOptions, highlight])
+
+    return (
+      <div className={cn(codeBlockClasses, 'relative', className)}>
+        {/* Header with filename and language */}
+        {(filename || language !== 'text') && (
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <div className="flex items-center gap-3">
+              {filename && (
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 font-mono">
+                  {filename}
+                </span>
+              )}
+              {language !== 'text' && (
+                <span className="px-2 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded">
+                  {language}
+                </span>
+              )}
+            </div>
+
+            {/* Copy button in header for better visibility */}
+            {showCopy && !isLoading && <CopyButton code={codeContent} />}
           </div>
+        )}
 
-          {/* Copy button in header for better visibility */}
-          {showCopy && !isLoading && <CopyButton code={codeContent} />}
+        {/* Code content */}
+        <div className="relative">
+          {isLoading ? (
+            <CodeSkeleton />
+          ) : error ? (
+            <div className="p-4 text-red-600 dark:text-red-400 text-sm">{error}</div>
+          ) : (
+            <div
+              className={cn(
+                'overflow-x-auto',
+                '[&_pre]:m-0 [&_pre]:p-4 [&_pre]:bg-transparent',
+                '[&_code]:font-mono [&_code]:text-sm',
+                '[&_.line]:block',
+                showLineNumbers &&
+                  '[&_.line]:pl-12 [&_.line]:relative [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-8 [&_.line]:before:text-right [&_.line]:before:text-slate-400 [&_.line]:before:text-xs [&_.line]:before:content-[attr(data-line)] [&_.line]:before:pr-4 [&_.line]:before:select-none',
+                '[&_.highlighted-line]:bg-yellow-200/20 dark:[&_.highlighted-line]:bg-yellow-500/10',
+                '[&_.highlighted-line]:border-l-2 [&_.highlighted-line]:border-yellow-500 [&_.highlighted-line]:pl-3 [&_.highlighted-line]:ml-1'
+              )}
+              dangerouslySetInnerHTML={{ __html: highlightedCode }}
+            />
+          )}
+
+          {/* Copy button for blocks without header */}
+          {showCopy && !filename && language === 'text' && !isLoading && (
+            <CopyButton code={codeContent} />
+          )}
         </div>
-      )}
-
-      {/* Code content */}
-      <div className="relative">
-        {isLoading ? (
-          <CodeSkeleton />
-        ) : error ? (
-          <div className="p-4 text-red-600 dark:text-red-400 text-sm">{error}</div>
-        ) : (
-          <div
-            className={cn(
-              'overflow-x-auto',
-              '[&_pre]:m-0 [&_pre]:p-4 [&_pre]:bg-transparent',
-              '[&_code]:font-mono [&_code]:text-sm',
-              '[&_.line]:block',
-              showLineNumbers &&
-                '[&_.line]:pl-12 [&_.line]:relative [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-8 [&_.line]:before:text-right [&_.line]:before:text-slate-400 [&_.line]:before:text-xs [&_.line]:before:content-[attr(data-line)] [&_.line]:before:pr-4 [&_.line]:before:select-none',
-              '[&_.highlighted-line]:bg-yellow-200/20 dark:[&_.highlighted-line]:bg-yellow-500/10',
-              '[&_.highlighted-line]:border-l-2 [&_.highlighted-line]:border-yellow-500 [&_.highlighted-line]:pl-3 [&_.highlighted-line]:ml-1'
-            )}
-            dangerouslySetInnerHTML={{ __html: highlightedCode }}
-          />
-        )}
-
-        {/* Copy button for blocks without header */}
-        {showCopy && !filename && language === 'text' && !isLoading && (
-          <CopyButton code={codeContent} />
-        )}
       </div>
-    </div>
-  )
-}
+    )
+  }
+)
+
+CodeBlock.displayName = 'CodeBlock'
