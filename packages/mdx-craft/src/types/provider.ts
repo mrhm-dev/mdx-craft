@@ -5,7 +5,6 @@ import type {
   CompilationMetadata,
   ComponentRegistry,
   MDXComponent,
-  PartialTheme,
   Theme,
   TOCItem,
 } from './theme.js'
@@ -13,7 +12,7 @@ import type {
 export type MDXViewerProviderProps = {
   children: React.ReactNode
   components?: ComponentRegistry
-  theme?: PartialTheme
+  theme?: Partial<Theme>
   remarkPlugins?: PluggableList
   rehypePlugins?: PluggableList
   cache?: CacheConfig
@@ -24,16 +23,10 @@ export type MDXViewerContextValue = {
   components: ComponentRegistry
   registerComponent: (name: string, component: MDXComponent) => void
   unregisterComponent: (name: string) => void
-  getComponentClasses: (
-    componentType: keyof Theme['components'],
-    additionalClasses?: string
-  ) => string
-  getTypographyClasses: (additionalClasses?: string) => string
   cache: Required<CacheConfig>
   remarkPlugins: PluggableList
   rehypePlugins: PluggableList
   metadata?: CompilationMetadata
-  updateTheme: (newTheme: PartialTheme) => void
 }
 
 export type TOCContextValue = {
@@ -47,6 +40,5 @@ export type TOCContextValue = {
 
 export type ThemeContextValue = {
   theme: Theme
-  updateTheme: (updates: PartialTheme) => void
   resetTheme: () => void
 }

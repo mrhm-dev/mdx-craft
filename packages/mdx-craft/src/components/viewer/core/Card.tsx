@@ -2,7 +2,6 @@
 
 import React from 'react'
 import type { FC, ReactNode } from 'react'
-import { useMDXViewer } from '../../../hooks/useMDXViewer.js'
 import { cn } from '../../../theme/utils.js'
 
 /**
@@ -88,17 +87,12 @@ export const Card: FC<CardProps> = ({
   target,
   rel,
 }) => {
-  const { getComponentClasses } = useMDXViewer()
-
-  // Get base card classes from theme
-  const cardClasses = getComponentClasses('card')
-
   // Determine if card is interactive
   const isInteractive = Boolean(href || onClick)
 
   // Build final class name
   const finalClassName = cn(
-    cardClasses,
+    'card',
     // Layout classes
     horizontal ? 'flex flex-row items-center' : 'flex flex-col',
     // Interactive states

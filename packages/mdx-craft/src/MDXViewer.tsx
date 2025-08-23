@@ -41,7 +41,6 @@ const DefaultErrorComponent: FC<{ error: Error }> = ({ error }) => {
 export const MDXViewer: FC<MDXViewerProps> = ({
   source,
   components: instanceComponents,
-  theme: instanceTheme,
   remarkPlugins: instanceRemarkPlugins = [],
   rehypePlugins: instanceRehypePlugins = [],
   generateTOC = true,
@@ -51,7 +50,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   onError,
   loadingComponent: LoadingComponent = DefaultLoader,
   errorComponent: ErrorComponent = DefaultErrorComponent,
-  className,
   style,
   useCache = true,
 }) => {
@@ -164,11 +162,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     // Only recompile if the state has changed
     if (!hasChanged) return
 
-    // Update theme
-    if (instanceTheme) {
-      globalContext.updateTheme(instanceTheme)
-    }
-
     const compile = async () => {
       setIsCompiling(true)
       setCompilationError(null)
@@ -221,8 +214,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     }))
   }, [headings])
 
-  const typographyClasses = globalContext.getTypographyClasses(className)
-
   if (isCompiling) {
     return <LoadingComponent />
   }
@@ -247,7 +238,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       style={style}
     >
       {/* Main Content */}
-      <div className={cn('mdx-viewer__content font-sans flex-grow min-w-0', typographyClasses)}>
+      <div className={cn('mdx-viewer__content font-sans flex-grow min-w-0')}>
         <MDXProvider components={mergedComponents}>
           <article className="mdx-article">{compiledContent}</article>
         </MDXProvider>
@@ -257,7 +248,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       {displayTOC && (
         <TOC
           items={tocItems}
-          sticky={tocConfig.sticky || false}
+          sticky={tocConfig.sticky || true}
           stickyOffset={tocConfig.stickyOffset || '4rem'}
           showNested={true}
           highlightActive={true}

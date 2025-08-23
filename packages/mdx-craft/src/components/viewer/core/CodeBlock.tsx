@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
-import { useMDXViewer } from '../../../hooks/useMDXViewer.js'
 import { useShiki, type HighlightOptions } from '../../../plugins/shiki-highlighter.js'
 import { cn } from '../../../theme/utils.js'
 import { BundledTheme } from 'shiki'
@@ -177,7 +176,6 @@ export const CodeBlock: FC<CodeBlockProps> = React.memo(
     showCopy = true,
     theme,
   }) => {
-    const { getComponentClasses } = useMDXViewer()
     const { highlight } = useShiki()
 
     const [highlightedCode, setHighlightedCode] = useState<string>('')
@@ -188,9 +186,6 @@ export const CodeBlock: FC<CodeBlockProps> = React.memo(
     const codeContent = useMemo(() => {
       return typeof children === 'string' ? children.trim() : children?.toString()?.trim() || ''
     }, [children])
-
-    // Get base code block classes from theme
-    const codeBlockClasses = getComponentClasses('codeBlock')
 
     // Memoize highlight options to prevent unnecessary re-highlighting
     const highlightOptions = useMemo(
@@ -237,7 +232,7 @@ export const CodeBlock: FC<CodeBlockProps> = React.memo(
     }, [codeContent, highlightOptions, highlight])
 
     return (
-      <div className={cn(codeBlockClasses, 'relative', className)}>
+      <div className={cn('codeBlock', 'relative', className)}>
         {/* Header with filename and language */}
         {(filename || language !== 'text') && (
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
