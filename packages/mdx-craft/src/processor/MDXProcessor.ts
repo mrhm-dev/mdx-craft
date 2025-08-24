@@ -1,5 +1,4 @@
 import { getDefaultRemarkPlugins } from '../plugins/remarkPlugins.js'
-import type { HeadingMetadata } from '../types/registry.js'
 import { MDXCache } from './cache.js'
 import type {
   CompilationResult,
@@ -18,7 +17,6 @@ import type { PluggableList } from 'unified'
 export interface CompilationContext {
   startTime: number
   cacheKey: string
-  headings: HeadingMetadata[]
   componentKeys: string[]
   evaluateOptions: {
     development: boolean
@@ -82,7 +80,6 @@ export class MDXProcessor {
     const pluginFingerPrint = {
       remark: options.remarkPlugins?.length ?? 0,
       rehype: options.rehypePlugins?.length ?? 0,
-      toc: options.generateTOC ?? false,
     }
     const cacheKey = MDXCache.generateKey(
       options.source,
@@ -104,7 +101,6 @@ export class MDXProcessor {
               ? this.renderMDX(cachedEntry.content, options.components)
               : null,
             metadata: {
-              headings: cachedEntry.metadata.headings,
               duration,
               cacheHit: true,
               componentCount: componentKeys.length,
@@ -116,11 +112,7 @@ export class MDXProcessor {
     }
 
     // Prepare compilation context
-    const headings: HeadingMetadata[] = []
-    const remarkPlugins = [
-      ...getDefaultRemarkPlugins(options.generateTOC ? headings : undefined),
-      ...(options.remarkPlugins ?? []),
-    ]
+    const remarkPlugins = [...getDefaultRemarkPlugins(), ...(options.remarkPlugins ?? [])]
     const rehypePlugins = [
       ...(isSync ? getSyncRehypePlugins() : getDefaultRehypePlugins()),
       ...(options.rehypePlugins ?? []),
@@ -133,7 +125,6 @@ export class MDXProcessor {
     //   remarkPlugins: remarkPlugins.length,
     //   rehypePlugins: rehypePlugins.length,
     //   components: componentKeys.length,
-    //   generateTOC: options.generateTOC,
     // })
 
     const evaluateOptions = {
@@ -148,7 +139,6 @@ export class MDXProcessor {
       context: {
         startTime,
         cacheKey,
-        headings,
         componentKeys,
         evaluateOptions,
       },
@@ -166,7 +156,6 @@ export class MDXProcessor {
       this.cache.set(context.cacheKey, {
         content: compiled,
         metadata: {
-          headings: context.headings,
           timestamp: Date.now(),
         },
       })
@@ -177,7 +166,6 @@ export class MDXProcessor {
     return {
       content: this.renderMDX(compiled, options.components),
       metadata: {
-        headings: context.headings,
         duration,
         cacheHit: false,
         componentCount: context.componentKeys.length,
@@ -195,7 +183,6 @@ export class MDXProcessor {
     return {
       content: null,
       metadata: {
-        headings: [],
         duration,
         cacheHit: false,
         componentCount: context.componentKeys.length,

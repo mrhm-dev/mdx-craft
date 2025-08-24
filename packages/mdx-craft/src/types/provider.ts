@@ -1,12 +1,6 @@
 import React from 'react'
 import { type PluggableList } from 'unified'
-import type {
-  CacheConfig,
-  CompilationMetadata,
-  ComponentRegistry,
-  MDXComponent,
-  TOCItem,
-} from './index.js'
+import type { CacheConfig, CompilationMetadata, ComponentRegistry, MDXComponent } from './index.js'
 
 export type MDXViewerProviderProps = {
   children: React.ReactNode
@@ -24,13 +18,4 @@ export type MDXViewerContextValue = {
   remarkPlugins: PluggableList
   rehypePlugins: PluggableList
   metadata?: CompilationMetadata
-}
-
-export type TOCContextValue = {
-  items: TOCItem[]
-  activeId: string | null
-  scrollToHeading: (id: string) => void
-  flatItems: TOCItem[]
-  isVisible: boolean
-  toggleVisibility: () => void
 }

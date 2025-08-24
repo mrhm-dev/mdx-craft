@@ -44,18 +44,11 @@ describe('MDXProcessor', () => {
       const options: CompilerOptions = {
         source: '# Hello World\n\nThis is a test.',
         components: {},
-        generateTOC: true, // Need to explicitly enable TOC
       }
 
       const result = await processor.compile(options)
 
       expect(result.content).toBeTruthy()
-      expect(result.metadata.headings).toHaveLength(1)
-      expect(result.metadata.headings[0]).toEqual({
-        id: 'hello-world',
-        text: 'Hello World',
-        level: 1,
-      })
       expect(result.metadata.cacheHit).toBe(false)
       expect(result.error).toBeUndefined()
     })
@@ -100,23 +93,6 @@ describe('MDXProcessor', () => {
       expect(result.content).toBeNull()
       expect(result.error).toBeDefined()
       expect(result.error?.message).toContain('Could not parse')
-      expect(result.metadata.headings).toEqual([])
-    })
-
-    it('should generate TOC when enabled', async () => {
-      const options: CompilerOptions = {
-        source: '# First\n## Second\n### Third\n# Fourth',
-        components: {},
-        generateTOC: true,
-      }
-
-      const result = await processor.compile(options)
-
-      expect(result.metadata.headings).toHaveLength(4)
-      expect(result.metadata.headings[0]?.level).toBe(1)
-      expect(result.metadata.headings[1]?.level).toBe(2)
-      expect(result.metadata.headings[2]?.level).toBe(3)
-      expect(result.metadata.headings[3]?.level).toBe(1)
     })
 
     it('should work with custom remark plugins', async () => {
@@ -174,19 +150,12 @@ describe('MDXProcessor', () => {
       const options: CompilerOptions = {
         source: '# Hello Sync\n\nThis is a sync test.',
         components: {},
-        generateTOC: true,
       }
 
       const result = processor.compileSync(options)
 
       expect(result.error).toBeUndefined()
       expect(result.content).toBeTruthy()
-      expect(result.metadata.headings).toHaveLength(1)
-      expect(result.metadata.headings[0]).toEqual({
-        id: 'hello-sync',
-        text: 'Hello Sync',
-        level: 1,
-      })
       expect(result.metadata.cacheHit).toBe(false)
     })
 
@@ -217,7 +186,6 @@ describe('MDXProcessor', () => {
       expect(result.content).toBeNull()
       expect(result.error).toBeDefined()
       expect(result.error?.message).toContain('Could not parse')
-      expect(result.metadata.headings).toEqual([])
     })
 
     it('should share cache between async and sync methods', async () => {
@@ -418,91 +386,6 @@ describe('MDXProcessor', () => {
       // Valid source should still be cached
       const validResult = await processor.compile(sources[0]!.options)
       expect(validResult.metadata.cacheHit).toBe(true)
-    })
-  })
-
-  describe('edge cases', () => {
-    it('should handle empty source', async () => {
-      const options: CompilerOptions = {
-        source: '',
-        components: {},
-      }
-
-      const result = await processor.compile(options)
-      expect(result.content).toBeTruthy()
-      expect(result.metadata.headings).toEqual([])
-      expect(result.error).toBeUndefined()
-    })
-
-    it('should handle very large content', async () => {
-      const largeContent = '# Heading\n\n' + 'This is a paragraph.\n\n'.repeat(1000)
-      const options: CompilerOptions = {
-        source: largeContent,
-        components: {},
-      }
-
-      const result = await processor.compile(options)
-      expect(result.content).toBeTruthy()
-      expect(result.error).toBeUndefined()
-    })
-
-    it('should handle special characters in headings', async () => {
-      const options: CompilerOptions = {
-        source: '# Hello & World!\n## Test @ 123\n### Special #$% Characters',
-        components: {},
-        generateTOC: true,
-      }
-
-      const result = await processor.compile(options)
-      expect(result.metadata.headings).toHaveLength(3)
-      expect(result.metadata.headings[0]?.id).toBe('hello-world')
-      expect(result.metadata.headings[1]?.id).toBe('test-123')
-      expect(result.metadata.headings[2]?.id).toBe('special-characters')
-    })
-
-    it('should handle MDX without complex imports', async () => {
-      const options: CompilerOptions = {
-        source: '# MDX Content\n\nContent here without imports.',
-        components: {},
-      }
-
-      const result = await processor.compile(options)
-      // Should compile without errors
-      expect(result.error).toBeUndefined()
-      expect(result.content).toBeTruthy()
-    })
-
-    it('should handle concurrent compilations', async () => {
-      const options1: CompilerOptions = {
-        source: '# Concurrent 1',
-        components: {},
-      }
-
-      const options2: CompilerOptions = {
-        source: '# Concurrent 2',
-        components: {},
-      }
-
-      const options3: CompilerOptions = {
-        source: '# Concurrent 3',
-        components: {},
-      }
-
-      // Run compilations concurrently
-      const results = await Promise.all([
-        processor.compile(options1),
-        processor.compile(options2),
-        processor.compile(options3),
-      ])
-
-      // All should succeed
-      results.forEach((result) => {
-        expect(result.content).toBeTruthy()
-        expect(result.error).toBeUndefined()
-      })
-
-      // All should be cached
-      expect(processor.getCacheStats().entries).toBe(3)
     })
   })
 

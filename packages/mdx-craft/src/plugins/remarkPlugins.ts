@@ -10,7 +10,6 @@ import { visit } from 'unist-util-visit'
 import type { PluggableList } from 'unified'
 import type { Root, Node, Heading, Text } from 'mdast'
 import type { VFile } from 'vfile'
-import type { HeadingMetadata } from '../types/registry.js'
 
 // Additional types for AST nodes
 interface DirectiveNode extends Node {
@@ -73,9 +72,9 @@ export type RemarkPluginConfig = {
 }
 
 /**
- * Custom remark plugin to extract headings for TOC
+ * Custom remark plugin to add heading IDs for anchor linking
  */
-export const remarkExtractHeadings = (headings: HeadingMetadata[]) => {
+export const remarkAddHeadingIds = () => {
   return (tree: Root) => {
     visit(tree, 'heading', (node: Heading) => {
       const text = node.children
@@ -84,16 +83,15 @@ export const remarkExtractHeadings = (headings: HeadingMetadata[]) => {
         .join('')
 
       // Generate ID from text
-      const id = text
+      let id = text
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
 
-      headings.push({
-        id,
-        text,
-        level: node.depth,
-      })
+      // Ensure ID doesn't start with a number (prepend 'heading-' if it does)
+      if (/^\d/.test(id)) {
+        id = `heading-${id}`
+      }
 
       // Add ID to the node for linking - type-safe approach
       const extendedNode = node as ExtendedHeading
@@ -164,10 +162,7 @@ export const remarkCustomDirectives = () => {
 /**
  * Get configured remark plugins based on options
  */
-export const getRemarkPlugins = (
-  config: RemarkPluginConfig = {},
-  extractHeadings?: HeadingMetadata[]
-): PluggableList => {
+export const getRemarkPlugins = (config: RemarkPluginConfig = {}): PluggableList => {
   const plugins: PluggableList = []
 
   // Frontmatter support (should come early)
@@ -246,10 +241,8 @@ export const getRemarkPlugins = (
     plugins.push(remarkAddReadingTime)
   }
 
-  // Extract headings for TOC
-  if (config.extractHeadings !== false && extractHeadings) {
-    plugins.push([remarkExtractHeadings, extractHeadings])
-  }
+  // Always add heading IDs for anchor linking
+  plugins.push(remarkAddHeadingIds)
 
   return plugins
 }
@@ -257,111 +250,87 @@ export const getRemarkPlugins = (
 /**
  * Default remark plugins configuration for most use cases
  */
-export const getDefaultRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: true,
-      frontmatter: true,
-      directives: true,
-      gemoji: true,
-      readingTime: true,
-      extractHeadings: true,
-    },
-    extractHeadings
-  )
+export const getDefaultRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: true,
+    frontmatter: true,
+    directives: true,
+    gemoji: true,
+    readingTime: true,
+  })
 }
 
 /**
  * Minimal remark plugins configuration
  */
-export const getMinimalRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: false,
-      frontmatter: false,
-      directives: false,
-      extractHeadings: true,
-    },
-    extractHeadings
-  )
+export const getMinimalRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: false,
+    frontmatter: false,
+    directives: false,
+  })
 }
 
 /**
  * Blog-optimized remark plugins configuration
  */
-export const getBlogRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: true,
-      breaks: true,
-      frontmatter: true,
-      gemoji: true,
-      readingTime: true,
-      extractHeadings: true,
-    },
-    extractHeadings
-  )
+export const getBlogRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: true,
+    breaks: true,
+    frontmatter: true,
+    gemoji: true,
+    readingTime: true,
+  })
 }
 
 /**
  * Documentation-optimized remark plugins configuration
  */
-export const getDocsRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: true,
-      frontmatter: true,
-      wikiLinks: {
-        hrefTemplate: (permalink: string) => `/docs/${permalink}`,
-      },
-      directives: true,
-      flexibleMarkers: true,
-      extractHeadings: true,
+export const getDocsRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: true,
+    frontmatter: true,
+    wikiLinks: {
+      hrefTemplate: (permalink: string) => `/docs/${permalink}`,
     },
-    extractHeadings
-  )
+    directives: true,
+    flexibleMarkers: true,
+  })
 }
 
 /**
  * Safe remark plugins configuration with minimal external features
  */
-export const getSafeRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: true,
-      frontmatter: false,
-      wikiLinks: false,
-      directives: false,
-      flexibleMarkers: false,
-      gemoji: false,
-      readingTime: false,
-      extractHeadings: true,
-    },
-    extractHeadings
-  )
+export const getSafeRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: true,
+    frontmatter: false,
+    wikiLinks: false,
+    directives: false,
+    flexibleMarkers: false,
+    gemoji: false,
+    readingTime: false,
+  })
 }
 
 /**
  * Academic/Research-optimized remark plugins configuration
  */
-export const getAcademicRemarkPlugins = (extractHeadings?: HeadingMetadata[]): PluggableList => {
-  return getRemarkPlugins(
-    {
-      gfm: true,
-      math: true,
-      frontmatter: true,
-      directives: true,
-      flexibleMarkers: true,
-      readingTime: true,
-      extractHeadings: true,
-    },
-    extractHeadings
-  )
+export const getAcademicRemarkPlugins = (): PluggableList => {
+  return getRemarkPlugins({
+    gfm: true,
+    math: true,
+    frontmatter: true,
+    directives: true,
+    flexibleMarkers: true,
+    readingTime: true,
+  })
 }
 
 // Export individual plugins for custom configurations

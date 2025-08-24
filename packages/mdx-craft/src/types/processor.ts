@@ -1,6 +1,6 @@
 import { type PluggableList } from 'unified'
 import { type ReactElement } from 'react'
-import { type ComponentRegistry, type HeadingMetadata } from './registry.js'
+import { type ComponentRegistry } from './registry.js'
 import { evaluate } from '@mdx-js/mdx'
 
 /**
@@ -9,7 +9,6 @@ import { evaluate } from '@mdx-js/mdx'
  * @components - The components to use for the compiler
  * @remarkPlugins - The remark plugins to use for the compiler
  * @rehypePlugins - The rehype plugins to use for the compiler
- * @generateTOC - Whether to generate a table of contents
  * @development - Whether to use the development environment
  */
 export type CompilerOptions = {
@@ -17,7 +16,6 @@ export type CompilerOptions = {
   components: ComponentRegistry
   remarkPlugins?: PluggableList
   rehypePlugins?: PluggableList
-  generateTOC?: boolean
   development?: boolean
 }
 
@@ -30,7 +28,6 @@ export type CompilerOptions = {
 export type CompilationResult = {
   content: ReactElement | null
   metadata: {
-    headings: HeadingMetadata[]
     duration: number
     cacheHit: boolean
     componentCount: number
@@ -48,8 +45,6 @@ export type CompilationMetadata = {
   componentCount: number
   /** Whether result was from cache */
   cacheHit: boolean
-  /** Generated headings for TOC */
-  headings: HeadingMetadata[]
   /** Source code length */
   sourceLength: number
   /** Plugin execution times */
@@ -68,7 +63,6 @@ export type CacheEntry = {
 
   content: MDXModule | null
   metadata: {
-    headings: HeadingMetadata[]
     timestamp: number
   }
 }
@@ -83,30 +77,6 @@ export type ProcessorConfig = {
   cacheEnabled?: boolean
   cacheMaxSize: number // in MB
   cacheTTL: number // in milliseconds
-}
-
-/**
- * Heading Node
- * This is a type for the heading node of the compiled content. This will be used to generate the table of contents.
- *
- * @type - The type of the node
- * @depth - The depth of the heading
- * @children - The children of the heading
- * @data - The data of the heading
- */
-export type HeadingNode = {
-  type: 'heading'
-  depth: number
-  children: {
-    type: 'text'
-    value: string
-  }[]
-  data?: {
-    id?: string
-    hProperties?: {
-      id?: string
-    }
-  }
 }
 
 export type MDXModule = Awaited<ReturnType<typeof evaluate>>

@@ -1,66 +1,29 @@
-/**
- * Table of Contents Configuration
- */
-export type TOCConfig = {
-  /**
-   * Enable mobile optimizations
-   * @default true
-   */
-  mobile?: boolean
-
-  /**
-   * Desktop position
-   * @default 'right'
-   */
-  position?: 'left' | 'right'
-
-  /**
-   * Enable sticky positioning
-   * @default true
-   */
-  sticky?: boolean
-
-  /**
-   * Enable mobile collapsible behavior
-   * @default true
-   */
-  collapsible?: boolean
-
-  /**
-   * Minimum heading level to include
-   * @default 2
-   */
-  minLevel?: number
-
-  /**
-   * Maximum heading level to include
-   * @default 3
-   */
-  maxLevel?: number
-
-  /**
-   * Mobile breakpoint for responsive behavior
-   * @default 'lg'
-   */
-  mobileBreakpoint?: 'sm' | 'md' | 'lg' | 'xl'
-
-  /**
-   * Sticky offset from top when scrolling
-   * @default "4rem"
-   */
-  stickyOffset?: string
+export type TOCItem = {
+  id: string
+  text: string
+  level: number
 }
 
-/**
- * TOC item structure
- */
-export type TOCItem = {
-  /** Unique identifier */
-  id: string
-  /** Display text */
-  text: string
-  /** Heading level */
-  level: number
-  /** Nested children */
-  children?: TOCItem[]
+export type UseTOCOptions = {
+  /** Minimum heading level to include (default: 1) */
+  minLevel?: number
+  /** Maximum heading level to include (default: 6) */
+  maxLevel?: number
+  /** CSS selector for heading elements (default: 'h1, h2, h3, h4, h5, h6') */
+  selector?: string
+  /** Scroll offset when navigating to headings (default: 80) */
+  scrollOffset?: number
+  /** Root element to search within (default: document) */
+  root?: Element | Document
+}
+
+export type UseTOCReturn = {
+  /** Array of TOC items extracted from DOM */
+  items: TOCItem[]
+  /** ID of currently active heading */
+  activeId: string | null
+  /** Function to scroll to a heading by ID */
+  scrollTo: (id: string) => void
+  /** Whether the hook is currently extracting TOC data */
+  isLoading: boolean
 }
