@@ -173,7 +173,9 @@ class ShikiHighlighter {
 
     // Auto-detect dark mode
     if (typeof window !== 'undefined') {
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+      // Check for Tailwind v4 dark mode (class on html element)
+      const htmlElement = document.documentElement
+      const isDarkMode = htmlElement.classList.contains('dark')
       return isDarkMode ? this.config.darkTheme : this.config.lightTheme
     }
 
@@ -225,21 +227,11 @@ class ShikiHighlighter {
   private createLineNumbersTransformer(startingLineNumber = 1) {
     return {
       name: 'line-numbers',
-      preprocess(code: string) {
-        return code
-      },
-      code(node: any) {
+      line(node: any, lineNumber: number) {
+        // Add data-line attribute to each line
         node.properties = node.properties || {}
-        node.properties.style = (node.properties.style || '') + '; position: relative;'
-
-        // Add line numbers
-        const lines = node.children || []
-        lines.forEach((line: any, index: number) => {
-          if (line.type === 'element' && line.tagName === 'span') {
-            line.properties = line.properties || {}
-            line.properties['data-line'] = startingLineNumber + index
-          }
-        })
+        node.properties['data-line'] = String(startingLineNumber + lineNumber - 1)
+        node.properties.className = (node.properties.className || []).concat('line')
       },
     }
   }

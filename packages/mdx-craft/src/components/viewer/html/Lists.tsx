@@ -21,7 +21,7 @@ export const UnorderedList: FC<ListProps> = ({ children, className }) => {
     <ul
       className={cn(
         'list-disc list-outside ml-6 mb-6 space-y-2',
-        'text-slate-700 dark:text-slate-300',
+        'text-zinc-900/80 dark:text-zinc-100/70',
         '[&>li]:pl-1',
         className
       )}
@@ -39,7 +39,7 @@ export const OrderedList: FC<ListProps> = ({ children, className }) => {
     <ol
       className={cn(
         'list-decimal list-outside ml-6 mb-6 space-y-2',
-        'text-slate-700 dark:text-slate-300',
+        'text-zinc-900/80 dark:text-zinc-100/70',
         '[&>li]:pl-1',
         className
       )}
@@ -56,8 +56,8 @@ export const ListItem: FC<ListItemProps> = ({ children, className }) => {
   return (
     <li
       className={cn(
-        'text-base md:text-lg leading-7',
-        'marker:text-slate-500 dark:marker:text-slate-400',
+        'text-base leading-6',
+        'marker:text-zinc-900/80 dark:marker:text-zinc-100/70',
         // Handle nested lists
         '[&>ul]:mt-2 [&>ul]:mb-0',
         '[&>ol]:mt-2 [&>ol]:mb-0',

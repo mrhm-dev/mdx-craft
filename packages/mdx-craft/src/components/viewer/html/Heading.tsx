@@ -1,8 +1,9 @@
 'use client'
 
-import { FC, ReactNode, HTMLAttributes, useState, useCallback } from 'react'
+import { FC, ReactNode, HTMLAttributes, useCallback } from 'react'
 import { cn } from '../../../utils/index.js'
-import { Link2, Check } from 'lucide-react'
+import { LinkIcon } from '../../icons/index.js'
+import { CopyButton } from '../../common/CopyButton.js'
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
   children?: ReactNode
@@ -18,52 +19,20 @@ const HeadingWithAnchor: FC<{
   id?: string
   props?: HTMLAttributes<HTMLHeadingElement>
 }> = ({ as: Component, children, className, id, props }) => {
-  const [isCopied, setIsCopied] = useState(false)
-
-  const handleCopy = useCallback(
-    async (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      if (!id) return
-
-      const url = `${window.location.origin}${window.location.pathname}#${id}`
-
-      try {
-        await navigator.clipboard.writeText(url)
-        setIsCopied(true)
-        setTimeout(() => setIsCopied(false), 2000)
-      } catch (err) {
-        console.error('Failed to copy:', err)
-      }
-    },
-    [id]
-  )
+  const getCopyValue = useCallback(() => {
+    if (!id) return ''
+    return `${window.location.origin}${window.location.pathname}#${id}`
+  }, [id])
 
   return (
     <Component {...props} id={id} className={cn('group relative', className)}>
       {children}
       {id && (
-        <button
-          onClick={handleCopy}
-          className={cn(
-            'absolute inline-flex items-center justify-center',
-            'ml-2 p-1.5 rounded-md',
-            'text-zinc-300 dark:text-zinc-600 hover:text-zinc-400 dark:hover:text-zinc-500',
-            'hover:bg-zinc-100 dark:hover:bg-zinc-800',
-            'transition-all duration-200',
-            'opacity-0 group-hover:opacity-100',
-            '-translate-y-[50%] top-[50%]'
-          )}
-          aria-label={isCopied ? 'Link copied!' : 'Copy link to section'}
-          title={isCopied ? 'Link copied!' : 'Copy link to section'}
-        >
-          {isCopied ? (
-            <Check className="w-4 h-4 text-green-500 dark:text-green-400" />
-          ) : (
-            <Link2 className="w-4 h-4" />
-          )}
-        </button>
+        <CopyButton
+          value={getCopyValue}
+          standbyIcon={LinkIcon}
+          className="p-1.5 rounded-md transition-all duration-200 absolute top-1 right-0 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        />
       )}
     </Component>
   )
@@ -78,7 +47,7 @@ export const H1: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h1"
       className={cn(
         'text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 font-sans',
-        'mb-6 scroll-mt-16',
+        'mb-6 mt-12 scroll-mt-16 leading-tight',
         className
       )}
       id={props.id}
@@ -98,7 +67,7 @@ export const H2: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h2"
       className={cn(
         'text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
-        'mb-4 scroll-mt-16',
+        'mb-4 mt-12 scroll-mt-16',
         className
       )}
       id={props.id}
@@ -118,7 +87,7 @@ export const H3: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h3"
       className={cn(
         'text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
-        'mb-3 scroll-mt-16',
+        'mb-3 mt-12 scroll-mt-16',
         className
       )}
       id={props.id}
@@ -138,7 +107,7 @@ export const H4: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h4"
       className={cn(
         'text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
-        'mb-3 scroll-mt-16',
+        'mb-2 mt-12 scroll-mt-16',
         className
       )}
       id={props.id}
@@ -158,7 +127,7 @@ export const H5: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h5"
       className={cn(
         'text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
-        'mb-2 scroll-mt-16',
+        'mb-2 mt-12 scroll-mt-16',
         className
       )}
       id={props.id}
@@ -178,7 +147,7 @@ export const H6: FC<HeadingProps> = ({ children, className, ...props }) => {
       as="h6"
       className={cn(
         'text-sm font-semibold tracking-tight text-zinc-700 dark:text-zinc-300',
-        'mb-2 scroll-mt-16',
+        'mb-2 mt-12 scroll-mt-16',
         className
       )}
       id={props.id}
