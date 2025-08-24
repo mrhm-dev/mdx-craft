@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, ReactNode } from 'react'
-import { cn } from '../../../theme/utils.js'
+import { cn } from '../../../utils/index.js'
 
 type ListProps = {
   children: ReactNode

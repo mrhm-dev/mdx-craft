@@ -1,6 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComponentType, LazyExoticComponent } from 'react'
 
+/**
+ * MDX Component Type for TypeScript
+ * Intentionally using any to allow for any component to be passed in
+ */
+export type MDXComponent = React.ComponentType<any>
+
+/**
+ * Component Registry
+ * This is a record of components that can be used in the MDX content
+ */
+export type ComponentRegistry = Record<string, MDXComponent>
+
 export type ComponentEntry = {
   name: string
 
@@ -28,4 +40,18 @@ export type RegisterComponentOptions = {
   override?: boolean
   category?: ComponentEntry['category']
   description?: string
+}
+
+/**
+ * Heading metadata for TOC generation
+ */
+export type HeadingMetadata = {
+  /** Unique identifier for the heading */
+  id: string
+  /** Heading text content */
+  text: string
+  /** Heading level (1-6) */
+  level: number
+  /** Optional anchor slug */
+  slug?: string
 }

@@ -10,7 +10,7 @@ import { visit } from 'unist-util-visit'
 import type { PluggableList } from 'unified'
 import type { Root, Node, Heading, Text } from 'mdast'
 import type { VFile } from 'vfile'
-import type { HeadingMetadata } from '../types/theme.js'
+import type { HeadingMetadata } from '../types/registry.js'
 
 // Additional types for AST nodes
 interface DirectiveNode extends Node {

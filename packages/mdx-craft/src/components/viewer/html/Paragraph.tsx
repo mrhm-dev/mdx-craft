@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, ReactNode, HTMLAttributes } from 'react'
-import { cn } from '../../../theme/utils.js'
+import { cn } from '../../../utils/index.js'
 
 type ParagraphProps = HTMLAttributes<HTMLParagraphElement> & {
   children?: ReactNode

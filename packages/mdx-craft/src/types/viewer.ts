@@ -1,5 +1,5 @@
 import type { PluggableList } from 'unified'
-import type { ComponentRegistry, Theme, TOCConfig } from './theme.js'
+import type { ComponentRegistry, TOCConfig } from './index.js'
 import type { ComponentType, CSSProperties } from 'react'
 import { CompilationResult } from './processor.js'
 
@@ -14,7 +14,6 @@ export type MDXViewerStateRef = {
 export type MDXViewerProps = {
   source: string
   components?: ComponentRegistry
-  theme?: Partial<Theme>
   remarkPlugins?: PluggableList[]
   rehypePlugins?: PluggableList[]
   generateTOC?: boolean

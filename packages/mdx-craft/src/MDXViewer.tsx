@@ -1,9 +1,8 @@
 import { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { cn } from './theme/utils.js'
-import { animations } from './theme/classes.js'
+import { cn } from './utils/index.js'
 import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
 import { useMDXViewer } from './hooks/useMDXViewer.js'
-import { HeadingMetadata, TOCItem } from './types/theme.js'
+import type { HeadingMetadata, TOCItem } from './types/index.js'
 import { MDXProcessor } from './processor/MDXProcessor.js'
 import { getGlobalRegistry } from './processor/ComponentRegistry.js'
 import { MDXProvider } from '@mdx-js/react'
@@ -17,12 +16,7 @@ const DefaultLoader: FC = () => {
   return (
     <div className="flex items-center justify-center p-8 text-slate-500 dark:text-slate-400">
       <div className="text-center">
-        <div
-          className={cn(
-            'w-8 h-8 border-2 border-slate-300 border-t-emerald-600 rounded-full mx-auto mb-4',
-            animations.loading.spin
-          )}
-        />
+        <div className="w-8 h-8 border-2 border-slate-300 border-t-emerald-600 rounded-full mx-auto mb-4 animate-spin" />
         <div className="text-sm">Loading Content...</div>
       </div>
     </div>
@@ -225,15 +219,13 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   const displayTOC = showTOC && tocItems.length > 0
   const tocPosition = tocConfig.position || 'right'
 
-  console.log('UseEffect')
-
   return (
     <div
       className={cn(
-        'mdx-viewer',
+        'mdx-viewer font-sans',
         displayTOC && 'flex',
         displayTOC && tocPosition === 'left' ? 'flex-row-reverse' : 'flex-row',
-        showTOC && 'gap-8'
+        showTOC && 'md:gap-8 lg:gap-16'
       )}
       style={style}
     >
@@ -246,16 +238,18 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
       {/* Table of Contents */}
       {displayTOC && (
-        <TOC
-          items={tocItems}
-          sticky={tocConfig.sticky || true}
-          stickyOffset={tocConfig.stickyOffset || '4rem'}
-          showNested={true}
-          highlightActive={true}
-          minLevel={tocConfig.minLevel || 1}
-          maxLevel={tocConfig.maxLevel || 3}
-          mobile={tocConfig.mobile || true}
-        />
+        <div className="min-w-64">
+          <TOC
+            items={tocItems}
+            sticky={tocConfig.sticky || true}
+            stickyOffset={tocConfig.stickyOffset || '4rem'}
+            showNested={true}
+            highlightActive={true}
+            minLevel={tocConfig.minLevel || 1}
+            maxLevel={tocConfig.maxLevel || 3}
+            mobile={tocConfig.mobile || true}
+          />
+        </div>
       )}
     </div>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, ReactNode, HTMLAttributes, AnchorHTMLAttributes, ImgHTMLAttributes } from 'react'
-import { cn } from '../../../theme/utils.js'
+import { cn } from '../../../utils/index.js'
 
 // Fixed type definitions that extend proper HTML attributes
 type ListProps = HTMLAttributes<HTMLUListElement | HTMLOListElement> & {

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import type { FC, ReactNode } from 'react'
-import { cn } from '../../../theme/utils.js'
+import { cn } from '../../../utils/index.js'
 
 /**
  * Card component props

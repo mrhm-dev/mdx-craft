@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import type { TOCConfig, TOCItem } from '../../../types/theme.js'
+import type { TOCConfig, TOCItem } from '../../../types/toc.js'
 
 export type TOCProps = {
   items: TOCItem[]

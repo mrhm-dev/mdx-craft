@@ -1,19 +1,15 @@
 import { FC, useCallback, useMemo, useState } from 'react'
 import { MDXViewerContextValue, MDXViewerProviderProps } from '../types/provider.js'
-import { CacheConfig, ComponentRegistry, MDXComponent, Theme } from '../types/theme.js'
+import { CacheConfig, ComponentRegistry, MDXComponent } from '../types/index.js'
 import { MDXViewerContext } from './context.js'
 
 export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
   children,
   components: initialComponents = {},
-  theme: themeOverrides = {},
   remarkPlugins = [],
   rehypePlugins = [],
   cache = { enabled: true, maxSize: 10, ttl: 300000 },
 }) => {
-  // Generate the default theme with overrides
-  // const theme = useMemo(() => createTheme(themeOverrides), [themeOverrides])
-  const [theme] = useState<Theme>(themeOverrides as Theme)
   const [components, setComponents] = useState<ComponentRegistry>(initialComponents)
 
   const cacheConfig = useMemo<Required<CacheConfig>>(
@@ -39,7 +35,6 @@ export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
 
   const contextValue: MDXViewerContextValue = useMemo(
     () => ({
-      theme,
       components,
       registerComponent,
       unregisterComponent,
@@ -47,15 +42,7 @@ export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
       remarkPlugins,
       rehypePlugins,
     }),
-    [
-      theme,
-      components,
-      registerComponent,
-      unregisterComponent,
-      cacheConfig,
-      remarkPlugins,
-      rehypePlugins,
-    ]
+    [components, registerComponent, unregisterComponent, cacheConfig, remarkPlugins, rehypePlugins]
   )
 
   return <MDXViewerContext.Provider value={contextValue}>{children}</MDXViewerContext.Provider>

@@ -1,6 +1,6 @@
 import { type PluggableList } from 'unified'
 import { type ReactElement } from 'react'
-import { type ComponentRegistry, type HeadingMetadata } from './theme.js'
+import { type ComponentRegistry, type HeadingMetadata } from './registry.js'
 import { evaluate } from '@mdx-js/mdx'
 
 /**
@@ -36,6 +36,24 @@ export type CompilationResult = {
     componentCount: number
   }
   error?: Error
+}
+
+/**
+ * Compilation metadata
+ */
+export type CompilationMetadata = {
+  /** Compilation duration in milliseconds */
+  duration: number
+  /** Number of components used */
+  componentCount: number
+  /** Whether result was from cache */
+  cacheHit: boolean
+  /** Generated headings for TOC */
+  headings: HeadingMetadata[]
+  /** Source code length */
+  sourceLength: number
+  /** Plugin execution times */
+  pluginTimes?: Record<string, number>
 }
 
 /**
@@ -92,3 +110,15 @@ export type HeadingNode = {
 }
 
 export type MDXModule = Awaited<ReturnType<typeof evaluate>>
+
+/**
+ * Cache configuration
+ */
+export type CacheConfig = {
+  /** Enable caching */
+  enabled?: boolean
+  /** Maximum cache size in entries */
+  maxSize?: number
+  /** Time to live in milliseconds */
+  ttl?: number
+}

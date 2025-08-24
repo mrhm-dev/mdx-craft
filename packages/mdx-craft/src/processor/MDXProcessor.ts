@@ -1,5 +1,5 @@
 import { getDefaultRemarkPlugins } from '../plugins/remarkPlugins.js'
-import { HeadingMetadata } from '../types/theme.js'
+import type { HeadingMetadata } from '../types/registry.js'
 import { MDXCache } from './cache.js'
 import type {
   CompilationResult,

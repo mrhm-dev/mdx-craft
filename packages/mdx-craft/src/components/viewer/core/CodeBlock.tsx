@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
 import { useShiki, type HighlightOptions } from '../../../plugins/shiki-highlighter.js'
-import { cn } from '../../../theme/utils.js'
+import { cn } from '../../../utils/index.js'
 import { BundledTheme } from 'shiki'
 
 /**
