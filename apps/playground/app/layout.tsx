@@ -33,6 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${firaMono.variable} ${poppins.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <MDXViewerProvider>{children as any}</MDXViewerProvider>
         </ThemeProvider>
       </body>

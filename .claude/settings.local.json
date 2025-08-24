@@ -5,7 +5,12 @@
       "Bash(mkdir:*)",
       "Bash(pnpm test:*)",
       "Bash(pnpm build:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)"
     ],
     "deny": [],
     "ask": []
