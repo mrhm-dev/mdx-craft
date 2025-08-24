@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${firaMono.variable} ${poppins.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
