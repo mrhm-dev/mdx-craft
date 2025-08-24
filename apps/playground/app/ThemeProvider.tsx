@@ -18,7 +18,7 @@ export const ThemeProvider = ({
   attribute = 'class',
   defaultTheme = 'system',
   enableSystem = true,
-}: ThemeProviderProps): JSX.Element => {
+}: ThemeProviderProps) => {
   return (
     <NextThemesProvider
       attribute={attribute}

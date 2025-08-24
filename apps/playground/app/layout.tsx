@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { MDXViewerProvider } from 'mdx-craft'
-import { Inter, Fira_Mono } from 'next/font/google'
+import { Fira_Mono, Poppins } from 'next/font/google'
 import { ThemeProvider } from './ThemeProvider'
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-poppins',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   style: ['normal', 'italic'],
 })
 
@@ -31,9 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${firaMono.className} ${inter.className} font-sans`}>
+      <body className={`${firaMono.variable} ${poppins.variable} font-sans antialiased`}>
         <ThemeProvider defaultTheme="dark">
-          <MDXViewerProvider>{children}</MDXViewerProvider>
+          <MDXViewerProvider>{children as any}</MDXViewerProvider>
         </ThemeProvider>
       </body>
     </html>

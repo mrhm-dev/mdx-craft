@@ -2,3 +2,8 @@
 @source '../node_modules/mdx-craft';
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-poppins, sans-serif);
+  --font-mono: var(--font-fira-mono, monospace);
+}
