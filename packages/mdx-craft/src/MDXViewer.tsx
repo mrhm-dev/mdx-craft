@@ -1,22 +1,19 @@
-import { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { cn } from './utils/index.js'
-import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
-import { useMDXViewer } from './hooks/useMDXViewer.js'
-import type { HeadingMetadata, TOCItem } from './types/index.js'
-import { MDXProcessor } from './processor/MDXProcessor.js'
-import { getGlobalRegistry } from './processor/ComponentRegistry.js'
 import { MDXProvider } from '@mdx-js/react'
-import * as CoreComponents from './components/viewer/core/index.js'
+import { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pluggable } from 'unified'
-import { CompilationResult } from './types/processor.js'
-import { TOC } from './components/viewer/navigation/TOC.js'
+import * as CoreComponents from './components/viewer/core/index.js'
 import { HTMLComponents } from './components/viewer/html/index.js'
+import { useMDXViewer } from './hooks/useMDXViewer.js'
+import { getGlobalRegistry } from './processor/ComponentRegistry.js'
+import { MDXProcessor } from './processor/MDXProcessor.js'
+import { CompilationResult } from './types/processor.js'
+import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
 
 const DefaultLoader: FC = () => {
   return (
-    <div className="flex items-center justify-center p-8 text-slate-500 dark:text-slate-400">
+    <div className="flex items-center justify-center p-8 text-zinc-500 dark:text-zinc-400">
       <div className="text-center">
-        <div className="w-8 h-8 border-2 border-slate-300 border-t-emerald-600 rounded-full mx-auto mb-4 animate-spin" />
+        <div className="w-8 h-8 border-2 border-zinc-300 border-t-emerald-600 rounded-full mx-auto mb-4 animate-spin" />
         <div className="text-sm">Loading Content...</div>
       </div>
     </div>
@@ -37,9 +34,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   components: instanceComponents,
   remarkPlugins: instanceRemarkPlugins = [],
   rehypePlugins: instanceRehypePlugins = [],
-  generateTOC = true,
-  showTOC = true,
-  tocConfig = {},
   onCompile,
   onError,
   loadingComponent: LoadingComponent = DefaultLoader,
@@ -54,7 +48,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   const [isCompiling, setIsCompiling] = useState(false)
   const [compiledContent, setCompiledContent] = useState<ReactElement | null>(null)
   const [compilationError, setCompilationError] = useState<Error | null>(null)
-  const [headings, setHeadings] = useState<HeadingMetadata[]>([])
 
   const compileRef = useRef<MDXViewerStateRef | null>(null)
 
@@ -128,7 +121,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     (prev: MDXViewerStateRef | null) => {
       const currentState: MDXViewerStateRef = {
         source,
-        generateTOC: !!generateTOC,
         components: JSON.stringify(mergedComponents),
         remarkPlugins: mergedRemarkPlugins.length,
         rehypePlugins: mergedRehypePlugins.length,
@@ -138,7 +130,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
       if (prev) {
         hasChanged =
           prev.source !== currentState.source ||
-          prev.generateTOC !== currentState.generateTOC ||
           prev.components !== currentState.components ||
           prev.remarkPlugins !== currentState.remarkPlugins ||
           prev.rehypePlugins !== currentState.rehypePlugins
@@ -146,7 +137,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
       return { state: currentState, hasChanged }
     },
-    [source, generateTOC, mergedComponents, mergedRemarkPlugins, mergedRehypePlugins]
+    [source, mergedComponents, mergedRemarkPlugins, mergedRehypePlugins]
   )
 
   useEffect(() => {
@@ -166,7 +157,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
           components: mergedComponents,
           remarkPlugins: mergedRemarkPlugins,
           rehypePlugins: mergedRehypePlugins,
-          generateTOC,
           development: process.env.NODE_ENV === 'development',
         })
 
@@ -177,7 +167,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
           stableOnError(result.error)
         } else {
           setCompiledContent(result.content)
-          setHeadings(result.metadata.headings)
           stableOnCompile(result.metadata)
         }
       } catch (error) {
@@ -200,14 +189,6 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source])
 
-  const tocItems: TOCItem[] = useMemo(() => {
-    return headings.map((heading) => ({
-      id: heading.id,
-      text: heading.text,
-      level: heading.level,
-    }))
-  }, [headings])
-
   if (isCompiling) {
     return <LoadingComponent />
   }
@@ -216,41 +197,12 @@ export const MDXViewer: FC<MDXViewerProps> = ({
     return <ErrorComponent error={compilationError} />
   }
 
-  const displayTOC = showTOC && tocItems.length > 0
-  const tocPosition = tocConfig.position || 'right'
-
   return (
-    <div
-      className={cn(
-        'mdx-viewer font-sans',
-        displayTOC && 'flex',
-        displayTOC && tocPosition === 'left' ? 'flex-row-reverse' : 'flex-row',
-        showTOC && 'md:gap-8 lg:gap-16'
-      )}
-      style={style}
-    >
-      {/* Main Content */}
-      <div className={cn('mdx-viewer__content font-sans flex-grow min-w-0')}>
-        <MDXProvider components={mergedComponents as any}>
-          <article className="mdx-article">{compiledContent}</article>
-        </MDXProvider>
-      </div>
-
-      {/* Table of Contents */}
-      {displayTOC && (
-        <div className="min-w-64">
-          <TOC
-            items={tocItems}
-            sticky={tocConfig.sticky || true}
-            stickyOffset={tocConfig.stickyOffset || '4rem'}
-            showNested={true}
-            highlightActive={true}
-            minLevel={tocConfig.minLevel || 1}
-            maxLevel={tocConfig.maxLevel || 3}
-            mobile={tocConfig.mobile || true}
-          />
-        </div>
-      )}
+    <div className="mdx-viewer font-sans" style={style}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <MDXProvider components={mergedComponents as any}>
+        <article className="mdx-article">{compiledContent}</article>
+      </MDXProvider>
     </div>
   )
 }
