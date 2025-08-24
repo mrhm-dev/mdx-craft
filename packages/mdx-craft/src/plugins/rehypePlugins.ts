@@ -2,9 +2,7 @@ import rehypeSlug from 'rehype-slug'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeShiki from '@shikijs/rehype'
 import rehypeKatex from 'rehype-katex'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import type { PluggableList } from 'unified'
-import type { Options as AutolinkOptions } from 'rehype-autolink-headings'
 
 export type ShikiOptions = {
   themes?:
@@ -25,32 +23,6 @@ export type RehypePluginConfig = {
   shiki?: boolean | ShikiOptions
   /** Enable Math rendering with KaTeX */
   math?: boolean
-  /** Enable autolink headings */
-  autolinkHeadings?: boolean | AutolinkOptions
-}
-
-/**
- * Default autolink headings configuration
- */
-const defaultAutolinkConfig: AutolinkOptions = {
-  behavior: 'append',
-  properties: {
-    className: ['anchor'],
-    ariaLabel: 'Link to this section',
-  },
-  content: {
-    type: 'element',
-    tagName: 'span',
-    properties: {
-      className: ['anchor-icon'],
-    },
-    children: [
-      {
-        type: 'text',
-        value: '#',
-      },
-    ],
-  },
 }
 
 /**
@@ -97,13 +69,6 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
   // Add IDs to headings (must come before autolink headings)
   if (config.slugs !== false) {
     plugins.push(rehypeSlug)
-  }
-
-  // Add links to headings (must come after slugs)
-  if (config.autolinkHeadings !== false) {
-    const autolinkOptions =
-      typeof config.autolinkHeadings === 'object' ? config.autolinkHeadings : defaultAutolinkConfig
-    plugins.push([rehypeAutolinkHeadings, autolinkOptions])
   }
 
   // Syntax highlighting with Shiki
@@ -184,7 +149,6 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
 export const getDefaultRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     slugs: true,
-    autolinkHeadings: true,
     shiki: true,
     math: true,
     sanitize: false, // Disable sanitization to allow custom components
@@ -197,7 +161,6 @@ export const getDefaultRehypePlugins = (): PluggableList => {
 export const getSafeRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     slugs: true,
-    autolinkHeadings: true,
     shiki: true,
     math: true,
     sanitize: true,
@@ -210,7 +173,6 @@ export const getSafeRehypePlugins = (): PluggableList => {
 export const getSyncRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     slugs: true,
-    autolinkHeadings: true,
     shiki: false, // Shiki is async, disable for sync mode
     math: true,
     sanitize: false,
@@ -223,7 +185,6 @@ export const getSyncRehypePlugins = (): PluggableList => {
 export const getMinimalRehypePlugins = (): PluggableList => {
   return getRehypePlugins({
     slugs: false,
-    autolinkHeadings: false,
     shiki: false,
     math: false,
     sanitize: false,
@@ -231,7 +192,4 @@ export const getMinimalRehypePlugins = (): PluggableList => {
 }
 
 // Export individual plugins for custom configurations
-export { rehypeSlug, rehypeSanitize, rehypeShiki, rehypeKatex, rehypeAutolinkHeadings }
-
-// Export types
-export type { AutolinkOptions }
+export { rehypeSlug, rehypeSanitize, rehypeShiki, rehypeKatex }

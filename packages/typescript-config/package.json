@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "scripts": {
+    "clean": "rimraf .turbo node_modules/.cache"
+  },
   "publishConfig": {
     "access": "public"
   }

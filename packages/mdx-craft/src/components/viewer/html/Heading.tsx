@@ -1,10 +1,72 @@
 'use client'
 
-import { FC, ReactNode, HTMLAttributes } from 'react'
+import { FC, ReactNode, HTMLAttributes, useState, useCallback } from 'react'
 import { cn } from '../../../utils/index.js'
+import { Link2, Check } from 'lucide-react'
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
   children?: ReactNode
+}
+
+/**
+ * Base heading component with copy functionality
+ */
+const HeadingWithAnchor: FC<{
+  as: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  children: ReactNode
+  className?: string
+  id?: string
+  props?: HTMLAttributes<HTMLHeadingElement>
+}> = ({ as: Component, children, className, id, props }) => {
+  const [isCopied, setIsCopied] = useState(false)
+
+  const handleCopy = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      if (!id) return
+
+      const url = `${window.location.origin}${window.location.pathname}#${id}`
+
+      try {
+        await navigator.clipboard.writeText(url)
+        setIsCopied(true)
+        setTimeout(() => setIsCopied(false), 2000)
+      } catch (err) {
+        console.error('Failed to copy:', err)
+      }
+    },
+    [id]
+  )
+
+  return (
+    <Component {...props} id={id} className={cn('group relative', className)}>
+      {children}
+      {id && (
+        <button
+          onClick={handleCopy}
+          className={cn(
+            'absolute inline-flex items-center justify-center',
+            'ml-2 p-1.5 rounded-md',
+            'text-zinc-300 dark:text-zinc-600 hover:text-zinc-400 dark:hover:text-zinc-500',
+            'hover:bg-zinc-100 dark:hover:bg-zinc-800',
+            'transition-all duration-200',
+            'opacity-0 group-hover:opacity-100',
+            '-translate-y-[50%] top-[50%]'
+          )}
+          aria-label={isCopied ? 'Link copied!' : 'Copy link to section'}
+          title={isCopied ? 'Link copied!' : 'Copy link to section'}
+        >
+          {isCopied ? (
+            <Check className="w-4 h-4 text-green-500 dark:text-green-400" />
+          ) : (
+            <Link2 className="w-4 h-4" />
+          )}
+        </button>
+      )}
+    </Component>
+  )
 }
 
 /**
@@ -12,17 +74,18 @@ type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
  */
 export const H1: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h1
-      {...props}
+    <HeadingWithAnchor
+      as="h1"
       className={cn(
-        'text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans',
-        'mb-8 mt-10 pb-4 border-b border-slate-200 dark:border-slate-700',
-        'scroll-mt-16',
+        'text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 font-sans',
+        'mb-6 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h1>
+    </HeadingWithAnchor>
   )
 }
 
@@ -31,17 +94,18 @@ export const H1: FC<HeadingProps> = ({ children, className, ...props }) => {
  */
 export const H2: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h2
-      {...props}
+    <HeadingWithAnchor
+      as="h2"
       className={cn(
-        'text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100',
-        'mb-6 mt-8 pb-2 border-b border-slate-200 dark:border-slate-700',
-        'scroll-mt-16',
+        'text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'mb-4 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h2>
+    </HeadingWithAnchor>
   )
 }
 
@@ -50,17 +114,18 @@ export const H2: FC<HeadingProps> = ({ children, className, ...props }) => {
  */
 export const H3: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h3
-      {...props}
+    <HeadingWithAnchor
+      as="h3"
       className={cn(
-        'text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100',
-        'mb-4 mt-6',
-        'scroll-mt-16',
+        'text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'mb-3 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h3>
+    </HeadingWithAnchor>
   )
 }
 
@@ -69,17 +134,18 @@ export const H3: FC<HeadingProps> = ({ children, className, ...props }) => {
  */
 export const H4: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h4
-      {...props}
+    <HeadingWithAnchor
+      as="h4"
       className={cn(
-        'text-xl md:text-2xl font-medium tracking-tight text-slate-900 dark:text-slate-100',
-        'mb-3 mt-5',
-        'scroll-mt-16',
+        'text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'mb-3 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h4>
+    </HeadingWithAnchor>
   )
 }
 
@@ -88,17 +154,18 @@ export const H4: FC<HeadingProps> = ({ children, className, ...props }) => {
  */
 export const H5: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h5
-      {...props}
+    <HeadingWithAnchor
+      as="h5"
       className={cn(
-        'text-lg md:text-xl font-medium tracking-tight text-slate-900 dark:text-slate-100',
-        'mb-2 mt-4',
-        'scroll-mt-16',
+        'text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'mb-2 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h5>
+    </HeadingWithAnchor>
   )
 }
 
@@ -107,16 +174,17 @@ export const H5: FC<HeadingProps> = ({ children, className, ...props }) => {
  */
 export const H6: FC<HeadingProps> = ({ children, className, ...props }) => {
   return (
-    <h6
-      {...props}
+    <HeadingWithAnchor
+      as="h6"
       className={cn(
-        'text-base md:text-lg font-medium tracking-tight text-slate-700 dark:text-slate-300',
-        'mb-2 mt-3',
-        'scroll-mt-16',
+        'text-sm font-semibold tracking-tight text-zinc-700 dark:text-zinc-300',
+        'mb-2 scroll-mt-16',
         className
       )}
+      id={props.id}
+      props={props}
     >
       {children}
-    </h6>
+    </HeadingWithAnchor>
   )
 }

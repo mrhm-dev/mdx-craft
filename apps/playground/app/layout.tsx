@@ -1,17 +1,8 @@
 import type { Metadata } from 'next'
-// import localFont from 'next/font/local'
 import './globals.css'
 import { MDXViewerProvider } from 'mdx-craft'
 import { Inter, Fira_Mono } from 'next/font/google'
-
-// const geistSans = localFont({
-//   src: './fonts/GeistVF.woff',
-//   variable: '--font-geist-sans',
-// })
-// const geistMono = localFont({
-//   src: './fonts/GeistMonoVF.woff',
-//   variable: '--font-geist-mono',
-// })
+import { ThemeProvider } from './ThemeProvider'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,6 +11,7 @@ const inter = Inter({
   weight: ['300', '400', '500', '600', '700', '800', '900'],
   style: ['normal', 'italic'],
 })
+
 const firaMono = Fira_Mono({
   subsets: ['latin'],
   variable: '--font-fira-mono',
@@ -39,8 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${firaMono.className} ${inter.className} `}>
-        <MDXViewerProvider>{children}</MDXViewerProvider>
+      <body className={`${firaMono.className} ${inter.className} font-sans`}>
+        <ThemeProvider defaultTheme="dark">
+          <MDXViewerProvider>{children}</MDXViewerProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

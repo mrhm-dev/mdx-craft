@@ -11,14 +11,19 @@
     "check-types": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "clean": "rimraf .next dist coverage .turbo node_modules/.cache"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "mdx-craft": "workspace:*",
     "next": "^15.4.2",
+    "next-themes": "^0.4.6",
+    "postcss": "^8.4.49",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@monaco-editor/react": "^4.6.0"
+    "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

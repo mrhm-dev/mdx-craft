@@ -20,6 +20,9 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:coverage": "turbo run test:coverage",
+    "clean": "turbo run clean && rimraf node_modules/.cache",
+    "clean:turbo": "turbo daemon stop && rimraf .turbo",
+    "clean:all": "pnpm clean && pnpm clean:turbo && rimraf node_modules",
     "prepare": "husky",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -43,6 +46,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.3.0",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "turbo": "^2.5.6",
     "typescript": "5.9.2"

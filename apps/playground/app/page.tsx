@@ -1,8 +1,9 @@
 'use client'
 
 import { MDXViewer } from 'mdx-craft'
-import 'mdx-craft/styles.css'
-import styles from './page.module.css'
+import Link from 'next/link'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 const comprehensiveSource = `
 # MDX Viewer v2.0 – Tailwind CSS Documentation Showcase
@@ -324,30 +325,66 @@ To begin using MDX Viewer v2.0 with Tailwind CSS, refer to the following resourc
 *This documentation demonstrates the capabilities and flexibility of MDX Viewer v2.0 with Tailwind CSS integration. All components are designed for mobile-first responsive layouts, accessibility, and high performance.*
 `
 
-export default function PlaygroundPage() {
+export default function PlaygroundPage(): JSX.Element {
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <h1>MDX Craft Playground</h1>
-        <p>Experiment with MDX content in real-time</p>
+    <div className="min-h-screen w-full dark:bg-zinc-900">
+      <header className="px-4 h-16 bg-zinc-200 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+        <nav className="container mx-auto flex justify-between items-center h-full  ">
+          <Link href="/" className="text-zinc-900 dark:text-zinc-100">
+            <span className="text-xl font-semibold font-sans">Playground</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+          </div>
+        </nav>
       </header>
-
-      <main className={styles.main}>
+      <main className="container mx-auto px-4 py-8">
         <MDXViewer source={comprehensiveSource} />
       </main>
-
-      <footer className={styles.footer}>
-        <a href="/docs" target="_blank" rel="noopener noreferrer">
-          Documentation
-        </a>
-        <a
-          href="https://github.com/yourusername/mdx-craft"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
-      </footer>
     </div>
+  )
+}
+
+function ThemeToggle() {
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
+  const isDark = (resolvedTheme || theme) === 'dark'
+
+  return (
+    <button
+      aria-label="Toggle dark mode"
+      className="rounded p-2 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      type="button"
+    >
+      {isDark ? (
+        // Moon icon for dark mode
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" fill="currentColor" />
+        </svg>
+      ) : (
+        // Sun icon for light mode
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5" fill="currentColor" />
+          <g stroke="currentColor" strokeWidth="2">
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </g>
+        </svg>
+      )}
+    </button>
   )
 }
