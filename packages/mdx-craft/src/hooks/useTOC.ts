@@ -41,39 +41,7 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const elementsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mutationTimeoutRef = useRef<number | null>(null)
-
-  // Extract TOC items from DOM and cache elements
-  const extractTOCItems = useCallback(() => {
-    if (!root) return []
-
-    const headings = root.querySelectorAll(selector)
-    const tocItems: TOCItem[] = []
-    const newElementsMap = new Map<string, HTMLElement>()
-
-    headings.forEach((heading) => {
-      const element = heading as HTMLElement
-      const level = parseInt(element.tagName.charAt(1), 10)
-
-      // Filter by level
-      if (level < minLevel || level > maxLevel) return
-
-      // Get or generate ID
-      const id = getOrGenerateId(element)
-      element.id = id
-
-      const text = element.textContent?.trim() || ''
-      if (text) {
-        tocItems.push({ id, text, level })
-        // Cache the element for later use
-        newElementsMap.set(id, element)
-      }
-    })
-
-    // Update the elements cache
-    elementsRef.current = newElementsMap
-
-    return tocItems
-  }, [root, selector, minLevel, maxLevel])
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   // Scroll to heading function
   const scrollTo = useCallback(
@@ -100,21 +68,58 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
         // Immediately set the active ID when clicking
         setActiveId(id)
 
+        // Track initial scroll position to detect completion
+        const initialScrollY = window.scrollY
+        const targetScrollY = offsetTop
+
         window.scrollTo({
           top: offsetTop,
           behavior: 'smooth',
         })
 
-        // Reset the flag after smooth scroll completes (roughly 600ms)
+        // Use multiple methods to detect scroll completion
+        let scrollEndTimer: NodeJS.Timeout
+        let lastScrollY = initialScrollY
+        let scrollStableCount = 0
+
+        const checkScrollEnd = () => {
+          const currentScrollY = window.scrollY
+
+          // Check if scroll position is stable or reached target
+          if (
+            Math.abs(currentScrollY - lastScrollY) < 1 ||
+            Math.abs(currentScrollY - targetScrollY) < 10
+          ) {
+            scrollStableCount++
+          } else {
+            scrollStableCount = 0
+          }
+
+          lastScrollY = currentScrollY
+
+          // If position is stable for 2 checks or 1 second has passed, re-enable observer
+          if (scrollStableCount >= 2) {
+            isScrollingRef.current = false
+            return
+          }
+
+          scrollEndTimer = setTimeout(checkScrollEnd, 50)
+        }
+
+        // Start monitoring scroll completion
+        scrollEndTimer = setTimeout(checkScrollEnd, 50)
+
+        // Fallback: reset after maximum time regardless
         scrollTimeoutRef.current = setTimeout(() => {
+          clearTimeout(scrollEndTimer)
           isScrollingRef.current = false
-        }, 700)
+        }, 1000)
       }
     },
     [root, scrollOffset]
   )
 
-  // Combined effect for extraction, mutation observer, and initial setup
+  // Initial setup and mutation observer
   useEffect(() => {
     if (!root) {
       setIsLoading(false)
@@ -122,8 +127,35 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
     }
 
     // Extract initial TOC items
+    const extractItems = () => {
+      if (!root) return []
+
+      const headings = root.querySelectorAll(selector)
+      const tocItems: TOCItem[] = []
+      const newElementsMap = new Map<string, HTMLElement>()
+
+      headings.forEach((heading) => {
+        const element = heading as HTMLElement
+        const level = parseInt(element.tagName.charAt(1), 10)
+
+        if (level < minLevel || level > maxLevel) return
+
+        const id = getOrGenerateId(element)
+        element.id = id
+
+        const text = element.textContent?.trim() || ''
+        if (text) {
+          tocItems.push({ id, text, level })
+          newElementsMap.set(id, element)
+        }
+      })
+
+      elementsRef.current = newElementsMap
+      return tocItems
+    }
+
     setIsLoading(true)
-    const tocItems = extractTOCItems()
+    const tocItems = extractItems()
     setItems(tocItems)
     setIsLoading(false)
 
@@ -133,14 +165,12 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
         window.cancelAnimationFrame(mutationTimeoutRef.current)
       }
 
-      // Extract TOC items
       mutationTimeoutRef.current = window.requestAnimationFrame(() => {
-        const updatedItems = extractTOCItems()
+        const updatedItems = extractItems()
         setItems(updatedItems)
       })
     }
 
-    // Set up mutation observer to update TOC items when DOM changes
     const mutationObserver = new MutationObserver(debouncedUpdate)
     mutationObserver.observe(root, {
       childList: true,
@@ -149,77 +179,57 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
       attributeFilter: ['id'],
     })
 
-    // Clean up
     return () => {
       mutationObserver.disconnect()
       if (mutationTimeoutRef.current) {
         window.cancelAnimationFrame(mutationTimeoutRef.current)
       }
     }
-  }, [extractTOCItems, root])
-
-  // Memoize observer options for stability
-  const observerOptions = useMemo<IntersectionObserverInit>(
-    () => ({
-      rootMargin: `-${scrollOffset}px 0px -70% 0px`,
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-    }),
-    [scrollOffset]
-  )
-
-  // Memoize observer callback for stability
-  const observerCallback = useCallback<IntersectionObserverCallback>(
-    (entries) => {
-      // Skip updates if we're currently scrolling programmatically
-      if (isScrollingRef.current) return
-
-      // Find the topmost intersecting heading
-      let topMostEntry: IntersectionObserverEntry | null = null
-      let minTop = Infinity
-
-      for (const entry of entries) {
-        if (entry.isIntersecting && entry.boundingClientRect.top < minTop) {
-          minTop = entry.boundingClientRect.top
-          topMostEntry = entry
-        }
-      }
-
-      if (topMostEntry) {
-        setActiveId(topMostEntry.target.id || null)
-        return
-      }
-      // Fallback: find the closest heading above the viewport using cached elements
-      const scrollY = window.scrollY
-      let closestId = items[0]?.id || null
-
-      for (const item of items) {
-        const element = elementsRef.current.get(item.id)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          const absoluteTop = rect.top + scrollY
-
-          if (absoluteTop <= scrollY + scrollOffset + 10) {
-            closestId = item.id
-          } else {
-            break
-          }
-        }
-      }
-
-      if (closestId) {
-        setActiveId(closestId)
-      }
-    },
-    [items, scrollOffset]
-  )
+  }, [root, selector, minLevel, maxLevel])
 
   // Set up intersection observer for active tracking
   useEffect(() => {
     if (!root || items.length === 0) return
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions)
+    // Clean up existing observer
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
 
-    // Observe all heading elements using cached elements
+    const observerOptions: IntersectionObserverInit = {
+      rootMargin: `-${scrollOffset}px 0px -70% 0px`,
+      threshold: [0, 0.1, 0.9, 1],
+    }
+
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      if (isScrollingRef.current) return
+
+      // Sort entries by their position in the document
+      const sortedEntries = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => {
+          const aRect = a.boundingClientRect
+          const bRect = b.boundingClientRect
+          return aRect.top - bRect.top
+        })
+
+      if (sortedEntries.length > 0) {
+        const topEntry = sortedEntries[0]
+        const newActiveId = topEntry?.target.id || ''
+
+        setActiveId((prev) => {
+          if (prev !== newActiveId) {
+            return newActiveId
+          }
+          return prev
+        })
+      }
+    }
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions)
+    observerRef.current = observer
+
+    // Observe all heading elements
     items.forEach((item) => {
       const element = elementsRef.current.get(item.id)
       if (element) {
@@ -227,25 +237,26 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
       }
     })
 
-    // Set initial active item based on scroll position using cached elements
-    let initialActive = null
+    // Set initial active item only if none is set
+    if (!activeId && items.length > 0) {
+      const scrollY = window.scrollY
+      let closestItem = items[0]
+      let minDistance = Infinity
 
-    for (const item of items) {
-      const element = elementsRef.current.get(item.id)
-      if (element) {
-        const rect = element.getBoundingClientRect()
-        if (rect.top >= -100 && rect.top <= window.innerHeight * 0.3) {
-          initialActive = item.id
-          break
+      for (const item of items) {
+        const element = elementsRef.current.get(item.id)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          const distance = Math.abs(rect.top + scrollY - scrollY - scrollOffset)
+
+          if (distance < minDistance && rect.top <= scrollOffset + 100) {
+            minDistance = distance
+            closestItem = item
+          }
         }
       }
-    }
 
-    if (initialActive) {
-      setActiveId(initialActive)
-    } else if (items.length > 0) {
-      // If nothing is specifically visible, activate the first item
-      setActiveId(items[0]?.id || null)
+      setActiveId(closestItem?.id || '')
     }
 
     return () => {
@@ -254,7 +265,7 @@ export const useTOC = (options: UseTOCOptions = {}): UseTOCReturn => {
         clearTimeout(scrollTimeoutRef.current)
       }
     }
-  }, [items, root, observerCallback, observerOptions])
+  }, [items, root, scrollOffset, activeId])
 
   return useMemo(
     () => ({

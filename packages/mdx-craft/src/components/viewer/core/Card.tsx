@@ -2,6 +2,7 @@
 
 import { FC, HTMLAttributes, useState } from 'react'
 import { cn } from '../../../utils/index.js'
+import { ExternalLinkIcon } from '../../icons/index.js'
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -136,19 +137,19 @@ export const Card: FC<CardProps> = ({
     sm: {
       container: 'p-3 sm:p-4',
       title: 'text-base sm:text-lg',
-      content: 'text-xs sm:text-sm',
+      content: 'text-sm',
       image: 'h-32 sm:h-40',
     },
     md: {
-      container: 'p-4 sm:p-5 md:p-6',
+      container: 'p-3 sm:p-5 md:p-6',
       title: 'text-lg sm:text-xl',
       content: 'text-sm sm:text-base',
       image: 'h-48 sm:h-56 md:h-64',
     },
     lg: {
       container: 'p-5 sm:p-6 md:p-8',
-      title: 'text-xl sm:text-2xl',
-      content: 'text-base sm:text-lg',
+      title: 'text-xl',
+      content: 'text-base',
       image: 'h-56 sm:h-64 md:h-80',
     },
   }
@@ -212,7 +213,7 @@ export const Card: FC<CardProps> = ({
               {icon}
             </div>
           )}
-          <h3
+          <h4
             className={cn(
               'font-semibold text-zinc-900 dark:text-zinc-100 leading-tight',
               'group-hover:text-blue-600 dark:group-hover:text-blue-400',
@@ -221,7 +222,7 @@ export const Card: FC<CardProps> = ({
             )}
           >
             {title}
-          </h3>
+          </h4>
         </div>
 
         {/* Description content */}
@@ -261,20 +262,7 @@ export const Card: FC<CardProps> = ({
               aria-label={`${cta}: ${title}`}
             >
               <span>{cta}</span>
-              <svg
-                className="w-4 h-4 transition-transform duration-200 group-hover/cta:translate-x-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
+              <ExternalLinkIcon className="w-4 h-4" />
             </a>
           </div>
         )}
