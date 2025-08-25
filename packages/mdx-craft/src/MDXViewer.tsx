@@ -1,13 +1,13 @@
 import { MDXProvider } from '@mdx-js/react'
 import { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pluggable } from 'unified'
-import * as CoreComponents from './components/viewer/core/index.js'
 import { HTMLComponents } from './components/viewer/html/index.js'
 import { useMDXViewer } from './hooks/useMDXViewer.js'
 import { getGlobalRegistry } from './processor/ComponentRegistry.js'
 import { MDXProcessor } from './processor/MDXProcessor.js'
 import { CompilationResult } from './types/processor.js'
 import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
+import { Card, CodeBlock, CodeBlockGroup } from './components/viewer/core/index.js'
 
 const DefaultLoader: FC = () => {
   return (
@@ -68,14 +68,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
     if (!reg.has('Card')) {
       // Core components
-      reg.registerBatch({
-        Accordion: CoreComponents.Accordion,
-        Card: CoreComponents.Card,
-        Tabs: CoreComponents.Tabs,
-        CodeBlock: CoreComponents.CodeBlock,
-
-        // TODO: Add more built in components here
-      })
+      reg.registerBatch({ Card, CodeBlock, CodeBlockGroup })
     }
 
     return reg

@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, ReactNode, HTMLAttributes, useEffect, useState, useRef } from 'react'
-import { cn } from '../../../utils/index.js'
+import { cn, getCodeBlockStyles } from '../../../utils/index.js'
 import React from 'react'
 import { highlightCode, type HighlightOptions } from '../../../plugins/shiki-highlighter.js'
 import { CopyIcon } from '../../icons/CopyIcon.js'
@@ -217,52 +217,7 @@ export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
           {/* Add custom styles for Shiki output */}
           <style
             dangerouslySetInnerHTML={{
-              __html: `
-            .shiki-code-block pre {
-              background: transparent !important;
-              padding: 1rem !important;
-              margin: 0 !important;
-              overflow-x: auto;
-              font-family: 'Fira Code', 'Monaco', 'Consolas', 'Courier New', monospace;
-            }
-            .shiki-code-block code {
-              background: transparent !important;
-              display: block;
-              font-family: inherit;
-              line-height: 0.5;
-            }
-            .shiki-code-block .line {
-              display: block;
-              padding: 0.125rem 1rem;
-              line-height: 1.2;
-              min-height: 1.2em;
-            }
-            .shiki-code-block .line:empty::before {
-              content: '\\200B';
-            }
-            .shiki-code-block .line[data-line] {
-              position: relative;
-              padding-left: 3.5rem;
-            }
-            .shiki-code-block .line[data-line]::before {
-              content: attr(data-line);
-              position: absolute;
-              left: 0;
-              width: 1.5rem;
-              color: rgb(113 113 122 / 0.4);
-              text-align: right;
-              font-size: 0.75rem;
-              user-select: none;
-              line-height: 1.5;
-
-            }
-            .shiki-code-block .highlighted-line {
-              background-color: rgb(59 130 246 / 0.1);
-              border-left: 3px solid rgb(59 130 246);
-              margin-left: -3px;
-              padding-left: calc(3.5rem - 3px);
-            }
-          `,
+              __html: getCodeBlockStyles(false),
             }}
           />
         </div>
