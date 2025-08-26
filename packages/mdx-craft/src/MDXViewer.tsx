@@ -7,7 +7,21 @@ import { getGlobalRegistry } from './processor/ComponentRegistry.js'
 import { MDXProcessor } from './processor/MDXProcessor.js'
 import { CompilationResult } from './types/processor.js'
 import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
-import { Card, CodeBlock, CodeBlockGroup } from './components/viewer/core/index.js'
+import {
+  Card,
+  CodeBlock,
+  CodeBlockGroup,
+  Expandable,
+  Accordion,
+  AccordionGroup,
+  Note,
+  Warning,
+  Info,
+  Tip,
+  Check,
+  Danger,
+  Frame,
+} from './components/viewer/core/index.js'
 
 const DefaultLoader: FC = () => {
   return (
@@ -68,7 +82,21 @@ export const MDXViewer: FC<MDXViewerProps> = ({
 
     if (!reg.has('Card')) {
       // Core components
-      reg.registerBatch({ Card, CodeBlock, CodeBlockGroup })
+      reg.registerBatch({
+        Card,
+        CodeBlock,
+        CodeBlockGroup,
+        Expandable,
+        Accordion,
+        AccordionGroup,
+        Note,
+        Warning,
+        Info,
+        Tip,
+        Check,
+        Danger,
+        Frame,
+      })
     }
 
     return reg

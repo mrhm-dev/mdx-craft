@@ -1,39 +1,44 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
-import type { FC, ReactNode } from 'react'
+import {
+  FC,
+  ReactNode,
+  useState,
+  useRef,
+  useEffect,
+  createContext,
+  useContext,
+  useMemo,
+  useCallback,
+} from 'react'
+import { cn } from '../../../utils/index.js'
+import { ChevronIcon } from '../../icons/ChevronIcon.js'
 
-/**
- * Accordion component props
- */
-export type AccordionProps = {
+// Context for managing accordion group state
+const AccordionGroupContext = createContext<{
+  openItems: Set<string>
+  toggleItem: (id: string) => void
+  allowMultiple: boolean
+} | null>(null)
+
+export interface AccordionProps {
   /**
-   * Accordion title
+   * The title/header text for the accordion
    */
   title: string
 
   /**
-   * Icon to display (optional)
+   * Optional icon to display before the title
    */
-  icon?: string | ReactNode
+  icon?: ReactNode
 
   /**
-   * Whether the accordion is open by default
+   * Whether the accordion is initially open (only works when not in a group)
    */
   defaultOpen?: boolean
 
   /**
-   * Controlled open state
-   */
-  open?: boolean
-
-  /**
-   * Callback when open state changes
-   */
-  onOpenChange?: (open: boolean) => void
-
-  /**
-   * Accordion content
+   * The content to display when expanded
    */
   children: ReactNode
 
@@ -41,24 +46,21 @@ export type AccordionProps = {
    * Additional CSS classes
    */
   className?: string
+
+  /**
+   * Unique identifier for the accordion (used in groups)
+   */
+  id?: string
 }
 
-/**
- * AccordionGroup component props
- */
-export type AccordionGroupProps = {
+export interface AccordionGroupProps {
   /**
-   * Allow multiple accordions to be open
+   * Whether multiple accordions can be open at the same time
    */
   allowMultiple?: boolean
 
   /**
-   * Default open accordion indices
-   */
-  defaultOpen?: number[]
-
-  /**
-   * Children accordions
+   * The accordions to group together
    */
   children: ReactNode
 
@@ -69,10 +71,10 @@ export type AccordionGroupProps = {
 }
 
 /**
- * Accordion component
+ * Individual Accordion component
  *
  * @example
- * ```mdx
+ * ```tsx
  * <Accordion title="What is MDX?" defaultOpen>
  *   MDX is a format that lets you seamlessly write JSX in your Markdown documents.
  * </Accordion>
@@ -82,152 +84,94 @@ export const Accordion: FC<AccordionProps> = ({
   title,
   icon,
   defaultOpen = false,
-  open: controlledOpen,
-  onOpenChange,
   children,
-  className = '',
+  className,
+  id,
 }) => {
-  const [isOpen, setIsOpen] = useState(controlledOpen ?? defaultOpen)
+  const groupContext = useContext(AccordionGroupContext)
+  const [isStandaloneOpen, setIsStandaloneOpen] = useState(defaultOpen)
+  const [height, setHeight] = useState<number | 'auto'>(0)
   const contentRef = useRef<HTMLDivElement>(null)
-  const [contentHeight, setContentHeight] = useState<number | 'auto'>('auto')
 
-  // Handle controlled state
-  useEffect(() => {
-    if (controlledOpen !== undefined) {
-      setIsOpen(controlledOpen)
-    }
-  }, [controlledOpen])
-
-  // Measure content height for smooth animation
-  useEffect(() => {
-    if (contentRef.current) {
-      if (isOpen) {
-        setContentHeight(contentRef.current.scrollHeight)
-        // After animation, set to auto for dynamic content
-        const timer = setTimeout(() => {
-          setContentHeight('auto')
-        }, 300)
-        return () => clearTimeout(timer)
-      } else {
-        setContentHeight(contentRef.current.scrollHeight)
-        // Force reflow
-        contentRef.current.offsetHeight // eslint-disable-line @typescript-eslint/no-unused-expressions
-        setContentHeight(0)
-      }
-    }
-    return undefined
-  }, [isOpen])
-
-  const handleToggle = () => {
-    const newState = !isOpen
-    setIsOpen(newState)
-    onOpenChange?.(newState)
+  // Generate stable ID with useRef to ensure it doesn't change
+  const idRef = useRef<string>()
+  if (!idRef.current) {
+    idRef.current = id || `accordion-${Math.random().toString(36).substr(2, 9)}`
   }
+  const accordionId = idRef.current
+
+  // Determine if this accordion is open
+  const isOpen = groupContext ? groupContext.openItems.has(accordionId) : isStandaloneOpen
+
+  // Handle toggle
+  const handleToggle = () => {
+    if (groupContext) {
+      console.log('Group toggle:', accordionId, 'current open items:', groupContext.openItems)
+      groupContext.toggleItem(accordionId)
+    } else {
+      console.log('Standalone toggle:', accordionId, 'current state:', isStandaloneOpen)
+      setIsStandaloneOpen((prev) => !prev)
+    }
+  }
+
+  // Update height when open state changes
+  useEffect(() => {
+    if (!contentRef.current) return
+
+    if (isOpen) {
+      const scrollHeight = contentRef.current.scrollHeight
+      setHeight(scrollHeight)
+    } else {
+      setHeight(0)
+    }
+  }, [isOpen, children])
+
+  // Initialize height on mount if defaultOpen
+  useEffect(() => {
+    if (defaultOpen && !groupContext && contentRef.current) {
+      setHeight(contentRef.current.scrollHeight)
+    }
+  }, [])
 
   return (
     <div
-      className={`mdx-accordion ${className}`.trim()}
-      style={{
-        marginTop: 'var(--mdx-spacing-sm)',
-        marginBottom: 'var(--mdx-spacing-sm)',
-        backgroundColor: 'var(--mdx-accordion-background, var(--mdx-color-background))',
-        border: '1px solid var(--mdx-accordion-border, var(--mdx-color-border))',
-        borderRadius: 'var(--mdx-radius-md)',
-        overflow: 'hidden',
-      }}
+      className={cn(
+        'border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden',
+        'bg-white dark:bg-zinc-900/50',
+        className
+      )}
     >
+      {/* Header */}
       <button
         onClick={handleToggle}
-        className="mdx-accordion__trigger"
-        style={{
-          width: '100%',
-          padding: 'var(--mdx-spacing-md)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 'var(--mdx-spacing-md)',
-          backgroundColor: isOpen
-            ? 'var(--mdx-accordion-activeBackground, transparent)'
-            : 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 'var(--mdx-font-size-base)',
-          fontWeight: 'var(--mdx-font-weight-medium)',
-          color: 'var(--mdx-color-foreground)',
-          textAlign: 'left',
-          transition: 'background-color 0.2s ease',
-          outline: 'none',
-        }}
-        onMouseEnter={(e) => {
-          if (!isOpen) {
-            e.currentTarget.style.backgroundColor =
-              'var(--mdx-accordion-activeBackground, rgba(0, 0, 0, 0.02))'
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isOpen) {
-            e.currentTarget.style.backgroundColor = 'transparent'
-          }
-        }}
+        className={cn(
+          'w-full px-4 py-3 text-left',
+          'bg-zinc-50/50 dark:bg-zinc-900/30',
+          'hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30',
+          'transition-all duration-200',
+          'flex items-center justify-between',
+          'focus:outline-none hover:scale-[1.01]',
+          isOpen && 'bg-zinc-100/50 dark:bg-zinc-800/30'
+        )}
         aria-expanded={isOpen}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--mdx-spacing-sm)' }}>
-          {icon && (
-            <span
-              className="mdx-accordion__icon"
-              style={{
-                fontSize: '1.25rem',
-                lineHeight: 1,
-              }}
-            >
-              {typeof icon === 'string' ? icon : icon}
-            </span>
-          )}
-          <span>{title}</span>
+        <div className="flex items-center gap-3">
+          {icon && <div className="text-zinc-600 dark:text-zinc-400">{icon}</div>}
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">{title}</span>
         </div>
 
-        <svg
-          className="mdx-accordion__chevron"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s ease',
-            flexShrink: 0,
-          }}
-        >
-          <path
-            d="M5 7.5L10 12.5L15 7.5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ChevronIcon
+          className={cn(
+            'size-4 text-zinc-500 dark:text-zinc-400 transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )}
+        />
       </button>
 
-      <div
-        ref={contentRef}
-        className="mdx-accordion__content"
-        style={{
-          height: contentHeight,
-          overflow: 'hidden',
-          transition: 'height 0.3s ease',
-        }}
-      >
-        <div
-          style={{
-            padding: 'var(--mdx-spacing-md)',
-            paddingTop: 0,
-            fontSize: 'var(--mdx-font-size-base)',
-            color: 'var(--mdx-color-muted)',
-            lineHeight: 'var(--mdx-line-height-normal)',
-          }}
-        >
-          {children}
+      {/* Content */}
+      <div className="overflow-hidden transition-all duration-300 ease-in-out" style={{ height }}>
+        <div ref={contentRef} className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="text-zinc-700 dark:text-zinc-300 leading-relaxed">{children}</div>
         </div>
       </div>
     </div>
@@ -238,52 +182,56 @@ export const Accordion: FC<AccordionProps> = ({
  * AccordionGroup component for managing multiple accordions
  *
  * @example
- * ```mdx
- * <AccordionGroup>
- *   <Accordion title="First">Content 1</Accordion>
- *   <Accordion title="Second">Content 2</Accordion>
+ * ```tsx
+ * <AccordionGroup allowMultiple>
+ *   <Accordion title="First Question">Answer 1</Accordion>
+ *   <Accordion title="Second Question">Answer 2</Accordion>
  * </AccordionGroup>
  * ```
  */
 export const AccordionGroup: FC<AccordionGroupProps> = ({
   allowMultiple = false,
-  defaultOpen = [],
   children,
-  className = '',
+  className,
 }) => {
-  const [openIndices, setOpenIndices] = useState<Set<number>>(new Set(defaultOpen))
+  const [openItems, setOpenItems] = useState<Set<string>>(new Set())
 
-  const handleAccordionChange = (index: number, open: boolean): void => {
-    if (allowMultiple) {
-      const newIndices = new Set(openIndices)
-      if (open) {
-        newIndices.add(index)
-      } else {
-        newIndices.delete(index)
-      }
-      setOpenIndices(newIndices)
-    } else {
-      setOpenIndices(open ? new Set([index]) : new Set())
-    }
-  }
+  const toggleItem = useCallback(
+    (id: string) => {
+      setOpenItems((prev) => {
+        const newSet = new Set(prev)
+
+        if (newSet.has(id)) {
+          newSet.delete(id)
+          console.log('Removed item:', id)
+        } else {
+          if (!allowMultiple) {
+            newSet.clear()
+            console.log('Cleared all items (single mode)')
+          }
+          newSet.add(id)
+          console.log('Added item:', id)
+        }
+
+        console.log('New open items:', newSet)
+        return newSet
+      })
+    },
+    [allowMultiple]
+  )
+
+  const contextValue = useMemo(
+    () => ({
+      openItems,
+      toggleItem,
+      allowMultiple,
+    }),
+    [openItems, allowMultiple, toggleItem]
+  )
 
   return (
-    <div
-      className={`mdx-accordion-group ${className}`.trim()}
-      style={{
-        marginTop: 'var(--mdx-spacing-md)',
-        marginBottom: 'var(--mdx-spacing-md)',
-      }}
-    >
-      {React.Children.map(children, (child, index) => {
-        if (React.isValidElement(child) && child.type === Accordion) {
-          return React.cloneElement(child as React.ReactElement<AccordionProps>, {
-            open: openIndices.has(index),
-            onOpenChange: (open: boolean) => handleAccordionChange(index, open),
-          })
-        }
-        return child
-      })}
-    </div>
+    <AccordionGroupContext.Provider value={contextValue}>
+      <div className={cn('space-y-3', className)}>{children}</div>
+    </AccordionGroupContext.Provider>
   )
 }
