@@ -21,6 +21,8 @@ import {
   Check,
   Danger,
   Frame,
+  Steps,
+  Step,
 } from './components/viewer/core/index.js'
 
 const DefaultLoader: FC = () => {
@@ -96,6 +98,8 @@ export const MDXViewer: FC<MDXViewerProps> = ({
         Check,
         Danger,
         Frame,
+        Steps,
+        Step,
       })
     }
 
