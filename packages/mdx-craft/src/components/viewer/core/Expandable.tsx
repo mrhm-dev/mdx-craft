@@ -65,10 +65,7 @@ export const Expandable: FC<ExpandableProps> = ({
 
   return (
     <div
-      className={cn(
-        'border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden',
-        className
-      )}
+      className={cn('border border-border rounded-lg overflow-hidden bg-card shadow-sm', className)}
       {...props}
     >
       {/* Header */}
@@ -76,27 +73,34 @@ export const Expandable: FC<ExpandableProps> = ({
         onClick={toggleExpanded}
         className={cn(
           'w-full px-4 py-3 text-left',
-          'bg-zinc-50 dark:bg-zinc-900/50',
-          'hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
+          'bg-card',
+          'hover:bg-secondary',
           'transition-colors duration-200',
           'flex items-center justify-between',
-          'focus:outline-none'
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          isExpanded && 'bg-secondary'
         )}
       >
         <div className="flex items-center gap-3">
-          {icon && <div className="text-zinc-600 dark:text-zinc-400">{icon}</div>}
-          <span className="font-medium text-zinc-900 dark:text-zinc-100 line-clamp-1">{title}</span>
+          {icon && <div className="text-muted-foreground">{icon}</div>}
+          <span className="font-medium text-foreground line-clamp-1">{title}</span>
         </div>
 
         {/* Chevron icon */}
         <ChevronIcon
-          className={cn('size-4 transition-transform', isExpanded ? 'rotate-180' : '')}
+          className={cn(
+            'size-4 transition-transform text-muted-foreground',
+            isExpanded ? 'rotate-180' : ''
+          )}
         />
       </button>
 
       {/* Content */}
       <div className="overflow-hidden transition-all duration-300 ease-in-out" style={{ height }}>
-        <div ref={contentRef} className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
+        <div
+          ref={contentRef}
+          className="px-4 py-3 border-t border-border bg-background/50 backdrop-blur-sm"
+        >
           {children}
         </div>
       </div>
