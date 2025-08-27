@@ -1,242 +1,173 @@
 'use client'
 
-import React, { useState } from 'react'
-import type { FC, ReactNode } from 'react'
+import React, { useState, useEffect, Children, isValidElement } from 'react'
+import type { FC, ReactNode, ReactElement } from 'react'
+import { cn } from '../../../utils/index.js'
 
 /**
- * Tab item structure
+ * Props for individual Tab component
  */
-export type TabItem = {
-  /**
-   * Tab label
-   */
-  label: string
-
-  /**
-   * Tab value (unique identifier)
-   */
-  value: string
-
-  /**
-   * Tab content
-   */
-  content: ReactNode
-
-  /**
-   * Icon for the tab
-   */
-  icon?: string | ReactNode
-
-  /**
-   * Whether the tab is disabled
-   */
+interface TabProps extends React.HTMLAttributes<HTMLButtonElement> {
+  /** The title displayed in the tab header */
+  title: string
+  /** Optional icon to display alongside the title */
+  icon?: ReactNode
+  /** The content to display when this tab is active */
+  children: ReactNode
+  /** Whether this tab should be disabled */
   disabled?: boolean
 }
 
 /**
- * Tabs component props
+ * Individual Tab component (used as child of Tabs)
+ * @example
+ * ```tsx
+ * <Tab title="JavaScript" icon={<JsIcon />}>
+ *   console.log('Hello World')
+ * </Tab>
+ * ```
  */
-export type TabsProps = {
-  /**
-   * Tab items
-   */
-  items: TabItem[]
-
-  /**
-   * Default active tab value
-   */
-  defaultValue?: string
-
-  /**
-   * Controlled active tab value
-   */
-  value?: string
-
-  /**
-   * Callback when tab changes
-   */
-  onValueChange?: (value: string) => void
-
-  /**
-   * Tab orientation
-   */
-  orientation?: 'horizontal' | 'vertical'
-
-  /**
-   * Additional CSS classes
-   */
-  className?: string
+export const Tab: FC<TabProps> = ({ children }) => {
+  // Tab component just holds the data, rendering is handled by Tabs
+  return <>{children}</>
 }
 
 /**
- * Mintlify-style Tabs component
- *
+ * Props for the Tabs container component
+ */
+interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Tab components as children */
+  children: ReactNode
+  /** Default active tab index */
+  defaultIndex?: number
+  /** Controlled active tab index */
+  activeIndex?: number
+  /** Callback when tab changes */
+  onTabChange?: (index: number) => void
+  /** Tab list alignment */
+  align?: 'left' | 'center' | 'right'
+  /** Whether tabs should take full width */
+  fullWidth?: boolean
+}
+
+/**
+ * Tabs component with flat underline style
  * @example
- * ```mdx
- * <Tabs
- *   items={[
- *     { label: "JavaScript", value: "js", content: "console.log('Hello');" },
- *     { label: "Python", value: "py", content: "print('Hello')" },
- *     { label: "Rust", value: "rs", content: "println!(\"Hello\");" }
- *   ]}
- * />
+ * ```tsx
+ * <Tabs>
+ *   <Tab title="First">First tab content</Tab>
+ *   <Tab title="Second" icon={<Icon />}>Second tab content</Tab>
+ * </Tabs>
  * ```
  */
 export const Tabs: FC<TabsProps> = ({
-  items,
-  defaultValue,
-  value: controlledValue,
-  onValueChange,
-  orientation = 'horizontal',
-  className = '',
+  children,
+  defaultIndex = 0,
+  activeIndex: controlledIndex,
+  onTabChange,
+  className,
+  align = 'left',
+  fullWidth = false,
+  ...props
 }) => {
-  const firstEnabledTab = items.find((item) => !item.disabled)
-  const [activeValue, setActiveValue] = useState(
-    controlledValue ?? defaultValue ?? firstEnabledTab?.value ?? ''
-  )
+  // Extract tab data from children
+  const tabs = Children.toArray(children)
+    .filter((child) => isValidElement(child) && child.type === Tab)
+    .map((child) => {
+      const tabElement = child as ReactElement<TabProps>
+      return {
+        title: tabElement.props.title,
+        icon: tabElement.props.icon,
+        content: tabElement.props.children,
+        disabled: tabElement.props.disabled || false,
+      }
+    })
+
+  // Find first non-disabled tab
+  const firstEnabledIndex = tabs.findIndex((tab) => !tab.disabled)
+  const initialIndex = defaultIndex >= 0 ? defaultIndex : firstEnabledIndex
+
+  const [activeTab, setActiveTab] = useState(initialIndex)
 
   // Handle controlled state
-  React.useEffect(() => {
-    if (controlledValue !== undefined) {
-      setActiveValue(controlledValue)
+  useEffect(() => {
+    if (controlledIndex !== undefined && controlledIndex >= 0) {
+      setActiveTab(controlledIndex)
     }
-  }, [controlledValue])
+  }, [controlledIndex])
 
-  const handleTabClick = (value: string) => {
-    const tab = items.find((item) => item.value === value)
-    if (tab && !tab.disabled) {
-      setActiveValue(value)
-      onValueChange?.(value)
+  const handleTabClick = (index: number) => {
+    if (!tabs[index]?.disabled) {
+      setActiveTab(index)
+      onTabChange?.(index)
     }
   }
 
-  // const activeTab = items.find(item => item.value === activeValue);
+  if (tabs.length === 0) {
+    return null
+  }
 
   return (
-    <div
-      className={`mdx-tabs mdx-tabs--${orientation} ${className}`.trim()}
-      style={{
-        marginTop: 'var(--mdx-spacing-md)',
-        marginBottom: 'var(--mdx-spacing-md)',
-        display: orientation === 'vertical' ? 'flex' : 'block',
-        gap: orientation === 'vertical' ? 'var(--mdx-spacing-md)' : 0,
-      }}
-    >
-      {/* Tab list */}
+    <div className={cn('w-full', className)} {...props}>
+      {/* Tab List */}
       <div
-        className="mdx-tabs__list"
+        className={cn(
+          'relative border-b border-border/20',
+          align === 'center' && 'flex justify-center',
+          align === 'right' && 'flex justify-end'
+        )}
         role="tablist"
-        style={{
-          display: 'flex',
-          flexDirection: orientation === 'vertical' ? 'column' : 'row',
-          borderBottom:
-            orientation === 'horizontal'
-              ? `1px solid var(--mdx-tabs-borderColor, var(--mdx-color-border))`
-              : 'none',
-          borderRight:
-            orientation === 'vertical'
-              ? `1px solid var(--mdx-tabs-borderColor, var(--mdx-color-border))`
-              : 'none',
-          minWidth: orientation === 'vertical' ? '150px' : 'auto',
-          gap: orientation === 'vertical' ? '0.25rem' : 0,
-        }}
       >
-        {items.map((item) => (
-          <button
-            key={item.value}
-            role="tab"
-            aria-selected={activeValue === item.value}
-            disabled={item.disabled}
-            onClick={() => handleTabClick(item.value)}
-            className="mdx-tabs__trigger"
-            style={{
-              padding: 'var(--mdx-spacing-sm) var(--mdx-spacing-md)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--mdx-spacing-xs)',
-              background: 'transparent',
-              border: 'none',
-              borderBottom:
-                orientation === 'horizontal'
-                  ? `2px solid ${
-                      activeValue === item.value
-                        ? 'var(--mdx-tabs-activeColor, var(--mdx-color-primary))'
-                        : 'transparent'
-                    }`
-                  : 'none',
-              borderLeft:
-                orientation === 'vertical'
-                  ? `2px solid ${
-                      activeValue === item.value
-                        ? 'var(--mdx-tabs-activeColor, var(--mdx-color-primary))'
-                        : 'transparent'
-                    }`
-                  : 'none',
-              marginBottom: orientation === 'horizontal' ? '-1px' : 0,
-              marginRight: orientation === 'vertical' ? '-1px' : 0,
-              cursor: item.disabled ? 'not-allowed' : 'pointer',
-              fontSize: 'var(--mdx-font-size-sm)',
-              fontWeight:
-                activeValue === item.value
-                  ? 'var(--mdx-font-weight-semibold)'
-                  : 'var(--mdx-font-weight-normal)',
-              color: item.disabled
-                ? 'var(--mdx-color-muted)'
-                : activeValue === item.value
-                  ? 'var(--mdx-tabs-activeColor, var(--mdx-color-primary))'
-                  : 'var(--mdx-color-foreground)',
-              opacity: item.disabled ? 0.5 : 1,
-              transition: 'all 0.2s ease',
-              outline: 'none',
-              textAlign: 'left',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              if (!item.disabled && activeValue !== item.value) {
-                e.currentTarget.style.backgroundColor =
-                  'var(--mdx-tabs-hoverBackground, rgba(0, 0, 0, 0.05))'
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-          >
-            {item.icon && (
-              <span
-                className="mdx-tabs__icon"
-                style={{
-                  fontSize: '1rem',
-                  lineHeight: 1,
-                }}
-              >
-                {typeof item.icon === 'string' ? item.icon : item.icon}
+        <div
+          className={cn(
+            'flex',
+            fullWidth && 'w-full',
+            fullWidth && tabs.length > 0 && 'justify-between'
+          )}
+        >
+          {tabs.map((tab, index) => (
+            <button
+              key={index}
+              role="tab"
+              aria-selected={activeTab === index}
+              disabled={tab.disabled}
+              onClick={() => handleTabClick(index)}
+              className={cn(
+                'relative px-4 py-2.5 text-sm transition-all duration-200',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                'select-none whitespace-nowrap border-b-2 -mb-[1px]',
+                fullWidth && 'flex-1',
+                activeTab === index
+                  ? 'border-blue-500 border-b-2 text-foreground font-semibold'
+                  : 'border-transparent text-muted-foreground/70 hover:text-muted-foreground hover:border-border/30 font-medium',
+                tab.disabled &&
+                  'cursor-not-allowed opacity-40 hover:text-muted-foreground/70 hover:border-transparent'
+              )}
+            >
+              <span className="flex items-center gap-2">
+                {tab.icon && (
+                  <span className="inline-flex items-center justify-center">{tab.icon}</span>
+                )}
+                <span>{tab.title}</span>
               </span>
-            )}
-            <span>{item.label}</span>
-          </button>
-        ))}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tab panels */}
-      <div
-        className="mdx-tabs__panels"
-        style={{
-          flex: 1,
-          marginTop: orientation === 'horizontal' ? 'var(--mdx-spacing-md)' : 0,
-          marginLeft: orientation === 'vertical' ? 'var(--mdx-spacing-md)' : 0,
-        }}
-      >
-        {items.map((item) => (
+      {/* Tab Panels */}
+      <div className="mt-6">
+        {tabs.map((tab, index) => (
           <div
-            key={item.value}
+            key={index}
             role="tabpanel"
-            hidden={activeValue !== item.value}
-            className="mdx-tabs__panel"
-            style={{
-              animation: activeValue === item.value ? 'fadeIn 0.2s ease' : 'none',
-            }}
+            hidden={activeTab !== index}
+            className={cn(
+              'animate-in fade-in-0 duration-200',
+              activeTab === index ? 'block' : 'hidden'
+            )}
           >
-            {activeValue === item.value && item.content}
+            {activeTab === index && tab.content}
           </div>
         ))}
       </div>
