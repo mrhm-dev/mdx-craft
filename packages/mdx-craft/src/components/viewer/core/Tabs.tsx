@@ -112,7 +112,7 @@ export const Tabs: FC<TabsProps> = ({
       {/* Tab List */}
       <div
         className={cn(
-          'relative border-b border-border/20',
+          'relative border-b border-border',
           align === 'center' && 'flex justify-center',
           align === 'right' && 'flex justify-end'
         )}
@@ -138,10 +138,10 @@ export const Tabs: FC<TabsProps> = ({
                 'select-none whitespace-nowrap border-b-2 -mb-[1px]',
                 fullWidth && 'flex-1',
                 activeTab === index
-                  ? 'border-blue-500 border-b-2 text-foreground font-semibold'
-                  : 'border-transparent text-muted-foreground/70 hover:text-muted-foreground hover:border-border/30 font-medium',
+                  ? 'border-primary text-primary font-semibold'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted font-medium',
                 tab.disabled &&
-                  'cursor-not-allowed opacity-40 hover:text-muted-foreground/70 hover:border-transparent'
+                  'cursor-not-allowed opacity-40 hover:text-muted-foreground hover:border-transparent'
               )}
             >
               <span className="flex items-center gap-2">
