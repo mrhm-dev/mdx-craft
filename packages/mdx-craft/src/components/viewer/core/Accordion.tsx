@@ -131,6 +131,7 @@ export const Accordion: FC<AccordionProps> = ({
     if (defaultOpen && !groupContext && contentRef.current) {
       setHeight(contentRef.current.scrollHeight)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

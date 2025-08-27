@@ -25,6 +25,9 @@ import {
   Step,
   Tabs,
   Tab,
+  Stack,
+  VStack,
+  HStack,
 } from './components/viewer/core/index.js'
 
 const DefaultLoader: FC = () => {
@@ -104,6 +107,9 @@ export const MDXViewer: FC<MDXViewerProps> = ({
         Step,
         Tabs,
         Tab,
+        Stack,
+        VStack,
+        HStack,
       })
     }
 
