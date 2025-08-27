@@ -166,17 +166,6 @@ export const Card: FC<CardProps> = ({
 
         // Shadow system
         'shadow-sm hover:shadow-lg',
-        'hover:shadow-border',
-
-        // Transitions
-        'transition-all duration-300 ease-out',
-        'hover:-translate-y-1 hover:scale-[1.02]',
-
-        // Focus styles
-        'focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2',
-
-        // Margin
-        'mt-6',
 
         className
       )}
@@ -208,33 +197,15 @@ export const Card: FC<CardProps> = ({
       <div className={cn('relative z-10 flex flex-col gap-3', currentSize.container)}>
         {/* Title and Icon */}
         <div className="flex items-start gap-3">
-          {icon && (
-            <div className="flex-shrink-0 mt-1 text-muted-foreground group-hover:text-foreground transition-colors duration-200">
-              {icon}
-            </div>
-          )}
-          <h4
-            className={cn(
-              'font-semibold text-card-foreground leading-tight',
-              'group-hover:text-primary',
-              'transition-colors duration-200',
-              currentSize.title
-            )}
-          >
+          {icon && <div className="flex-shrink-0 mt-1 text-muted-foreground">{icon}</div>}
+          <h4 className={cn('font-semibold text-card-foreground leading-tight', currentSize.title)}>
             {title}
           </h4>
         </div>
 
         {/* Description content */}
         {children && (
-          <div
-            className={cn(
-              'text-muted-foreground leading-relaxed',
-              'group-hover:text-foreground',
-              'transition-colors duration-200',
-              currentSize.content
-            )}
-          >
+          <div className={cn('text-muted-foreground leading-relaxed', currentSize.content)}>
             {children}
           </div>
         )}
@@ -252,9 +223,6 @@ export const Card: FC<CardProps> = ({
                 'hover:border-primary',
                 'text-sm font-medium',
                 'text-secondary-foreground',
-                'hover:text-primary',
-                'transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2',
                 'group/cta'
               )}
               target="_blank"
