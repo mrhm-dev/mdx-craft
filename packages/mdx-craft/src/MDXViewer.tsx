@@ -1,35 +1,46 @@
+/**
+ * MDX Viewer Component - Enhanced with Hook-Based Architecture
+ *
+ * This component has been refactored to use a clean hook-based architecture
+ * that provides better performance, maintainability, and extensibility.
+ *
+ * Key Features:
+ * - **Component Registry with className overrides**: Automatic registration
+ *   of core components with support for className customization per component
+ * - **Compilation Hook**: Separated MDX compilation logic with proper
+ *   change detection and caching
+ * - **Virtualization Ready**: Includes reusable virtualization hook for
+ *   future performance optimization
+ * - **Clean JSX**: Minimal component logic with clear separation of concerns
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <MDXViewer source={mdxContent} />
+ *
+ * // With className overrides
+ * <MDXViewer
+ *   source={mdxContent}
+ *   classNameOverrides={{
+ *     Card: 'custom-card-styles border-2',
+ *     CodeBlock: 'bg-gray-900 text-white'
+ *   }}
+ * />
+ *
+ * // With custom components and plugins
+ * <MDXViewer
+ *   source={mdxContent}
+ *   components={{ CustomComponent: MyComponent }}
+ *   remarkPlugins={[remarkGfm]}
+ *   rehypePlugins={[rehypeSlug]}
+ * />
+ * ```
+ */
+
 import { MDXProvider } from '@mdx-js/react'
-import { FC, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Pluggable } from 'unified'
-import { HTMLComponents } from './components/viewer/html/index.js'
-import { useMDXViewer } from './hooks/useMDXViewer.js'
-import { getGlobalRegistry } from './processor/ComponentRegistry.js'
-import { MDXProcessor } from './processor/MDXProcessor.js'
-import { CompilationResult } from './types/processor.js'
-import { MDXViewerProps, MDXViewerStateRef } from './types/viewer.js'
-import {
-  Card,
-  CodeBlock,
-  CodeBlockGroup,
-  Expandable,
-  Accordion,
-  AccordionGroup,
-  Note,
-  Warning,
-  Info,
-  Tip,
-  Check,
-  Danger,
-  Frame,
-  Steps,
-  Step,
-  Tabs,
-  Tab,
-  Stack,
-  VStack,
-  HStack,
-  Space,
-} from './components/viewer/core/index.js'
+import { FC } from 'react'
+import { useComponentRegistry, useMDXCompilation } from './hooks/index.js'
+import { MDXViewerProps } from './types/viewer.js'
 
 const DefaultLoader: FC = () => {
   return (
@@ -51,6 +62,12 @@ const DefaultErrorComponent: FC<{ error: Error }> = ({ error }) => {
   )
 }
 
+/**
+ * Enhanced MDXViewer component with hook-based architecture
+ *
+ * Renders MDX content with support for component registration, className overrides,
+ * and performance optimizations through proper change detection and caching.
+ */
 export const MDXViewer: FC<MDXViewerProps> = ({
   source,
   components: instanceComponents,
@@ -62,183 +79,39 @@ export const MDXViewer: FC<MDXViewerProps> = ({
   errorComponent: ErrorComponent = DefaultErrorComponent,
   style,
   useCache = true,
+  classNameOverrides,
 }) => {
-  // Context
-  const globalContext = useMDXViewer()
+  // Use component registry hook with className overrides
+  const { components } = useComponentRegistry({
+    instanceComponents,
+    classNameOverrides,
+  })
 
-  // States
-  const [isCompiling, setIsCompiling] = useState(false)
-  const [compiledContent, setCompiledContent] = useState<ReactElement | null>(null)
-  const [compilationError, setCompilationError] = useState<Error | null>(null)
+  // Use compilation hook for clean logic separation
+  const compilation = useMDXCompilation({
+    source,
+    components,
+    remarkPlugins: instanceRemarkPlugins,
+    rehypePlugins: instanceRehypePlugins,
+    onCompile,
+    onError,
+    useCache,
+  })
 
-  const compileRef = useRef<MDXViewerStateRef | null>(null)
-
-  // Initialize Processor
-  const processor = useMemo(
-    () =>
-      new MDXProcessor({
-        cacheEnabled: useCache,
-        cacheMaxSize: globalContext.cache.maxSize,
-        cacheTTL: globalContext.cache.ttl,
-      }),
-    [useCache, globalContext.cache]
-  )
-
-  // Get registry and register builtin components
-  const registry = useMemo(() => {
-    const reg = getGlobalRegistry()
-
-    if (!reg.has('Card')) {
-      // Core components
-      reg.registerBatch({
-        Card,
-        CodeBlock,
-        CodeBlockGroup,
-        Expandable,
-        Accordion,
-        AccordionGroup,
-        Note,
-        Warning,
-        Info,
-        Tip,
-        Check,
-        Danger,
-        Frame,
-        Steps,
-        Step,
-        Tabs,
-        Tab,
-        Stack,
-        VStack,
-        HStack,
-        Space,
-      })
-    }
-
-    return reg
-  }, [])
-
-  const mergedComponents = useMemo(() => {
-    return {
-      ...HTMLComponents,
-      ...globalContext.components,
-      ...registry.getAll(),
-      ...instanceComponents,
-    }
-  }, [globalContext.components, instanceComponents, registry])
-
-  const mergedRemarkPlugins = useMemo(() => {
-    return [...globalContext.remarkPlugins, ...instanceRemarkPlugins] as Pluggable[]
-  }, [globalContext.remarkPlugins, instanceRemarkPlugins])
-
-  const mergedRehypePlugins = useMemo(() => {
-    return [...globalContext.rehypePlugins, ...instanceRehypePlugins] as Pluggable[]
-  }, [globalContext.rehypePlugins, instanceRehypePlugins])
-
-  // Create stale reference for callbacks
-  const stableOnCompile = useCallback(
-    (metadata: CompilationResult['metadata']) => {
-      onCompile?.(metadata)
-    },
-    [onCompile]
-  )
-
-  const stableOnError = useCallback(
-    (error: Error) => {
-      onError?.(error)
-    },
-    [onError]
-  )
-
-  /**
-   * Returns the current state and whether it has changed compared to the previous ref.
-   * Used to determine if recompilation is needed.
-   */
-  const detectChanges = useCallback(
-    (prev: MDXViewerStateRef | null) => {
-      const currentState: MDXViewerStateRef = {
-        source,
-        components: JSON.stringify(mergedComponents),
-        remarkPlugins: mergedRemarkPlugins.length,
-        rehypePlugins: mergedRehypePlugins.length,
-      }
-
-      let hasChanged = true
-      if (prev) {
-        hasChanged =
-          prev.source !== currentState.source ||
-          prev.components !== currentState.components ||
-          prev.remarkPlugins !== currentState.remarkPlugins ||
-          prev.rehypePlugins !== currentState.rehypePlugins
-      }
-
-      return { state: currentState, hasChanged }
-    },
-    [source, mergedComponents, mergedRemarkPlugins, mergedRehypePlugins]
-  )
-
-  useEffect(() => {
-    let cancelled = false
-    const { hasChanged } = detectChanges(compileRef.current)
-
-    // Only recompile if the state has changed
-    if (!hasChanged) return
-
-    const compile = async () => {
-      setIsCompiling(true)
-      setCompilationError(null)
-
-      try {
-        const result = await processor.compile({
-          source,
-          components: mergedComponents,
-          remarkPlugins: mergedRemarkPlugins,
-          rehypePlugins: mergedRehypePlugins,
-          development: process.env.NODE_ENV === 'development',
-        })
-
-        if (cancelled) return
-
-        if (result.error) {
-          setCompilationError(result.error)
-          stableOnError(result.error)
-        } else {
-          setCompiledContent(result.content)
-          stableOnCompile(result.metadata)
-        }
-      } catch (error) {
-        if (cancelled) return
-        const err = error instanceof Error ? error : new Error(String(error))
-        setCompilationError(err)
-        stableOnError(err)
-      } finally {
-        if (!cancelled) {
-          setIsCompiling(false)
-        }
-      }
-    }
-
-    compile()
-
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source])
-
-  if (isCompiling) {
+  // Clean JSX with minimal logic
+  if (compilation.isLoading) {
     return <LoadingComponent />
   }
 
-  if (compilationError) {
-    return <ErrorComponent error={compilationError} />
+  if (compilation.error) {
+    return <ErrorComponent error={compilation.error} />
   }
 
   return (
     <div className="mdx-viewer font-sans" style={style}>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <MDXProvider components={mergedComponents as any}>
-        <article className="mdx-article">{compiledContent}</article>
+      <MDXProvider components={components as any}>
+        <article className="mdx-article">{compilation.content}</article>
       </MDXProvider>
     </div>
   )

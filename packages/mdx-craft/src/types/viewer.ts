@@ -10,6 +10,8 @@ export type MDXViewerStateRef = {
   rehypePlugins: number
 }
 
+export type ComponentClassNameOverrides = Record<string, string>
+
 export type MDXViewerProps = {
   source: string
   components?: ComponentRegistry
@@ -23,4 +25,5 @@ export type MDXViewerProps = {
   className?: string
   style?: CSSProperties
   useCache?: boolean
+  classNameOverrides?: ComponentClassNameOverrides
 }
