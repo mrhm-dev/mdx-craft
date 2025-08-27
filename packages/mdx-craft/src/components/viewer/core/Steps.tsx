@@ -46,10 +46,8 @@ export const Step: FC<StepProps> = ({
       <div className="flex">
         {/* Left side with number and line */}
         <div className="flex flex-col items-center mr-4 md:mr-6 lg:mr-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-900/80">
-            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {stepNumber}
-            </span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-card shadow-sm">
+            <span className="text-sm font-semibold text-foreground">{stepNumber}</span>
           </div>
         </div>
 
@@ -64,7 +62,7 @@ export const Step: FC<StepProps> = ({
 
       {/* Extended line for spacing between steps */}
       {!isLast && (
-        <div className="absolute left-5 top-10 bottom-0 w-px bg-zinc-100 dark:bg-zinc-900/70 -translate-x-1/2" />
+        <div className="absolute left-5 top-10 bottom-0 w-px bg-border -translate-x-1/2" />
       )}
     </div>
   )
