@@ -137,8 +137,7 @@ export const Accordion: FC<AccordionProps> = ({
   return (
     <div
       className={cn(
-        'border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden',
-        'bg-white dark:bg-zinc-900/50',
+        'border border-border rounded-lg overflow-hidden bg-card backdrop-blur-sm',
         className
       )}
     >
@@ -147,32 +146,53 @@ export const Accordion: FC<AccordionProps> = ({
         onClick={handleToggle}
         className={cn(
           'w-full px-4 py-3 text-left',
-          'bg-zinc-50/50 dark:bg-zinc-900/30',
-          'hover:bg-zinc-100/50 dark:hover:bg-zinc-800/30',
+          'bg-card',
+          'hover:bg-secondary',
           'transition-all duration-200',
           'flex items-center justify-between',
-          'focus:outline-none hover:scale-[1.01]',
-          isOpen && 'bg-zinc-100/50 dark:bg-zinc-800/30'
+          'focus:outline-none focus:ring-2 focus:ring-primary/20',
+          isOpen && 'bg-secondary'
         )}
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          {icon && <div className="text-zinc-600 dark:text-zinc-400">{icon}</div>}
-          <span className="font-medium text-zinc-900 dark:text-zinc-100">{title}</span>
+          {icon && (
+            <div
+              className={cn(
+                'text-muted-foreground transition-colors duration-200',
+                'hover:text-foreground',
+                isOpen && 'text-primary'
+              )}
+            >
+              {icon}
+            </div>
+          )}
+          <span
+            className={cn(
+              'font-medium text-card-foreground transition-colors duration-200',
+              isOpen && 'text-foreground'
+            )}
+          >
+            {title}
+          </span>
         </div>
 
         <ChevronIcon
           className={cn(
-            'size-4 text-zinc-500 dark:text-zinc-400 transition-transform duration-200',
-            isOpen && 'rotate-180'
+            'size-4 text-muted-foreground transition-all duration-200',
+            'hover:text-foreground',
+            isOpen && 'rotate-180 text-primary'
           )}
         />
       </button>
 
       {/* Content */}
       <div className="overflow-hidden transition-all duration-300 ease-in-out" style={{ height }}>
-        <div ref={contentRef} className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
-          <div className="text-zinc-700 dark:text-zinc-300 leading-relaxed">{children}</div>
+        <div
+          ref={contentRef}
+          className="px-4 py-3 border-t border-border bg-background/50 backdrop-blur-sm"
+        >
+          <div className="text-muted-foreground leading-relaxed">{children}</div>
         </div>
       </div>
     </div>
@@ -204,17 +224,13 @@ export const AccordionGroup: FC<AccordionGroupProps> = ({
 
         if (newSet.has(id)) {
           newSet.delete(id)
-          console.log('Removed item:', id)
         } else {
           if (!allowMultiple) {
             newSet.clear()
-            console.log('Cleared all items (single mode)')
           }
           newSet.add(id)
-          console.log('Added item:', id)
         }
 
-        console.log('New open items:', newSet)
         return newSet
       })
     },
