@@ -169,8 +169,8 @@ export const Frame: FC<FrameProps> = ({
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800',
-          'bg-zinc-50 dark:bg-zinc-900/50',
+          'relative overflow-hidden rounded-lg border border-border shadow-sm',
+          'bg-card',
           !(width || height) && 'w-full',
           className
         )}
@@ -193,8 +193,8 @@ export const Frame: FC<FrameProps> = ({
       <div
         ref={containerRef}
         className={cn(
-          'relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800',
-          'bg-zinc-50 dark:bg-zinc-900/50',
+          'relative overflow-hidden rounded-lg border border-border shadow-sm',
+          'bg-card',
           !(width || height) && 'w-full',
           className
         )}
@@ -204,8 +204,8 @@ export const Frame: FC<FrameProps> = ({
         {/* Loading state */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-              <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 border-t-zinc-600 dark:border-t-zinc-300 rounded-full animate-spin" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="w-5 h-5 border-2 border-muted border-t-primary rounded-full animate-spin" />
               <span className="text-sm">Loading...</span>
             </div>
           </div>
@@ -214,7 +214,7 @@ export const Frame: FC<FrameProps> = ({
         {/* Error state */}
         {hasError && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-zinc-500 dark:text-zinc-400">
+            <div className="text-center text-muted-foreground">
               <svg
                 className="w-8 h-8 mx-auto mb-2"
                 fill="none"
@@ -229,7 +229,7 @@ export const Frame: FC<FrameProps> = ({
                 />
               </svg>
               <div className="text-sm">Failed to load content</div>
-              <div className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
+              <div className="text-xs text-muted-foreground/70 mt-1">
                 Check the URL or try again later
               </div>
             </div>
@@ -256,8 +256,8 @@ export const Frame: FC<FrameProps> = ({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800',
-        'bg-zinc-50 dark:bg-zinc-900/50',
+        'relative overflow-hidden rounded-lg border border-border shadow-sm',
+        'bg-card',
         'flex items-center justify-center',
         !(width || height) && 'w-full',
         className
@@ -265,7 +265,7 @@ export const Frame: FC<FrameProps> = ({
       style={containerStyle}
       {...props}
     >
-      <div className="text-center text-zinc-500 dark:text-zinc-400">
+      <div className="text-center text-muted-foreground">
         <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
@@ -275,9 +275,7 @@ export const Frame: FC<FrameProps> = ({
           />
         </svg>
         <div className="text-sm">No content to display</div>
-        <div className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-          Provide a src URL or embed code
-        </div>
+        <div className="text-xs text-muted-foreground/70 mt-1">Provide a src URL or embed code</div>
       </div>
     </div>
   )
