@@ -1,16 +1,22 @@
 'use client'
 
-import { FC, ReactNode, HTMLAttributes, useEffect, useState, useRef } from 'react'
+import { FC, ReactNode, HTMLAttributes, useRef } from 'react'
 import { cn, getCodeBlockStyles } from '../../../utils/index.js'
 import React from 'react'
-import { highlightCode, type HighlightOptions } from '../../../plugins/shiki-highlighter.js'
 import { CopyIcon } from '../../icons/CopyIcon.js'
 import { CopyButton } from '../../common/CopyButton.js'
-import { Badge } from '../../common/Badge.js'
 import { WindowControlDecoration } from '../../common/WindowControlDecoration.js'
+import { LanguageBadge } from '../../common/LanguageBadge.js'
+import { useCodeHighlighting } from '../../../hooks/index.js'
 
+/**
+ * Props for the Code component
+ */
 type CodeProps = HTMLAttributes<HTMLElement> & {
+  /** The code content to display */
   children?: ReactNode
+
+  /** Additional CSS classes for styling */
   className?: string
 }
 
@@ -39,19 +45,43 @@ const extractTextContent = (children: ReactNode): string => {
 }
 
 /**
- * Code component for multi-line code blocks from markdown files
- * Uses shiki-highlighter for syntax highlighting with copy functionality
+ * Code Component
+ *
+ * A code block component specifically designed for MDX/Markdown content.
+ * Automatically detects language from className and provides syntax highlighting.
+ *
+ * Features:
+ * - Automatic language detection from className
+ * - Syntax highlighting using Shiki
+ * - Copy to clipboard functionality
+ * - Window decorations for desktop feel
+ * - Loading state with skeleton
+ * - Theme-aware highlighting
+ * - Responsive design with scrollable content
+ *
+ * @example
+ * ```tsx
+ * // Used automatically by MDX for code blocks
+ * <Code className="language-javascript">
+ *   console.log('Hello, World!');
+ * </Code>
+ *
+ * // With nested code element (common in markdown)
+ * <Code>
+ *   <code className="language-typescript">
+ *     const greeting: string = 'Hello';
+ *   </code>
+ * </Code>
+ * ```
  */
 export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
-  const [highlightedCode, setHighlightedCode] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
   const codeRef = useRef<string>('')
 
-  // Extract language from className on either the pre element or nested code element
+  // Extract language from className (supports both language-* and lang-* formats)
   let detectedLanguage =
     className?.match(/language-(\w+)/)?.[1] || className?.match(/lang-(\w+)/)?.[1]
 
-  // If not found on pre, check if there's a code element child with the class
+  // Fallback: check nested code elements for language class
   if (!detectedLanguage && React.isValidElement(children)) {
     const codeElement = React.Children.toArray(children).find(
       (child) => React.isValidElement(child) && child.type === 'code'
@@ -63,106 +93,49 @@ export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
     }
   }
 
+  // Default to 'text' if no language detected
   detectedLanguage = detectedLanguage || 'text'
 
-  // Extract the actual code content from children
+  // Extract and store code content
   const codeString = extractTextContent(children)
-  codeRef.current = codeString // Store for copy functionality
+  codeRef.current = codeString // Store reference for copy functionality
 
-  useEffect(() => {
-    const highlightCodeContent = async () => {
-      if (!codeString.trim()) {
-        setHighlightedCode('')
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        setIsLoading(true)
-
-        // Check if dark mode is active (Tailwind v4)
-        const isDark = document.documentElement.classList.contains('dark')
-
-        const options: HighlightOptions = {
-          language: detectedLanguage,
-          showLineNumbers: true,
-          wordWrap: false,
-          startingLineNumber: 1,
-          theme: isDark ? 'github-dark' : 'github-light',
-        }
-
-        const result = await highlightCode(codeString, options)
-        setHighlightedCode(result.html)
-      } catch (err) {
-        console.error('Failed to highlight code:', err)
-        // Fallback to plain text
-        setHighlightedCode(`<pre><code>${codeString}</code></pre>`)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    highlightCodeContent()
-  }, [codeString, detectedLanguage])
-
-  // Re-highlight when theme changes
-  useEffect(() => {
-    const handleThemeChange = () => {
-      // Force re-highlight with new theme
-      if (codeString.trim()) {
-        const reHighlight = async () => {
-          // Check if dark mode is active (Tailwind v4)
-          const isDark = document.documentElement.classList.contains('dark')
-
-          const options: HighlightOptions = {
-            language: detectedLanguage,
-            showLineNumbers: true,
-            wordWrap: false,
-            startingLineNumber: 1,
-            theme: isDark ? 'github-dark' : 'github-light',
-          }
-          const result = await highlightCode(codeString, options)
-          setHighlightedCode(result.html)
-        }
-        reHighlight()
-      }
-    }
-
-    // Listen for theme changes
-    const observer = new MutationObserver(handleThemeChange)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
-
-    return () => observer.disconnect()
-  }, [codeString, detectedLanguage])
+  // Use shared highlighting hook
+  const { highlightedCode, isLoading, error } = useCodeHighlighting({
+    codeContent: codeString,
+    language: detectedLanguage,
+    showLineNumbers: true,
+    isTerminal: false,
+    startingLineNumber: 1,
+    wordWrap: false,
+    autoDetectTheme: true,
+  })
 
   if (isLoading) {
     return (
       <div
         className={cn(
-          'relative w-full rounded-xl border border-zinc-200 dark:border-zinc-800',
-          'bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950',
-          'my-6 overflow-hidden shadow-lg',
+          'relative w-full rounded-xl border border-border',
+          'bg-card',
+          'my-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300',
           className
         )}
         {...props}
       >
-        <div className="px-4 py-3 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800">
+        <div className="px-4 py-3 bg-card border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700 animate-pulse"></div>
-              <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700 animate-pulse"></div>
-              <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700 animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-muted animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-muted animate-pulse"></div>
+              <div className="w-3 h-3 rounded-full bg-muted animate-pulse"></div>
             </div>
           </div>
         </div>
         <div className="p-6">
           <div className="animate-pulse space-y-3">
-            <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-            <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4"></div>
-            <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded"></div>
+            <div className="h-4 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
           </div>
         </div>
       </div>
@@ -172,24 +145,22 @@ export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
   return (
     <div
       className={cn(
-        'relative w-full rounded-lg border border-zinc-200 dark:border-zinc-800',
-        'bg-white dark:bg-zinc-900',
-        'my-6 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300',
+        'relative w-full rounded-lg border border-border',
+        'bg-card',
+        'my-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300',
         'group',
         className
       )}
       {...props}
     >
       {/* Header with language and copy button */}
-      <div className="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-900/70 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="px-4 py-2.5 bg-card border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Window controls decoration */}
             <WindowControlDecoration />
             {/* Language badge with green accent */}
-            <Badge variant="success" className="capitalize">
-              {detectedLanguage}
-            </Badge>
+            <LanguageBadge language={detectedLanguage} />
           </div>
 
           {/* Copy button - always visible, icon only */}
@@ -203,31 +174,46 @@ export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
 
       {/* Code content with proper padding */}
       <div className="relative overflow-hidden">
-        <div
-          className={cn(
-            'overflow-x-auto overflow-y-auto max-h-[350px] md:max-h-[400px]',
-            '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2',
-            '[&::-webkit-scrollbar-track]:bg-transparent',
-            '[&::-webkit-scrollbar-thumb]:bg-zinc-400/30 [&::-webkit-scrollbar-thumb]:rounded',
-            '[&::-webkit-scrollbar-thumb:hover]:bg-zinc-400/50',
-            'text-sm font-mono'
-          )}
-        >
-          <div className="shiki-code-block" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
-          {/* Add custom styles for Shiki output */}
-          <style
-            dangerouslySetInnerHTML={{
-              __html: getCodeBlockStyles(false),
-            }}
-          />
-        </div>
+        {error ? (
+          <div className="p-6 text-danger text-sm font-medium">⚠️ {error}</div>
+        ) : (
+          <div
+            className={cn(
+              'overflow-x-auto overflow-y-auto max-h-[350px] md:max-h-[400px]',
+              '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2',
+              '[&::-webkit-scrollbar-track]:bg-transparent',
+              '[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb]:rounded',
+              '[&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/50',
+              'text-sm font-mono'
+            )}
+          >
+            <div
+              className="shiki-code-block"
+              dangerouslySetInnerHTML={{ __html: highlightedCode }}
+            />
+            {/* Add custom styles for Shiki output */}
+            <style
+              dangerouslySetInnerHTML={{
+                __html: getCodeBlockStyles(false),
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 /**
- * Inline code component for single-line code snippets
+ * InlineCode Component
+ *
+ * A styled inline code component for single-line code snippets within text.
+ * Automatically used by MDX for `code` elements.
+ *
+ * @example
+ * ```tsx
+ * <InlineCode>const greeting = 'Hello';</InlineCode>
+ * ```
  */
 export const InlineCode: FC<HTMLAttributes<HTMLElement> & { children?: ReactNode }> = ({
   children,
@@ -239,8 +225,8 @@ export const InlineCode: FC<HTMLAttributes<HTMLElement> & { children?: ReactNode
       {...props}
       className={cn(
         'inline-block px-1.5 py-0.5 text-sm font-mono font-medium rounded-md',
-        'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100',
-        'border border-zinc-200 dark:border-zinc-700',
+        'bg-muted text-muted-foreground',
+        'border border-border',
         'before:content-none after:content-none',
         className
       )}
