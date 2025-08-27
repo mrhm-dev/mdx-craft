@@ -225,7 +225,7 @@ export const InlineCode: FC<HTMLAttributes<HTMLElement> & { children?: ReactNode
       {...props}
       className={cn(
         'inline-block px-1.5 py-0.5 text-sm font-mono font-medium rounded-md',
-        'bg-muted text-muted-foreground',
+        'bg-card text-muted-foreground',
         'border border-border',
         'before:content-none after:content-none',
         className

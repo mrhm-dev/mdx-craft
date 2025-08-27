@@ -46,7 +46,7 @@ export const H1: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h1"
       className={cn(
-        'text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 font-sans',
+        'text-3xl font-semibold tracking-tight text-foreground font-sans',
         'mb-6 mt-12 scroll-mt-16 leading-tight',
         className
       )}
@@ -66,7 +66,7 @@ export const H2: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h2"
       className={cn(
-        'text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'text-2xl font-semibold tracking-tight text-foreground',
         'mb-4 mt-12 scroll-mt-16',
         className
       )}
@@ -86,7 +86,7 @@ export const H3: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h3"
       className={cn(
-        'text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'text-xl font-semibold tracking-tight text-foreground',
         'mb-3 mt-12 scroll-mt-16',
         className
       )}
@@ -106,7 +106,7 @@ export const H4: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h4"
       className={cn(
-        'text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'text-lg font-semibold tracking-tight text-foreground',
         'mb-2 mt-12 scroll-mt-16',
         className
       )}
@@ -126,7 +126,7 @@ export const H5: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h5"
       className={cn(
-        'text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+        'text-base font-semibold tracking-tight text-foreground',
         'mb-2 mt-12 scroll-mt-16',
         className
       )}
@@ -146,7 +146,7 @@ export const H6: FC<HeadingProps> = ({ children, className, ...props }) => {
     <HeadingWithAnchor
       as="h6"
       className={cn(
-        'text-sm font-semibold tracking-tight text-zinc-700 dark:text-zinc-300',
+        'text-sm font-semibold tracking-tight text-muted-foreground',
         'mb-2 mt-12 scroll-mt-16',
         className
       )}

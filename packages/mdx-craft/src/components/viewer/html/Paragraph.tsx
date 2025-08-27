@@ -14,7 +14,7 @@ export const Paragraph: FC<TextProps> = ({ children, className, ...props }) => {
     <span
       {...props}
       className={cn(
-        'text-base font-sans font-normal leading-6 mb-6 text-zinc-900/80 dark:text-zinc-100/70 block',
+        'text-base font-sans font-normal leading-6 mb-6 text-muted-foreground block',
         className
       )}
     >
@@ -28,10 +28,7 @@ export const Paragraph: FC<TextProps> = ({ children, className, ...props }) => {
  */
 export const Strong: FC<TextProps> = ({ children, className, ...props }) => {
   return (
-    <strong
-      {...props}
-      className={cn('font-semibold text-zinc-900! dark:text-zinc-100!', className)}
-    >
+    <strong {...props} className={cn('font-semibold text-foreground', className)}>
       {children}
     </strong>
   )
@@ -53,10 +50,7 @@ export const Emphasis: FC<TextProps> = ({ children, className, ...props }) => {
  */
 export const Delete: FC<TextProps> = ({ children, className, ...props }) => {
   return (
-    <del
-      {...props}
-      className={cn('line-through text-zinc-900/50 dark:text-zinc-100/50', className)}
-    >
+    <del {...props} className={cn('line-through text-muted-foreground', className)}>
       {children}
     </del>
   )
@@ -71,7 +65,7 @@ export const Mark: FC<TextProps> = ({ children, className, ...props }) => {
       {...props}
       className={cn(
         'bg-yellow-200 dark:bg-yellow-800/30',
-        'text-zinc-900 dark:text-zinc-100',
+        'text-foreground',
         'px-1 py-0.5 rounded',
         className
       )}
@@ -104,10 +98,7 @@ export const Blockquote: FC<TextProps> = ({ children, className, ...props }) => 
   return (
     <blockquote
       {...props}
-      className={cn(
-        'border-l-4 border-zinc-300 dark:border-zinc-700 pl-6 my-6 text-zinc-900/80 dark:text-zinc-100/70',
-        className
-      )}
+      className={cn('border-l-4 border-muted pl-6 my-6 text-muted-foreground', className)}
     >
       {children}
     </blockquote>

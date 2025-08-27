@@ -21,20 +21,20 @@ const PreviewLinkSkeleton: FC = () => (
   <div className="p-5 animate-pulse">
     <div className="flex items-start gap-4">
       {/* Image skeleton */}
-      <div className="flex-shrink-0 w-20 h-20 rounded-xl bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 border border-zinc-200 dark:border-zinc-600"></div>
+      <div className="flex-shrink-0 w-20 h-20 rounded-xl bg-gradient-to-br from-muted to-muted/70 border border-border"></div>
 
       {/* Content skeleton */}
       <div className="flex-1 min-w-0 space-y-3">
         {/* Favicon and site name skeleton */}
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-zinc-300 dark:bg-zinc-600"></div>
-          <div className="h-3 bg-zinc-300 dark:bg-zinc-600 rounded w-24"></div>
+          <div className="w-3 h-3 rounded-sm bg-muted"></div>
+          <div className="h-3 bg-muted rounded w-24"></div>
         </div>
 
         {/* Title skeleton */}
         <div className="space-y-2">
-          <div className="h-4 bg-zinc-300 dark:bg-zinc-600 rounded w-3/4"></div>
-          <div className="h-3 bg-zinc-300 dark:bg-zinc-600 rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
+          <div className="h-3 bg-muted rounded w-full"></div>
         </div>
       </div>
     </div>
@@ -114,8 +114,8 @@ const Popover: FC<PopoverProps> = ({ href, open, onClose, anchorRef }) => {
       id="popover-preview"
       className={cn(
         'fixed z-50 min-w-[320px] max-w-sm',
-        'rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50',
-        'bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl',
+        'rounded-2xl shadow-2xl border border-border/50',
+        'bg-popover/95 backdrop-blur-xl',
         'animate-in fade-in-0 zoom-in-95 duration-200'
       )}
       style={{
@@ -126,15 +126,15 @@ const Popover: FC<PopoverProps> = ({ href, open, onClose, anchorRef }) => {
       onMouseLeave={handleMouseLeave}
     >
       {/* Arrow pointer */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 dark:bg-zinc-900/95 border-l border-t border-zinc-200/50 dark:border-zinc-700/50 transform rotate-45"></div>
+      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-popover/95 border-l border-t border-border/50 transform rotate-45"></div>
 
       {shouldLoad ? (
         <LinkPreviewContent url={href} />
       ) : (
-        <div className="p-5 flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+        <div className="p-5 flex items-center justify-center text-muted-foreground">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-muted border-t-primary rounded-full animate-spin"></div>
             </div>
             <span className="text-sm font-medium">Loading preview...</span>
           </div>
@@ -155,7 +155,7 @@ const BookIcon: FC<{ className?: string }> = ({ className }) => (
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
-    className={cn('text-zinc-400', className)}
+    className={cn('text-muted-foreground', className)}
   >
     <path
       strokeLinecap="round"
@@ -230,7 +230,7 @@ const SiteName: FC<{ url: string; siteName?: string }> = ({ url, siteName }) => 
   }
 
   return (
-    <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
+    <span className="text-xs font-medium text-muted-foreground truncate">
       {siteName || getHostname()}
     </span>
   )
@@ -268,11 +268,11 @@ const LinkPreviewContent: FC<{ url: string }> = ({ url }) => {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block p-5 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors rounded-2xl"
+        className="block p-5 hover:bg-muted/30 transition-colors rounded-2xl"
       >
         <div className="flex items-start gap-4">
           {/* Image/Favicon area */}
-          <div className="flex-shrink-0 w-20 h-20 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden shadow-sm">
+          <div className="flex-shrink-0 w-20 h-20 rounded-xl bg-gradient-to-br from-muted to-muted/70 border border-border flex items-center justify-center overflow-hidden shadow-sm">
             <PreviewImage
               imageUrl={displayData.image}
               faviconUrl={faviconUrl}
@@ -291,13 +291,13 @@ const LinkPreviewContent: FC<{ url: string }> = ({ url }) => {
 
             {/* Title */}
             <div className="space-y-2">
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm leading-tight group-hover:underline line-clamp-2">
+              <h3 className="font-semibold text-foreground text-sm leading-tight group-hover:underline line-clamp-2">
                 {displayData.title || url}
               </h3>
 
               {/* Description */}
               {displayData.description && (
-                <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed line-clamp-2">
+                <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
                   {displayData.description}
                 </p>
               )}
@@ -307,8 +307,8 @@ const LinkPreviewContent: FC<{ url: string }> = ({ url }) => {
 
         {/* External link indicator */}
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-            <ExternalLinkIcon className="w-3 h-3 text-zinc-500 dark:text-zinc-400" />
+          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+            <ExternalLinkIcon className="w-3 h-3 text-muted-foreground" />
           </div>
         </div>
       </a>

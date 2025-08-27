@@ -116,10 +116,10 @@ export const Image: FC<ImageProps> = ({ src, alt, title, width, height, classNam
         {/* Image container with border and 16:9 aspect ratio */}
         <div
           className={cn(
-            'relative w-full bg-zinc-100 dark:bg-zinc-900/70',
+            'relative w-full bg-card',
             'aspect-video',
             'rounded-lg overflow-hidden',
-            'border-4 border-zinc-200 dark:border-zinc-700',
+            'border-4 border-border',
             'shadow-sm',
             src && !imageError && 'cursor-zoom-in',
             className
@@ -146,8 +146,8 @@ export const Image: FC<ImageProps> = ({ src, alt, title, width, height, classNam
               className={cn(
                 'w-full h-full',
                 'flex flex-col items-center justify-center',
-                'bg-zinc-100 dark:bg-zinc-900/70',
-                'text-zinc-500 dark:text-zinc-400'
+                'bg-card',
+                'text-muted-foreground'
               )}
             >
               <ImageIcon className="w-12 h-12 mb-3 opacity-50" />
@@ -179,11 +179,11 @@ export const Image: FC<ImageProps> = ({ src, alt, title, width, height, classNam
           <figcaption
             className={cn(
               'mt-2 text-sm text-center',
-              'text-zinc-600 dark:text-zinc-400',
+              'text-muted-foreground',
               'italic',
               src &&
                 !imageError &&
-                'cursor-zoom-in hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors duration-200'
+                'cursor-zoom-in hover:text-foreground transition-colors duration-200'
             )}
             onClick={src && !imageError ? handleImageClick : undefined}
             role={src && !imageError ? 'button' : undefined}

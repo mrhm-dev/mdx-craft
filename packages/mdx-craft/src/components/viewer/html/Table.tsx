@@ -57,7 +57,8 @@ export const TableRow: FC<TableRowProps> = ({ children, className, ...props }) =
     <tr
       {...props}
       className={cn(
-        'hover:bg-zinc-50 dark:hover:bg-zinc-900/40',
+        'even:bg-muted/15', // Alternative row background
+        'hover:bg-muted/25',
         'transition-colors duration-100',
         className
       )}
@@ -73,10 +74,10 @@ export const TableHeaderCell: FC<TableCellProps> = ({ children, className, ...pr
       {...props}
       className={cn(
         'px-3 py-2.5 text-left font-semibold tracking-tight',
-        'text-zinc-900 dark:text-zinc-100',
-        'border-b border-zinc-200 dark:border-zinc-800',
-        'border-r border-zinc-100 dark:border-zinc-800 last:border-r-0',
-        'bg-transparent',
+        'text-foreground',
+        'bg-muted/10', // Subtle header background
+        'border-b border-border',
+        'border-r border-border/50 last:border-r-0', // Thin vertical borders
         'break-words',
         className
       )}
@@ -93,10 +94,10 @@ export const TableDataCell: FC<TableCellProps> = ({ children, className, ...prop
       {...props}
       className={cn(
         'px-3 py-2.5',
-        'text-zinc-900/80 dark:text-zinc-100/70',
+        'text-muted-foreground',
         'bg-transparent',
-        'border-b border-zinc-100 dark:border-zinc-800',
-        'border-r border-zinc-100 dark:border-zinc-800 last:border-r-0',
+        'border-b border-border/30', // Subtle horizontal border
+        'border-r border-border/30 last:border-r-0', // Thin vertical borders
         'align-middle',
         'break-words',
         className
