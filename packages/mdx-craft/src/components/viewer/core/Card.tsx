@@ -54,13 +54,13 @@ const ImageWithLoader: FC<{
   return (
     <div className="relative overflow-hidden">
       {isLoading && (
-        <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-700 animate-pulse flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-zinc-400 dark:border-zinc-500 border-t-transparent rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-border border-t-transparent rounded-full animate-spin" />
         </div>
       )}
       {hasError ? (
-        <div className="w-full h-48 sm:h-56 md:h-64 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-          <div className="text-zinc-400 dark:text-zinc-500 text-center">
+        <div className="w-full h-48 sm:h-56 md:h-64 bg-secondary flex items-center justify-center">
+          <div className="text-muted-foreground text-center">
             <svg
               className="w-12 h-12 mx-auto mb-2"
               fill="none"
@@ -161,19 +161,19 @@ export const Card: FC<CardProps> = ({
       className={cn(
         // Base styles
         'group relative rounded-xl overflow-hidden',
-        'bg-white dark:bg-zinc-900/90 backdrop-blur-sm',
-        'border border-zinc-200/60 dark:border-zinc-800/60',
+        'bg-card backdrop-blur-sm',
+        'border border-border',
 
         // Shadow system
-        'shadow-sm hover:shadow-lg dark:shadow-zinc-900/10',
-        'hover:shadow-zinc-200/60 dark:hover:shadow-zinc-900/30',
+        'shadow-sm hover:shadow-lg',
+        'hover:shadow-border',
 
         // Transitions
         'transition-all duration-300 ease-out',
         'hover:-translate-y-1 hover:scale-[1.02]',
 
         // Focus styles
-        'focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:ring-offset-2',
+        'focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2',
 
         // Margin
         'mt-6',
@@ -183,7 +183,7 @@ export const Card: FC<CardProps> = ({
       {...props}
     >
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-zinc-50/30 dark:to-zinc-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       {/* Image section */}
       {image && (
@@ -209,14 +209,14 @@ export const Card: FC<CardProps> = ({
         {/* Title and Icon */}
         <div className="flex items-start gap-3">
           {icon && (
-            <div className="flex-shrink-0 mt-1 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors duration-200">
+            <div className="flex-shrink-0 mt-1 text-muted-foreground group-hover:text-foreground transition-colors duration-200">
               {icon}
             </div>
           )}
           <h4
             className={cn(
-              'font-semibold text-zinc-900 dark:text-zinc-100 leading-tight',
-              'group-hover:text-blue-600 dark:group-hover:text-blue-400',
+              'font-semibold text-card-foreground leading-tight',
+              'group-hover:text-primary',
               'transition-colors duration-200',
               currentSize.title
             )}
@@ -229,8 +229,8 @@ export const Card: FC<CardProps> = ({
         {children && (
           <div
             className={cn(
-              'text-zinc-600 dark:text-zinc-400 leading-relaxed',
-              'group-hover:text-zinc-700 dark:group-hover:text-zinc-300',
+              'text-muted-foreground leading-relaxed',
+              'group-hover:text-foreground',
               'transition-colors duration-200',
               currentSize.content
             )}
@@ -246,15 +246,15 @@ export const Card: FC<CardProps> = ({
               href={href}
               className={cn(
                 'inline-flex items-center gap-2 px-4 py-2 rounded-lg',
-                'bg-zinc-100 dark:bg-zinc-800/50',
-                'hover:bg-blue-50 dark:hover:bg-blue-900/20',
-                'border border-zinc-200 dark:border-zinc-700',
-                'hover:border-blue-200 dark:hover:border-blue-800',
+                'bg-secondary',
+                'hover:bg-accent',
+                'border border-border',
+                'hover:border-primary',
                 'text-sm font-medium',
-                'text-zinc-700 dark:text-zinc-300',
-                'hover:text-blue-600 dark:hover:text-blue-400',
+                'text-secondary-foreground',
+                'hover:text-primary',
                 'transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2',
+                'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2',
                 'group/cta'
               )}
               target="_blank"
