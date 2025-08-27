@@ -28,6 +28,7 @@ import {
   Stack,
   VStack,
   HStack,
+  Space,
 } from './components/viewer/core/index.js'
 
 const DefaultLoader: FC = () => {
@@ -110,6 +111,7 @@ export const MDXViewer: FC<MDXViewerProps> = ({
         Stack,
         VStack,
         HStack,
+        Space,
       })
     }
 
