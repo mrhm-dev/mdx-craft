@@ -10,7 +10,8 @@
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
-      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)"
+      "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
