@@ -213,7 +213,8 @@ const TabContent: FC<{
           ...block.props,
           isTab: true,
           showDecorations: false,
-          className: cn('rounded-none border-0 shadow-none', block.props.className),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          className: cn('rounded-none border-0 shadow-none', (block.props as any).className),
         })}
       </div>
     ))}
@@ -518,7 +519,7 @@ export const CodeBlockGroup: FC<CodeBlockGroupProps> = ({
         tabLabels={tabLabels}
         activeTab={activeTab}
         onTabChange={handleTabChangeWithScroll}
-        tabListRef={tabListRef}
+        tabListRef={tabListRef as React.RefObject<HTMLDivElement>}
         onScrollCheck={checkScrollAvailability}
       />
 

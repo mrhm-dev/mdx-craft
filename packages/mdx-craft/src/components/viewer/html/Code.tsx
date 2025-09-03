@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { FC, ReactNode, HTMLAttributes, useRef } from 'react'
@@ -12,7 +13,7 @@ import { useCodeHighlighting } from '../../../hooks/index.js'
 /**
  * Props for the Code component
  */
-type CodeProps = HTMLAttributes<HTMLElement> & {
+type CodeProps = HTMLAttributes<HTMLDivElement> & {
   /** The code content to display */
   children?: ReactNode
 
@@ -35,10 +36,10 @@ const extractTextContent = (children: ReactNode): string => {
   if (React.isValidElement(children)) {
     // If it's a code element, extract its children
     if (children.type === 'code') {
-      return extractTextContent(children.props.children)
+      return extractTextContent((children.props as any).children)
     }
     // For other elements, extract their children
-    return extractTextContent(children.props.children)
+    return extractTextContent((children.props as any).children)
   }
 
   return String(children || '')
@@ -87,7 +88,7 @@ export const Code: FC<CodeProps> = ({ children, className, ...props }) => {
       (child) => React.isValidElement(child) && child.type === 'code'
     )
     if (React.isValidElement(codeElement)) {
-      const codeClassName = codeElement.props.className as string | undefined
+      const codeClassName = (codeElement.props as any).className as string | undefined
       detectedLanguage =
         codeClassName?.match(/language-(\w+)/)?.[1] || codeClassName?.match(/lang-(\w+)/)?.[1]
     }

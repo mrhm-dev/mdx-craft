@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import React, { useMemo } from 'react'
@@ -95,10 +96,10 @@ const extractTextContent = (children: ReactNode): string => {
   if (React.isValidElement(children)) {
     // If it's a code element, extract its children
     if (children.type === 'code') {
-      return extractTextContent(children.props.children)
+      return extractTextContent((children.props as any).children)
     }
     // For other elements, extract their children
-    return extractTextContent(children.props.children)
+    return extractTextContent((children.props as any).children)
   }
 
   // Handle numbers, booleans, null, undefined

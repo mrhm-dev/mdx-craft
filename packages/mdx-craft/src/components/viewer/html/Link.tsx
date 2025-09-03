@@ -363,7 +363,7 @@ export const Link = ({ children, href, title, target, rel, className, ...props }
         <Strong>{children}</Strong>
       </a>
       <Popover
-        anchorRef={linkRef}
+        anchorRef={linkRef as React.RefObject<HTMLElement>}
         href={href}
         open={showPopover}
         onClose={() => setShowPopover(false)}

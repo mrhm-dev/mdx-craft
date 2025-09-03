@@ -76,10 +76,14 @@ export const Tabs: FC<TabsProps> = ({
     .map((child) => {
       const tabElement = child as ReactElement<TabProps>
       return {
-        title: tabElement.props.title,
-        icon: tabElement.props.icon,
-        content: tabElement.props.children,
-        disabled: tabElement.props.disabled || false,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        title: (tabElement.props as any).title,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        icon: (tabElement.props as any).icon,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        content: (tabElement.props as any).children,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        disabled: (tabElement.props as any).disabled || false,
       }
     })
 

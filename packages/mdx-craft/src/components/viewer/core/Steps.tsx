@@ -145,7 +145,8 @@ export function Steps({
             return React.cloneElement(child as React.ReactElement<StepProps>, {
               stepNumber: actualIndex + 1,
               isLast: isActuallyLast || (isCollapsed && isLastVisible),
-              className: cn(child.props.className),
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              className: cn((child.props as any).className),
             })
           }
           return child

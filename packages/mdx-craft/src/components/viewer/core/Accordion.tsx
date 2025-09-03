@@ -94,7 +94,7 @@ export const Accordion: FC<AccordionProps> = ({
   const contentRef = useRef<HTMLDivElement>(null)
 
   // Generate stable ID with useRef to ensure it doesn't change
-  const idRef = useRef<string>()
+  const idRef = useRef<string>('')
   if (!idRef.current) {
     idRef.current = id || `accordion-${Math.random().toString(36).substr(2, 9)}`
   }
