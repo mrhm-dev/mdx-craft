@@ -83,7 +83,6 @@ describe('MDXCache', () => {
     const mockEntry: CacheEntry = {
       content: null,
       metadata: {
-        headings: [],
         timestamp: Date.now(),
       },
     }
@@ -124,14 +123,12 @@ describe('MDXCache', () => {
       const entry1: CacheEntry = {
         content: null,
         metadata: {
-          headings: [{ id: 'test1', text: 'Test 1', level: 1 }],
           timestamp: now - 1000,
         },
       }
       const entry2: CacheEntry = {
         content: null,
         metadata: {
-          headings: [{ id: 'test2', text: 'Test 2', level: 1 }],
           timestamp: now - 500,
         },
       }
@@ -141,7 +138,7 @@ describe('MDXCache', () => {
 
       const retrieved = cache.get(key)
       expect(retrieved?.metadata.timestamp).toBe(now - 500)
-      expect(retrieved?.metadata.headings[0]?.id).toBe('test2')
+      // Check that the second entry replaced the first
     })
   })
 
@@ -152,7 +149,6 @@ describe('MDXCache', () => {
       const entry: CacheEntry = {
         content: null,
         metadata: {
-          headings: [],
           timestamp: Date.now() - 200, // 200ms ago, older than TTL
         },
       }
@@ -170,7 +166,6 @@ describe('MDXCache', () => {
       const entry: CacheEntry = {
         content: null,
         metadata: {
-          headings: [],
           timestamp: Date.now() - 1000, // 1 second ago, within TTL
         },
       }
@@ -187,7 +182,6 @@ describe('MDXCache', () => {
       const entry: CacheEntry = {
         content: null,
         metadata: {
-          headings: [],
           timestamp: Date.now() - 100, // Already expired
         },
       }
@@ -207,7 +201,6 @@ describe('MDXCache', () => {
     const mockEntry: CacheEntry = {
       content: null,
       metadata: {
-        headings: [],
         timestamp: Date.now(),
       },
     }
@@ -243,7 +236,7 @@ describe('MDXCache', () => {
     it('should clear all entries', () => {
       const entry: CacheEntry = {
         content: null,
-        metadata: { headings: [], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       cache.set('key1', entry)
@@ -271,15 +264,15 @@ describe('MDXCache', () => {
 
       const entry1: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h1', text: 'Header 1', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
       const entry2: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h2', text: 'Header 2', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
       const entry3: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h3', text: 'Header 3', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       limitedCache.set('key1', entry1)
@@ -304,15 +297,15 @@ describe('MDXCache', () => {
 
       const entry1: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h1', text: 'Header 1', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
       const entry2: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h2', text: 'Header 2', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
       const entry3: CacheEntry = {
         content: null,
-        metadata: { headings: [{ id: 'h3', text: 'Header 3', level: 1 }], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       limitedCache.set('key1', entry1)
@@ -334,7 +327,7 @@ describe('MDXCache', () => {
     it('should record hits and misses correctly', () => {
       const entry: CacheEntry = {
         content: null,
-        metadata: { headings: [], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       cache.set('existing', entry)
@@ -373,19 +366,12 @@ describe('MDXCache', () => {
     it('should estimate entry sizes', () => {
       const smallEntry: CacheEntry = {
         content: null,
-        metadata: { headings: [], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       const largeEntry: CacheEntry = {
         content: null,
         metadata: {
-          headings: Array(100)
-            .fill(0)
-            .map((_, i) => ({
-              id: `heading-${i}`,
-              text: `Very long heading text that should increase the size estimate significantly ${i}`,
-              level: 1,
-            })),
           timestamp: Date.now(),
         },
       }
@@ -404,7 +390,6 @@ describe('MDXCache', () => {
       const problematicEntry: CacheEntry = {
         content: null,
         metadata: {
-          headings: [],
           timestamp: Date.now(),
         },
       }
@@ -434,7 +419,7 @@ describe('MDXCache', () => {
     it('should return correct stats after operations', () => {
       const entry: CacheEntry = {
         content: null,
-        metadata: { headings: [], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       cache.set('key1', entry)
@@ -496,7 +481,7 @@ describe('Global cache functions', () => {
       const cache = getGlobalCache()
       const entry: CacheEntry = {
         content: null,
-        metadata: { headings: [], timestamp: Date.now() },
+        metadata: { timestamp: Date.now() },
       }
 
       cache.set('test', entry)
@@ -526,7 +511,6 @@ describe('Integration tests', () => {
     const entry1: CacheEntry = {
       content: null, // Would be actual React element in real usage
       metadata: {
-        headings: [{ id: 'hello-world', text: 'Hello World', level: 1 }],
         timestamp: Date.now(),
       },
     }
@@ -534,7 +518,6 @@ describe('Integration tests', () => {
     const entry2: CacheEntry = {
       content: null,
       metadata: {
-        headings: [{ id: 'another-document', text: 'Another Document', level: 2 }],
         timestamp: Date.now(),
       },
     }

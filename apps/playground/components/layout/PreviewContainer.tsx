@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select'
 import dynamic from 'next/dynamic'
 
-const MDXViewer = dynamic(() => import('mdx-craft').then((mod) => mod.MDXViewer), {
+const MDXViewer = dynamic(() => import('@sl/mdx-craft').then((mod) => mod.MDXViewer), {
   ssr: false,
 })
 
