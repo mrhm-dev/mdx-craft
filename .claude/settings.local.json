@@ -11,7 +11,10 @@
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
       "Read(/c:\\Users\\hasan\\Pictures\\Screenshots/**)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\packages\\mdx-craft\\src\\components\\viewer\\core/**)",
+      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\packages\\mdx-craft\\src\\components\\viewer\\core/**)",
+      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\apps\\playground\\components\\layout/**)"
     ],
     "deny": [],
     "ask": []

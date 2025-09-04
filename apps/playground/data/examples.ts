@@ -1,6 +1,14 @@
 import { Example } from '@/store/editorStore'
+import introduction from './1-introduction'
 
 export const mdxExamples: Example[] = [
+  {
+    id: 'introduction',
+    title: 'Introduction',
+    description: 'Introduction to MDX-Craft',
+    content: introduction,
+  },
+
   {
     id: 'basic-markdown',
     title: 'Basic Markdown',

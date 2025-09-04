@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { mdxExamples } from '@/data/examples'
 
 export type Example = {
@@ -148,6 +148,7 @@ export const useEditorStore = create<EditorState>()(
     }),
     {
       name: 'mdx-editor-storage',
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         content: state.content,
         viewport: state.viewport,
