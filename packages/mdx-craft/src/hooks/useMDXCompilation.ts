@@ -107,34 +107,27 @@ export const useMDXCompilation = (options: UseMDXCompilationOptions): UseMDXComp
     [onError]
   )
 
-  // Change detection function
-  const detectChanges = useCallback(
-    (prev: MDXViewerStateRef | null) => {
-      const currentState: MDXViewerStateRef = {
-        source,
-        components: JSON.stringify(components),
-        remarkPlugins: mergedRemarkPlugins.length,
-        rehypePlugins: mergedRehypePlugins.length,
-      }
-
-      let hasChanged = true
-      if (prev) {
-        hasChanged =
-          prev.source !== currentState.source ||
-          prev.components !== currentState.components ||
-          prev.remarkPlugins !== currentState.remarkPlugins ||
-          prev.rehypePlugins !== currentState.rehypePlugins
-      }
-
-      return { state: currentState, hasChanged }
-    },
-    [source, components, mergedRemarkPlugins, mergedRehypePlugins]
-  )
-
   // Main compilation effect
   useEffect(() => {
     let cancelled = false
-    const { state, hasChanged } = detectChanges(compileRef.current)
+
+    // Create current state for comparison
+    const currentState: MDXViewerStateRef = {
+      source,
+      components: JSON.stringify(components),
+      remarkPlugins: mergedRemarkPlugins.length,
+      rehypePlugins: mergedRehypePlugins.length,
+    }
+
+    // Check if state has changed
+    let hasChanged = true
+    if (compileRef.current) {
+      hasChanged =
+        compileRef.current.source !== currentState.source ||
+        compileRef.current.components !== currentState.components ||
+        compileRef.current.remarkPlugins !== currentState.remarkPlugins ||
+        compileRef.current.rehypePlugins !== currentState.rehypePlugins
+    }
 
     // Only recompile if the state has changed
     if (!hasChanged) return
@@ -157,17 +150,21 @@ export const useMDXCompilation = (options: UseMDXCompilationOptions): UseMDXComp
         if (result.error) {
           setError(result.error)
           stableOnError(result.error)
+          // IMPORTANT: Still update the ref to prevent infinite recompilation on errors
+          compileRef.current = currentState
         } else {
           setContent(result.content)
           stableOnCompile(result.metadata)
           // Update ref with current state after successful compilation
-          compileRef.current = state
+          compileRef.current = currentState
         }
       } catch (err) {
         if (cancelled) return
         const compilationError = err instanceof Error ? err : new Error(String(err))
         setError(compilationError)
         stableOnError(compilationError)
+        // IMPORTANT: Still update the ref to prevent infinite recompilation on errors
+        compileRef.current = currentState
       } finally {
         if (!cancelled) {
           setIsLoading(false)
@@ -185,7 +182,6 @@ export const useMDXCompilation = (options: UseMDXCompilationOptions): UseMDXComp
     components,
     mergedRemarkPlugins,
     mergedRehypePlugins,
-    detectChanges,
     processor,
     stableOnCompile,
     stableOnError,
