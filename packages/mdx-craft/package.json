@@ -1,6 +1,6 @@
 {
   "name": "@sl/mdx-craft",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "description": "A package for preview and write MDX codes in any React application",
   "main": "./dist/index.js",
