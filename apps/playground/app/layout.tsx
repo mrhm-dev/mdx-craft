@@ -4,7 +4,7 @@ import { Poppins, Fira_Mono } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
-import { MDXViewerProvider } from '@sl/mdx-craft'
+import { MDXViewerProvider } from 'mdx-craft'
 
 const poppins = Poppins({
   variable: '--font-poppins',

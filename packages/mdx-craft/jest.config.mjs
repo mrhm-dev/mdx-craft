@@ -1,5 +1,5 @@
 export default {
-  displayName: '@sl/mdx-craft',
+  displayName: 'mdx-craft',
   preset: 'ts-jest/presets/default-esm',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   testEnvironment: 'jsdom',

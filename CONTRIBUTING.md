@@ -14,12 +14,14 @@ First off, thank you for considering contributing to MDX Craft! It's people like
 
 1. Fork the repository
 2. Clone your fork:
+
    ```bash
    git clone https://github.com/yourusername/mdx-craft.git
    cd mdx-craft
    ```
 
 3. Install dependencies:
+
    ```bash
    pnpm install
    ```
@@ -102,12 +104,14 @@ We use [changesets](https://github.com/changesets/changesets) for version manage
 ## Pull Request Process
 
 1. Ensure your branch is up to date with main:
+
    ```bash
    git fetch upstream
    git rebase upstream/main
    ```
 
 2. Push your branch to your fork:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -129,6 +133,7 @@ We follow conventional commits:
 - `chore:` Build process or auxiliary tool changes
 
 Examples:
+
 ```
 feat: add MDX live preview component
 fix: resolve editor sync issues

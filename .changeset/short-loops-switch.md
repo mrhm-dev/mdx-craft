@@ -1,8 +1,8 @@
 ---
-'@sl/mdx-craft': major
+'mdx-craft': major
 ---
 
-Initial release of @sl/mdx-craft - A package for previewing and writing MDX code in React applications.
+Initial release of mdx-craft - A package for previewing and writing MDX code in React applications.
 
 Features:
 

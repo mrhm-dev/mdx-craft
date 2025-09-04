@@ -1,4 +1,4 @@
-# Contributing to @sl/mdx-craft
+# Contributing to mdx-craft
 
 ## Development
 

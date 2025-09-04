@@ -11,7 +11,7 @@ A powerful, type-safe package for previewing and writing MDX content in any Reac
 
 - 🎨 **Live MDX Preview** - Real-time rendering with customizable components
 - ✍️ **Interactive Editor** - Full-featured MDX editor with syntax highlighting
-- 🎯 **TypeScript Support** - Fully typed with excellent developer experience  
+- 🎯 **TypeScript Support** - Fully typed with excellent developer experience
 - 🎨 **Tailwind CSS Integration** - Beautiful, customizable styling out of the box
 - 🧪 **100% Test Coverage** - Comprehensive unit and integration tests
 - 📱 **Responsive Design** - Works seamlessly across all devices
@@ -38,15 +38,10 @@ import 'mdx-craft/styles.css'
 
 function App() {
   const [content, setContent] = useState('# Hello MDX\n\nWrite **markdown** with React components!')
-  
+
   return (
     <div className="container mx-auto p-4">
-      <MDXEditor
-        value={content}
-        onChange={setContent}
-        preview={true}
-        className="h-96"
-      />
+      <MDXEditor value={content} onChange={setContent} preview={true} className="h-96" />
     </div>
   )
 }
@@ -71,7 +66,7 @@ This repository contains multiple packages and applications:
 mdx-craft/
 ├── apps/
 │   ├── docs/          # Documentation site
-│   └── playground/    # Interactive playground  
+│   └── playground/    # Interactive playground
 ├── packages/
 │   ├── mdx-craft/     # Main npm package
 │   ├── eslint-config/ # Shared ESLint configurations
@@ -108,16 +103,16 @@ pnpm dev
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all development servers |
-| `pnpm build` | Build all packages and applications |
-| `pnpm test` | Run all tests across the monorepo |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm test:coverage` | Generate test coverage reports |
-| `pnpm lint` | Run ESLint across all packages |
-| `pnpm format` | Format code with Prettier |
-| `pnpm check-types` | Type check all packages |
+| Command              | Description                         |
+| -------------------- | ----------------------------------- |
+| `pnpm dev`           | Start all development servers       |
+| `pnpm build`         | Build all packages and applications |
+| `pnpm test`          | Run all tests across the monorepo   |
+| `pnpm test:watch`    | Run tests in watch mode             |
+| `pnpm test:coverage` | Generate test coverage reports      |
+| `pnpm lint`          | Run ESLint across all packages      |
+| `pnpm format`        | Format code with Prettier           |
+| `pnpm check-types`   | Type check all packages             |
 
 ### Testing
 

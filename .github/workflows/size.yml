@@ -27,7 +27,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm build --filter=@sl/mdx-craft
+        run: pnpm build --filter=mdx-craft
 
       - name: Check bundle size
         uses: andresz1/size-limit-action@v1
