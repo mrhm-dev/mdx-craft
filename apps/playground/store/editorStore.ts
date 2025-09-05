@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { mdxExamples } from '@/data/examples'
+import { mdxExamples } from '@/data'
 
 export type Example = {
   id: string
