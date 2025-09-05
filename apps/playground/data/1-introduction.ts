@@ -1,4 +1,8 @@
-const introduction = `
+const introduction = {
+  id: 'introduction',
+  title: 'Introduction',
+  description: 'Introduction to MDX-Craft',
+  content: `
 # MDX-Craft
 
 > Open-source MDX utility for rich, interactive markdown experiences.
@@ -90,6 +94,7 @@ MDX-Craft provides the missing piece: an open-source solution with enterprise fe
 ---
 
 **Transform your markdown into experiences worth reading.**
-`
+`,
+}
 
 export default introduction
