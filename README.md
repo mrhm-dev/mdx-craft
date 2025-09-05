@@ -1,200 +1,454 @@
-# MDX Craft
+# 🛠️ MDX Craft
 
-[![CI](https://github.com/yourusername/mdx-craft/workflows/CI/badge.svg)](https://github.com/yourusername/mdx-craft/actions)
-[![Coverage](https://codecov.io/gh/yourusername/mdx-craft/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/mdx-craft)
-[![npm version](https://badge.fury.io/js/mdx-craft.svg)](https://www.npmjs.com/package/mdx-craft)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <img src="https://img.shields.io/npm/v/mdx-craft" alt="npm version" />
+  <img src="https://img.shields.io/npm/l/mdx-craft" alt="license" />
+  <img src="https://img.shields.io/npm/dt/mdx-craft" alt="downloads" />
+</p>
 
-A powerful, type-safe package for previewing and writing MDX content in any React application. Built with modern tooling and comprehensive testing.
+<p align="center">
+  <strong>🎮 <a href="https://mdx-craft-playground.vercel.app/" target="_blank">Try the Live Demo</a></strong> • Experience MDX Craft in action!
+</p>
 
-## ✨ Features
+## 🌟 Introduction
 
-- 🎨 **Live MDX Preview** - Real-time rendering with customizable components
-- ✍️ **Interactive Editor** - Full-featured MDX editor with syntax highlighting
-- 🎯 **TypeScript Support** - Fully typed with excellent developer experience
-- 🎨 **Tailwind CSS Integration** - Beautiful, customizable styling out of the box
-- 🧪 **100% Test Coverage** - Comprehensive unit and integration tests
-- 📱 **Responsive Design** - Works seamlessly across all devices
-- 🚀 **Performance Optimized** - Small bundle size with tree-shaking support
+**MDX Craft** is an open-source MDX utility for creating rich, interactive markdown experiences in any React application. It bridges the gap between basic markdown processors and complex solutions, providing a comprehensive toolkit for building engaging content experiences.
 
-## 📦 Quick Start
+### 🤔 Why MDX Craft?
 
-### Installation
+MDX Craft empowers developers to create documentation that users actually want to read. Whether you're building API documentation, technical blogs, or knowledge bases, you get professional results without complexity.
+
+**🔄 Progressive enhancement** is at the core. Start with basic markdown and add interactive components as needed. Your content remains portable and version-controlled.
+
+### 🌐 Open Source First
+
+MDX Craft is an **MIT-licensed** open-source project that democratizes access to professional documentation tools. We believe great documentation experiences shouldn't be locked behind paywalls or proprietary platforms.
+
+👨‍💻 Built by developers, for developers. No vendor lock-in, no licensing fees, just powerful tools at your fingertips.
+
+### 🧩 The Challenge MDX Craft Solves
+
+Modern developers need more than basic markdown rendering. Current solutions fall short:
+
+- **🎨 Tailwind Typography**: Limited to prose classes, lacks interactive components
+- **🔧 Custom Solutions**: Time-consuming to build and maintain
+- **💰 Proprietary Platforms**: Expensive with vendor lock-in
+
+MDX Craft provides the missing piece: an open-source solution with enterprise features.
+
+## ✨ Core Features
+
+- **🧰 Rich Component Library**: 10+ professionally designed components including code blocks, tabs, accordions, callouts, and more
+- **🌈 Syntax Highlighting**: Beautiful code highlighting with support for numerous programming languages
+- **🔄 Interactive Elements**: Create engaging documentation with interactive components like tabs, accordions, and expandable sections
+- **🎨 Tailwind Integration**: Seamless integration with Tailwind CSS for consistent styling
+- **🛠️ Customizable**: Easily override components and styles to match your brand
+- **🔌 Framework Agnostic**: Works with any React-based framework including Next.js, Remix, and more
+- **📝 TypeScript Support**: Full TypeScript support for a better developer experience
+
+> 💡 **Explore all features interactively** in our [**live playground**](https://mdx-craft-playground.vercel.app/) - no installation required!
+
+## 🚀 Getting Started
+
+### 📥 Installation
 
 ```bash
 npm install mdx-craft
-# or
+or
 yarn add mdx-craft
-# or
+or
 pnpm add mdx-craft
 ```
 
-### Basic Usage
+### 🛠️ Basic Setup
+
+Wrap your application with the `MDXViewerProvider` component:
 
 ```tsx
-import React, { useState } from 'react'
-import { MDXEditor, MDXPreview } from 'mdx-craft'
-import 'mdx-craft/styles.css'
+import { MDXViewerProvider } from 'mdx-craft'
 
-function App() {
-  const [content, setContent] = useState('# Hello MDX\n\nWrite **markdown** with React components!')
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <MDXViewerProvider>{children}</MDXViewerProvider>
+}
+```
+
+### 🎨 Tailwind CSS Integration
+
+MDX Craft works seamlessly with Tailwind CSS. Add the following to your global CSS file:
+
+```css
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@source '../node_modules/mdx-craft';
+```
+
+### 📝 Basic Usage
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+export default function MDXPage() {
+  const mdxContent = `# Hello World
+
+This is **MDX** content with a code example:
+
+\`\`\`js
+console.log('Hello from MDX Craft!');
+\`\`\`
+`
 
   return (
-    <div className="container mx-auto p-4">
-      <MDXEditor value={content} onChange={setContent} preview={true} className="h-96" />
+    <div className="container mx-auto py-8">
+      <MDXViewer source={mdxContent} />
     </div>
   )
 }
 ```
 
-## 🏗️ Monorepo Structure
+## 🎯 Component Examples
 
-This repository contains multiple packages and applications:
+### 📄 Basic Markdown
 
-### Packages
+MDX Craft supports all standard markdown syntax including headings, lists, links, images, and more.
 
-- **[mdx-craft](./packages/mdx-craft)** - Main npm package for MDX preview and editing
-- **[eslint-config](./packages/eslint-config)** - Shared ESLint configurations
-- **[typescript-config](./packages/typescript-config)** - Shared TypeScript configurations
+```tsx
+import { MDXViewer } from 'mdx-craft'
 
-### Applications
+function BasicExample() {
+  const mdxContent = `
+# Heading 1
+## Heading 2
+### Heading 3
 
-- **[docs](./apps/docs)** - Documentation site built with Nextra (port 3001)
-- **[playground](./apps/playground)** - Interactive playground for testing features (port 3000)
+This is **bold text**, and this is *italic text*.
 
-```
-mdx-craft/
-├── apps/
-│   ├── docs/          # Documentation site
-│   └── playground/    # Interactive playground
-├── packages/
-│   ├── mdx-craft/     # Main npm package
-│   ├── eslint-config/ # Shared ESLint configurations
-│   └── typescript-config/ # Shared TypeScript configurations
-├── .github/
-│   ├── workflows/     # GitHub Actions CI/CD
-│   └── ISSUE_TEMPLATE/ # Issue templates
-└── scripts/           # Build and deployment scripts
-```
+> This is a blockquote
 
-## 🚀 Development
+- List item 1
+- List item 2
+- List item 3
 
-### Prerequisites
+1. Ordered item 1
+2. Ordered item 2
+3. Ordered item 3
+`
 
-- Node.js 18+
-- pnpm 9.0.0+
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/mdx-craft.git
-cd mdx-craft
-
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Start development servers
-pnpm dev
+  return <MDXViewer source={mdxContent} />
+}
 ```
 
-### Available Scripts
+### 🚀 Advanced Markdown
 
-| Command              | Description                         |
-| -------------------- | ----------------------------------- |
-| `pnpm dev`           | Start all development servers       |
-| `pnpm build`         | Build all packages and applications |
-| `pnpm test`          | Run all tests across the monorepo   |
-| `pnpm test:watch`    | Run tests in watch mode             |
-| `pnpm test:coverage` | Generate test coverage reports      |
-| `pnpm lint`          | Run ESLint across all packages      |
-| `pnpm format`        | Format code with Prettier           |
-| `pnpm check-types`   | Type check all packages             |
+MDX Craft also supports advanced markdown features like tables, task lists, and footnotes.
 
-### Testing
+```tsx
+import { MDXViewer } from 'mdx-craft'
 
-We maintain 100% test coverage with comprehensive unit and integration tests:
+function AdvancedExample() {
+  const mdxContent = `
+# Advanced Markdown
 
-```bash
-# Run all tests
-pnpm test
+## Tables
 
-# Run tests with coverage
-pnpm test:coverage
+| Name | Description | Price |
+| ---- | ----------- | ----- |
+| Item 1 | Description 1 | $10 |
+| Item 2 | Description 2 | $20 |
+| Item 3 | Description 3 | $30 |
 
-# Run tests in watch mode for development
-pnpm test:watch
+## Task Lists
 
-# Run tests for specific package
-pnpm test --filter=mdx-craft
+- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task
+
+## Footnotes
+
+Here's a sentence with a footnote. [^1]
+
+[^1]: This is the footnote.
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+### 💻 Code Blocks
+
+MDX Craft provides beautiful syntax highlighting for code blocks with support for numerous programming languages.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+function CodeBlockExample() {
+  const mdxContent = `
+# Code Block Example
+
+Here's a code block with syntax highlighting:
+
+\`\`\`python
+def fibonacci(n):
+    a, b = 0, 1
+    for _ in range(n):
+        yield a
+        a, b = b, a + b
+
+# Print the first 10 Fibonacci numbers
+for number in fibonacci(10):
+    print(number)
+\`\`\`
+
+You can also add a title to your code block:
+
+\`\`\`js:app.js
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+\`\`\`
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+### 📦 Code Block Groups
+
+Group related code blocks together for better organization.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+function CodeBlockGroupExample() {
+  const mdxContent = `
+# Code Block Group
+
+<CodeBlockGroup>
+
+\`\`\`js:frontend.js
+// Frontend code
+fetch('/api/data')
+  .then(response => response.json())
+  .then(data => console.log(data));
+\`\`\`
+
+\`\`\`js:backend.js
+// Backend code
+app.get('/api/data', (req, res) => {
+  res.json({ message: 'Hello from the API!' });
+});
+\`\`\`
+
+</CodeBlockGroup>
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+### 🎨 UI Components
+
+MDX Craft includes a variety of UI components to enhance your documentation.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+function ComponentsExample() {
+  const mdxContent = `
+# UI Components
+
+## Accordion
+
+<Accordion title="Click to expand">
+  This content is hidden until the accordion is clicked.
+  
+  You can include **markdown** inside the accordion.
+</Accordion>
+
+## Card
+
+<Card title="Card Title">
+  This is a card component with a title.
+  
+  Cards are useful for grouping related content.
+</Card>
+
+## Callouts
+
+<Info>
+  This is an informational callout.
+</Info>
+
+<Tip>
+  This is a tip callout with helpful advice.
+</Tip>
+
+<Danger>
+  This is a danger callout for critical warnings.
+</Danger>
+
+<Check>
+  This is a success callout for completed tasks.
+</Check>
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+### 🧭 Navigation Components
+
+MDX Craft provides navigation components like tabs, steps, and expandable sections.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+function NavigationExample() {
+  const mdxContent = `
+# Navigation Components
+
+## Tabs
+
+<Tabs>
+  <Tab title="First Tab">
+    Content for the first tab.
+
+    You can include **markdown** here.
+  </Tab>
+  <Tab title="Second Tab">
+    Content for the second tab.
+
+    \`\`\`js
+    // You can include code blocks
+    const greeting = 'Hello';
+    \`\`\`
+  </Tab>
+  <Tab title="Third Tab">
+    Content for the third tab.
+  </Tab>
+</Tabs>
+
+## Steps
+
+<Steps>
+  <Step title="First Step">
+    Instructions for the first step.
+  </Step>
+  <Step title="Second Step">
+    Instructions for the second step.
+  </Step>
+  <Step title="Final Step">
+    Instructions for the final step.
+  </Step>
+</Steps>
+
+## Expandable
+
+<Expandable title="Click to show more">
+  This content can be expanded or collapsed.
+
+  It's useful for hiding lengthy content that not all users may need to see.
+</Expandable>
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+### 🖼️ Frames
+
+MDX Craft includes frame components to simulate different environments.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+function FramesExample() {
+  const mdxContent = `
+# Frames
+
+<Frame 
+  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+  ratio="16:9"
+  title="YouTube Video Example"
+/>
+
+<Frame 
+  src="https://codepen.io/pen/abcdef"
+  ratio="4:3"
+  title="CodePen Demo"
+/>
+
+<Frame 
+  embed='<iframe src="https://codesandbox.io/embed/example" width="100%" height="400"></iframe>'
+  title="CodeSandbox Embed"
+/>
+`
+
+  return <MDXViewer source={mdxContent} />
+}
+```
+
+## 📚 API Reference
+
+### 🔧 MDXViewer
+
+The main component for rendering MDX content.
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+;<MDXViewer
+  source="# Hello World" // MDX content as a string
+  components={{}} // Optional custom components
+  rehypePlugins={[]} // Optional rehype plugins
+  remarkPlugins={[]} // Optional remark plugins
+/>
+```
+
+### 🎛️ MDXViewerProvider
+
+Provider component that sets up the MDX rendering context.
+
+```tsx
+import { MDXViewerProvider } from 'mdx-craft'
+;<MDXViewerProvider
+  components={{}} // Optional global custom components
+  rehypePlugins={[]} // Optional global rehype plugins
+  remarkPlugins={[]} // Optional global remark plugins
+>
+  {children}
+</MDXViewerProvider>
 ```
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Quick Contributing Steps
+1. 🍴 Fork the repository
+2. 🌿 Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. 💾 Commit your changes (`git commit -m 'feat(scope):Add some amazing feature'`)
+4. 🚀 Push to the branch (`git push origin feature/amazing-feature`)
+5. 🔄 Open a Pull Request
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass: `pnpm test`
-6. Add a changeset: `pnpm changeset`
-7. Commit your changes: `git commit -m 'feat: add amazing feature'`
-8. Push to the branch: `git push origin feature/amazing-feature`
-9. Open a Pull Request
-
-## 📖 Documentation
-
-- **[Getting Started Guide](./apps/docs/pages/getting-started.mdx)** - Complete setup and usage guide
-- **[API Reference](./packages/mdx-craft/README.md)** - Detailed component documentation
-- **[Examples](./apps/playground)** - Interactive examples and demos
-
-## 🔒 Security
-
-Please see our [Security Policy](./SECURITY.md) for reporting security vulnerabilities.
-
-## 📊 Project Stats
-
-- **100% TypeScript** - Fully typed codebase
-- **100% Test Coverage** - Comprehensive testing with Jest and Testing Library
-- **Modern Tooling** - Built with Turborepo, tsup, and modern React patterns
-- **CI/CD Pipeline** - Automated testing, building, and releasing
-- **Open Source** - MIT licensed with comprehensive documentation
-
-## 🚢 Releasing
-
-This project uses [Changesets](https://github.com/changesets/changesets) for version management:
-
-```bash
-# Add a changeset for your changes
-pnpm changeset
-
-# Version packages (automatically done by CI)
-pnpm version-packages
-
-# Publish to npm (automatically done by CI)
-pnpm release
-```
+> **[📚 <u>Read the full contribution guidelines</u>](https://github.com/raselinfo/mdx-craft/blob/main/CONTRIBUTING.md)** for more detailed information on our development process, project structure, testing guidelines, and more.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+MIT © [MDX Craft Contributors](https://github.com/mrhm-dev/mdx-craft/graphs/contributors)
 
-## 🙏 Acknowledgments
-
-- Built with [React](https://reactjs.org/) and [TypeScript](https://www.typescriptlang.org/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Bundled with [tsup](https://tsup.egoist.dev/)
-- Tested with [Jest](https://jestjs.io/) and [Testing Library](https://testing-library.com/)
-- Managed with [Turborepo](https://turborepo.org/)
+**Free to use in personal and commercial projects.**
 
 ---
 
 <div align="center">
-  <strong>Made with ❤️ for the React community</strong>
+
+**Made with ❤️ by developers, for developers**
+
+[⭐ Star on GitHub](https://github.com/mrhm-dev/mdx-craft) • [🚀 Try the Playground](https://mdx-craft-playground.vercel.app/) • [📖 Read the Docs](https://github.com/mrhm-dev/mdx-craft)
+
 </div>
