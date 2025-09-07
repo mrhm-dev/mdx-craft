@@ -14,7 +14,8 @@
       "Bash(npm run build:*)",
       "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\packages\\mdx-craft\\src\\components\\viewer\\core/**)",
       "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\packages\\mdx-craft\\src\\components\\viewer\\core/**)",
-      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\apps\\playground\\components\\layout/**)"
+      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\apps\\playground\\components\\layout/**)",
+      "Read(/C:\\Users\\hasan\\Documents\\projects\\mdx-craft\\packages\\mdx-craft\\src\\hooks/**)"
     ],
     "deny": [],
     "ask": []

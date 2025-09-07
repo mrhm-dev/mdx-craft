@@ -1,27 +1,16 @@
 import rehypeSlug from 'rehype-slug'
 import rehypeSanitize from 'rehype-sanitize'
-import rehypeShiki from '@shikijs/rehype'
 import rehypeKatex from 'rehype-katex'
 import type { PluggableList, Plugin } from 'unified'
 import type { Root, Element as HastElement } from 'hast'
-
-export type ShikiOptions = {
-  themes?:
-    | {
-        light?: string
-        dark?: string
-      }
-    | string
-  langs?: string[]
-}
 
 export type RehypePluginConfig = {
   /** Enable heading slugs */
   slugs?: boolean
   /** Enable HTML sanitization */
   sanitize?: boolean
-  /** Enable syntax highlighting with Shiki */
-  shiki?: boolean | ShikiOptions
+  /** Enable syntax highlighting with Shiki - Note: Shiki is handled by the Code component */
+  shiki?: boolean
   /** Enable Math rendering with KaTeX */
   math?: boolean
 }
@@ -81,40 +70,7 @@ const rehypePreserveLanguageClass: Plugin<[], Root> = () => {
   }
 }
 
-/**
- * Default Shiki configuration
- */
-const defaultShikiConfig: ShikiOptions = {
-  themes: {
-    light: 'github-light',
-    dark: 'github-dark',
-  },
-  langs: [
-    'javascript',
-    'typescript',
-    'jsx',
-    'tsx',
-    'python',
-    'rust',
-    'go',
-    'java',
-    'c',
-    'cpp',
-    'csharp',
-    'php',
-    'ruby',
-    'swift',
-    'kotlin',
-    'sql',
-    'html',
-    'css',
-    'json',
-    'yaml',
-    'markdown',
-    'bash',
-    'shell',
-  ],
-}
+// Shiki configuration moved to shiki-highlighter.ts for direct integration with Code component
 
 /**
  * Get configured rehype plugins based on options
@@ -130,14 +86,8 @@ export const getRehypePlugins = (config: RehypePluginConfig = {}): PluggableList
   // Always preserve language classes on code blocks
   plugins.push(rehypePreserveLanguageClass)
 
-  // Syntax highlighting with Shiki
-  if (config.shiki !== false) {
-    const shikiOptions =
-      typeof config.shiki === 'object'
-        ? { ...defaultShikiConfig, ...config.shiki }
-        : defaultShikiConfig
-    plugins.push([rehypeShiki, shikiOptions])
-  }
+  // Syntax highlighting with Shiki - handled by custom Code component
+  // Shiki is integrated directly in the Code component for better control
 
   // Math rendering with KaTeX
   if (config.math !== false) {
@@ -246,4 +196,4 @@ export const getMinimalRehypePlugins = (): PluggableList => {
 }
 
 // Export individual plugins for custom configurations
-export { rehypeSlug, rehypeSanitize, rehypeShiki, rehypeKatex }
+export { rehypeSlug, rehypeSanitize, rehypeKatex }

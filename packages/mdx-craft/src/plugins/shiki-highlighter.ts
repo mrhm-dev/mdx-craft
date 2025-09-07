@@ -30,16 +30,7 @@ export const SUPPORTED_LANGUAGES: BundledLanguage[] = [
   'dockerfile',
 ]
 
-export const SUPPORTED_THEMES: BundledTheme[] = [
-  'github-light',
-  'github-dark',
-  'github-dark-dimmed',
-  'vitesse-light',
-  'vitesse-dark',
-  'one-dark-pro',
-  'nord',
-  'material-theme-darker',
-]
+export const SUPPORTED_THEMES: BundledTheme[] = ['github-light', 'github-dark']
 
 export const DEFAULT_THEME = {
   light: 'github-light' as BundledTheme,
