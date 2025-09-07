@@ -39,12 +39,14 @@ MDX Craft provides the missing piece: an open-source solution with enterprise fe
 ## ✨ Core Features
 
 - **🧰 Rich Component Library**: 10+ professionally designed components including code blocks, tabs, accordions, callouts, and more
-- **🌈 Syntax Highlighting**: Beautiful code highlighting with support for numerous programming languages
+- **🌈 Optional Syntax Highlighting**: Beautiful code highlighting with Shiki (optional peer dependency for smaller bundles)
+- **📦 Lightweight by Default**: Core package is 50%+ smaller when syntax highlighting isn't needed
 - **🔄 Interactive Elements**: Create engaging documentation with interactive components like tabs, accordions, and expandable sections
 - **🎨 Tailwind Integration**: Seamless integration with Tailwind CSS for consistent styling
 - **🛠️ Customizable**: Easily override components and styles to match your brand
 - **🔌 Framework Agnostic**: Works with any React-based framework including Next.js, Remix, and more
 - **📝 TypeScript Support**: Full TypeScript support for a better developer experience
+- **🎯 Progressive Enhancement**: Works beautifully with or without optional features
 
 > 💡 **Explore all features interactively** in our [**live playground**](https://mdx-craft-playground.vercel.app/) - no installation required!
 
@@ -52,12 +54,28 @@ MDX Craft provides the missing piece: an open-source solution with enterprise fe
 
 ### 📥 Installation
 
+#### Basic Installation (No Syntax Highlighting)
+
+For the lightest bundle - perfect if you don't need code syntax highlighting:
+
 ```bash
 npm install mdx-craft
-or
+# or
 yarn add mdx-craft
-or
+# or
 pnpm add mdx-craft
+```
+
+#### Full Installation (With Syntax Highlighting)
+
+To enable beautiful syntax highlighting for code blocks:
+
+```bash
+npm install mdx-craft shiki
+# or
+yarn add mdx-craft shiki
+# or
+pnpm add mdx-craft shiki
 ```
 
 ### 🛠️ Basic Setup
@@ -104,6 +122,68 @@ console.log('Hello from MDX Craft!');
   )
 }
 ```
+
+## 🌈 Syntax Highlighting
+
+MDX Craft uses **Shiki** as an optional peer dependency for beautiful syntax highlighting. By default, it supports JavaScript, TypeScript, JSX, TSX, JSON, CSS, HTML, and Bash.
+
+### Default Languages (No Configuration Needed)
+
+```tsx
+import { MDXViewer } from 'mdx-craft'
+
+const codeExample = `
+\`\`\`javascript
+const greeting = 'Hello, World!'
+console.log(greeting)
+\`\`\`
+
+\`\`\`css  
+.button {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border: none;
+  padding: 12px 24px;
+}
+\`\`\`
+`
+
+function SyntaxHighlightingExample() {
+  return <MDXViewer source={codeExample} />
+}
+```
+
+### Custom Languages Configuration
+
+Need more languages? Configure them through the provider:
+
+```tsx
+import { MDXViewerProvider } from 'mdx-craft'
+
+function App() {
+  return (
+    <MDXViewerProvider
+      shikiConfig={{
+        languages: ['python', 'rust', 'go', 'sql', 'yaml'],
+        themes: ['github-light', 'github-dark'],
+      }}
+    >
+      <YourApp />
+    </MDXViewerProvider>
+  )
+}
+```
+
+### Without Syntax Highlighting
+
+If you don't install Shiki, code blocks will render as beautifully formatted plain text with:
+
+- ✅ Proper formatting and indentation
+- ✅ Copy to clipboard functionality
+- ✅ Line numbers (for CodeBlock component)
+- ✅ Language badges
+- ❌ No syntax highlighting colors
+
+This keeps your bundle size minimal while maintaining full functionality.
 
 ## 🎯 Component Examples
 
@@ -420,6 +500,7 @@ import { MDXViewerProvider } from 'mdx-craft'
   components={{}} // Optional global custom components
   rehypePlugins={[]} // Optional global rehype plugins
   remarkPlugins={[]} // Optional global remark plugins
+  shikiConfig={{}} // Optional syntax highlighting configuration
 >
   {children}
 </MDXViewerProvider>
