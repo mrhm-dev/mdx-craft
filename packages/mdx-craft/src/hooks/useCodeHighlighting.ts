@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
-import { highlightCode, type HighlightOptions } from '../plugins/shiki-highlighter.js'
-import type { BundledTheme } from 'shiki'
+import { getShikiHighlighter, type HighlightOptions } from '../plugins/shiki-highlighter.js'
+import { useMDXViewer } from './useMDXViewer.js'
+
+// Type is now defined locally since shiki is optional
+type BundledTheme = string
 
 /**
  * Configuration options for the useCodeHighlighting hook
@@ -95,6 +98,9 @@ export const useCodeHighlighting = ({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Get shikiConfig from context
+  const { shikiConfig } = useMDXViewer()
+
   // Memoized highlight function to prevent unnecessary re-renders
   const performHighlight = useMemo(
     () => async () => {
@@ -121,8 +127,9 @@ export const useCodeHighlighting = ({
           theme: theme || ((isDark ? 'github-dark' : 'github-light') as BundledTheme),
         }
 
-        // Perform highlighting
-        const result = await highlightCode(codeContent, options)
+        // Get highlighter with context config
+        const highlighter = getShikiHighlighter(shikiConfig)
+        const result = await highlighter.highlight(codeContent, options)
         setHighlightedCode(result.html)
       } catch (err) {
         console.error('Failed to highlight code:', err)

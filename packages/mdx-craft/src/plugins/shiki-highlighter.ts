@@ -1,34 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createHighlighter, type BundledLanguage, type BundledTheme, type Highlighter } from 'shiki'
 import { useMemo } from 'react'
 
-export const SUPPORTED_LANGUAGES: BundledLanguage[] = [
-  'typescript',
+// Dynamic imports - shiki types are imported conditionally
+type Highlighter = any
+type BundledLanguage = string
+type BundledTheme = string
+
+// Minimal default languages to reduce bundle size
+export const DEFAULT_LANGUAGES: BundledLanguage[] = [
   'javascript',
-  'python',
-  'rust',
-  'go',
-  'java',
-  'cpp',
-  'c',
-  'csharp',
-  'php',
-  'ruby',
-  'swift',
-  'kotlin',
-  'scala',
-  'bash',
-  'shell',
-  'sql',
+  'typescript',
+  'jsx',
+  'tsx',
   'json',
-  'yaml',
-  'html',
+  'bash',
   'css',
-  'scss',
-  'markdown',
-  'xml',
-  'dockerfile',
+  'html',
 ]
+
+// Legacy export for backward compatibility
+export const SUPPORTED_LANGUAGES = DEFAULT_LANGUAGES
 
 export const SUPPORTED_THEMES: BundledTheme[] = ['github-light', 'github-dark']
 
@@ -36,6 +27,19 @@ export const DEFAULT_THEME = {
   light: 'github-light' as BundledTheme,
   dark: 'github-dark' as BundledTheme,
 } as const
+
+/**
+ * Check if shiki is available as a peer dependency
+ */
+export const checkShikiAvailability = async (): Promise<boolean> => {
+  try {
+    await import('shiki')
+    return true
+  } catch {
+    console.info('MDX Craft: Shiki not installed - using plain text rendering for code blocks')
+    return false
+  }
+}
 
 export type ShikiConfig = {
   languages?: BundledLanguage[]
@@ -65,30 +69,76 @@ class ShikiHighlighter {
   private config: Required<ShikiConfig>
   private cache: Map<string, HighlightResult> = new Map()
   private maxCacheSize: number = 100
+  private shikiModule: any = null
+  private available: boolean = false
 
   constructor(config: ShikiConfig = {}) {
     this.config = {
-      languages: config.languages || SUPPORTED_LANGUAGES,
+      languages: config.languages || DEFAULT_LANGUAGES,
       themes: config.themes || SUPPORTED_THEMES,
       lightTheme: config.lightTheme || DEFAULT_THEME.light,
       darkTheme: config.darkTheme || DEFAULT_THEME.dark,
     }
   }
 
-  // Initialize highlighter
+  // Initialize highlighter with dynamic import
   async initialize() {
     if (this.highlighter) {
       return
     }
 
     try {
-      this.highlighter = await createHighlighter({
+      // Dynamic import of shiki
+      this.shikiModule = await import('shiki')
+      this.highlighter = await this.shikiModule.createHighlighter({
         themes: this.config.themes,
         langs: this.config.languages,
       })
-    } catch (error) {
-      console.error('Failed to initialize Shiki highlighter:', error)
-      throw new Error('Failed to initialize Shiki highlighter')
+      this.available = true
+    } catch {
+      console.info('MDX Craft: Shiki not available, falling back to plain text rendering')
+      this.available = false
+      this.shikiModule = null
+      this.highlighter = null
+    }
+  }
+
+  // Check if shiki is available and initialized
+  isAvailable(): boolean {
+    return this.available && this.highlighter !== null
+  }
+
+  // Create plain text fallback when shiki is not available
+  private createPlainTextFallback(code: string, options: HighlightOptions): HighlightResult {
+    const escapedCode = this.escapeHtml(code)
+
+    if (options.showLineNumbers) {
+      // Generate HTML with line numbers for CodeBlock component
+      const lines = escapedCode.split('\n')
+      const lineElements = lines
+        .map((line, index) => {
+          const lineNumber = (options.startingLineNumber || 1) + index
+          return `<div class="line" data-line="${lineNumber}">
+          <span class="line-number">${lineNumber}</span>
+          <span class="line-content">${line || ' '}</span>
+        </div>`
+        })
+        .join('')
+
+      return {
+        html: `<div class="plain-code-block">${lineElements}</div>`,
+        language: options.language,
+        theme: 'plain',
+        languageSupported: false,
+      }
+    } else {
+      // Simple format for Code component
+      return {
+        html: `<pre class="plain-code"><code>${escapedCode}</code></pre>`,
+        language: options.language,
+        theme: 'plain',
+        languageSupported: false,
+      }
     }
   }
 
@@ -98,8 +148,9 @@ class ShikiHighlighter {
       await this.initialize()
     }
 
-    if (!this.highlighter) {
-      throw new Error('Shiki highlighter not initialized')
+    // If shiki is not available, return plain text fallback
+    if (!this.isAvailable()) {
+      return this.createPlainTextFallback(code, options)
     }
 
     const cacheKey = this.createCacheKey(code, options)
@@ -316,14 +367,29 @@ class ShikiHighlighter {
   }
 }
 
-// Global singleton instance
-let globalHighlighter: ShikiHighlighter | null = null
+// Global highlighter cache - key by config to support different configurations
+const highlighterCache = new Map<string, ShikiHighlighter>()
+
+const createConfigKey = (config?: ShikiConfig): string => {
+  if (!config) return 'default'
+  return JSON.stringify({
+    languages: config.languages || DEFAULT_LANGUAGES,
+    themes: config.themes || SUPPORTED_THEMES,
+    lightTheme: config.lightTheme || DEFAULT_THEME.light,
+    darkTheme: config.darkTheme || DEFAULT_THEME.dark,
+  })
+}
 
 export const getShikiHighlighter = (config?: ShikiConfig): ShikiHighlighter => {
-  if (!globalHighlighter) {
-    globalHighlighter = new ShikiHighlighter(config)
+  const configKey = createConfigKey(config)
+
+  let highlighter = highlighterCache.get(configKey)
+  if (!highlighter) {
+    highlighter = new ShikiHighlighter(config)
+    highlighterCache.set(configKey, highlighter)
   }
-  return globalHighlighter
+
+  return highlighter
 }
 
 export const highlightCode = async (

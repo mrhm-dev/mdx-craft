@@ -3,7 +3,9 @@
 
 import React, { useMemo } from 'react'
 import type { FC, ReactNode } from 'react'
-import type { BundledTheme } from 'shiki'
+
+// Type is now defined locally since shiki is optional
+type BundledTheme = string
 import { cn, getCodeBlockStyles } from '../../../utils/index.js'
 import { CopyButton } from '../../common/CopyButton.js'
 import { CopyIcon } from '../../icons/CopyIcon.js'

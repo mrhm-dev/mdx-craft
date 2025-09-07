@@ -9,6 +9,7 @@ export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
   remarkPlugins = [],
   rehypePlugins = [],
   cache = { enabled: true, maxSize: 10, ttl: 300000 },
+  shikiConfig,
 }) => {
   const [components, setComponents] = useState<ComponentRegistry>(initialComponents)
 
@@ -41,8 +42,17 @@ export const MDXViewerProvider: FC<MDXViewerProviderProps> = ({
       cache: cacheConfig,
       remarkPlugins,
       rehypePlugins,
+      shikiConfig,
     }),
-    [components, registerComponent, unregisterComponent, cacheConfig, remarkPlugins, rehypePlugins]
+    [
+      components,
+      registerComponent,
+      unregisterComponent,
+      cacheConfig,
+      remarkPlugins,
+      rehypePlugins,
+      shikiConfig,
+    ]
   )
 
   return <MDXViewerContext.Provider value={contextValue}>{children}</MDXViewerContext.Provider>
