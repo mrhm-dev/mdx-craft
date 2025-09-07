@@ -1,5 +1,5 @@
 export { MDXViewer } from './MDXViewer.js'
+export { MDXViewerProvider } from './provider/MDXViewerProvider.js'
+export { useTOC } from './hooks/useTOC.js'
+export { TOC } from './components/viewer/navigation/index.js'
 export * from './types/index.js'
-export * from './hooks/index.js'
-export * from './provider/MDXViewerProvider.js'
-export * from './components/index.js'
