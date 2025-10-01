@@ -3,21 +3,34 @@
 import { useEditorStore } from '@/store/editorStore'
 import { Check, Copy, FileText, Hash, RotateCcw, Type } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 
 export const EditorContainer: React.FC = () => {
   const [copied, setCopied] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const {
     content,
     selectedExample,
     wordCount,
     charCount,
     hasChanges,
+    scrollSyncEnabled,
     setContent,
     copyContent,
     resetContent,
+    setEditorScrollPosition,
   } = useEditorStore()
+
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLTextAreaElement>) => {
+      if (scrollSyncEnabled) {
+        const target = e.target as HTMLTextAreaElement
+        setEditorScrollPosition(target.scrollTop, target.scrollLeft)
+      }
+    },
+    [scrollSyncEnabled, setEditorScrollPosition]
+  )
 
   const handleCopy = async () => {
     await copyContent()
@@ -73,8 +86,10 @@ export const EditorContainer: React.FC = () => {
       {/* Editor Content */}
       <div className="flex-1 overflow-hidden">
         <textarea
+          ref={textareaRef}
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onScroll={handleScroll}
           placeholder="Start typing your MDX content here..."
           className="w-full h-full p-4 bg-background font-mono text-sm resize-none focus:outline-none"
           spellCheck={false}

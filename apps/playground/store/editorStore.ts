@@ -33,6 +33,11 @@ type EditorState = {
   // Change detection
   hasChanges: boolean
 
+  // Scroll synchronization
+  scrollSyncEnabled: boolean
+  editorScrollTop: number
+  editorScrollLeft: number
+
   // Actions
   setContent: (content: string) => void
   loadExample: (example: Example) => void
@@ -43,6 +48,8 @@ type EditorState = {
   toggleFullscreen: () => void
   resetContent: () => void
   clearContent: () => void
+  setScrollSyncEnabled: (enabled: boolean) => void
+  setEditorScrollPosition: (top: number, left: number) => void
 }
 
 const calculateStats = (text: string) => {
@@ -69,6 +76,9 @@ export const useEditorStore = create<EditorState>()(
       isFullscreen: false,
       isCompiling: false,
       hasChanges: false,
+      scrollSyncEnabled: true,
+      editorScrollTop: 0,
+      editorScrollLeft: 0,
 
       // Actions
       setContent: (content: string) => {
@@ -144,6 +154,14 @@ export const useEditorStore = create<EditorState>()(
           charCount: 0,
           hasChanges: false,
         })
+      },
+
+      setScrollSyncEnabled: (scrollSyncEnabled: boolean) => {
+        set({ scrollSyncEnabled })
+      },
+
+      setEditorScrollPosition: (editorScrollTop: number, editorScrollLeft: number) => {
+        set({ editorScrollTop, editorScrollLeft })
       },
     }),
     {

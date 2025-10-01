@@ -11,23 +11,48 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import dynamic from 'next/dynamic'
+import { useRef, useState, useEffect } from 'react'
 
 const MDXViewer = dynamic(() => import('mdx-craft').then((mod) => mod.MDXViewer), {
   ssr: false,
+  loading: () => (
+    <div className="text-center py-8 text-muted-foreground not-prose">
+      <p className="text-lg">Loading preview...</p>
+    </div>
+  ),
 })
 
 export const PreviewContainer: React.FC = () => {
+  const previewRef = useRef<HTMLDivElement>(null)
+  const [isClient, setIsClient] = useState(false)
   const {
     compiledContent,
     viewport,
     zoomLevel,
     isFullscreen,
+    scrollSyncEnabled,
+    editorScrollTop,
+    editorScrollLeft,
     setViewport,
     setZoomLevel,
     toggleFullscreen,
   } = useEditorStore()
 
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const zoomLevels = [50, 75, 100, 125, 150]
+
+  // Sync scroll position with editor
+  useEffect(() => {
+    if (scrollSyncEnabled && previewRef.current) {
+      const previewElement = previewRef.current
+      previewElement.scrollTop = editorScrollTop
+      previewElement.scrollLeft = editorScrollLeft
+    }
+  }, [scrollSyncEnabled, editorScrollTop, editorScrollLeft])
 
   const handleZoomIn = () => {
     const currentIndex = zoomLevels.indexOf(zoomLevel)
@@ -149,7 +174,7 @@ export const PreviewContainer: React.FC = () => {
       </div>
 
       {/* Preview Content */}
-      <div className="flex-1 overflow-auto bg-background p-4 lg:p-8">
+      <div ref={previewRef} className="flex-1 overflow-auto bg-background p-4 lg:p-8">
         <div className={`${getViewportStyles()} mx-auto`}>
           {/* Device Frame for mobile/tablet */}
           {viewport !== 'desktop' && (
@@ -168,7 +193,7 @@ export const PreviewContainer: React.FC = () => {
                 className="p-4 bg-background prose prose-sm prose-neutral dark:prose-invert max-w-none"
                 style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top left' }}
               >
-                {compiledContent ? (
+                {compiledContent && isClient ? (
                   <MDXViewer source={compiledContent} />
                 ) : (
                   <div className="text-center py-8 text-muted-foreground not-prose">
@@ -186,7 +211,7 @@ export const PreviewContainer: React.FC = () => {
               className="bg-background prose prose-sm prose-neutral dark:prose-invert max-w-none"
               style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top left' }}
             >
-              {compiledContent ? (
+              {compiledContent && isClient ? (
                 <MDXViewer source={compiledContent} />
               ) : (
                 <div className="text-center py-8 text-muted-foreground not-prose">
