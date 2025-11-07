@@ -12,6 +12,7 @@ import * as devRuntime from 'react/jsx-dev-runtime'
 import { getDefaultRehypePlugins, getSyncRehypePlugins } from '../plugins/rehypePlugins.js'
 import React from 'react'
 import type { PluggableList } from 'unified'
+import { preprocessMDXSource } from './preprocessor.js'
 
 // Type for the compilation context
 export interface CompilationContext {
@@ -41,12 +42,16 @@ export class MDXProcessor {
   }
 
   async compile(options: CompilerOptions): Promise<CompilationResult> {
-    const { context, cachedResult } = this.prepareCompilation(options, false)
+    // Preprocess source to escape special characters before MDX parsing
+    const preprocessedSource = preprocessMDXSource(options.source)
+    const preprocessedOptions = { ...options, source: preprocessedSource }
+
+    const { context, cachedResult } = this.prepareCompilation(preprocessedOptions, false)
     if (cachedResult) return cachedResult
     if (!context) throw new Error('Failed to prepare compilation context')
 
     try {
-      const compiled = await evaluate(options.source, context.evaluateOptions)
+      const compiled = await evaluate(preprocessedSource, context.evaluateOptions)
       return this.processCompiledResult(compiled, context, options)
     } catch (error) {
       return this.createErrorResult(error, context, options)
@@ -54,12 +59,16 @@ export class MDXProcessor {
   }
 
   compileSync(options: CompilerOptions): CompilationResult {
-    const { context, cachedResult } = this.prepareCompilation(options, true)
+    // Preprocess source to escape special characters before MDX parsing
+    const preprocessedSource = preprocessMDXSource(options.source)
+    const preprocessedOptions = { ...options, source: preprocessedSource }
+
+    const { context, cachedResult } = this.prepareCompilation(preprocessedOptions, true)
     if (cachedResult) return cachedResult
     if (!context) throw new Error('Failed to prepare compilation context')
 
     try {
-      const compiled = evaluateSync(options.source, context.evaluateOptions)
+      const compiled = evaluateSync(preprocessedSource, context.evaluateOptions)
       return this.processCompiledResult(compiled, context, options)
     } catch (error) {
       return this.createErrorResult(error, context, options)

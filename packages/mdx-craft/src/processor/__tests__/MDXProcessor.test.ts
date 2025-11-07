@@ -84,7 +84,7 @@ describe('MDXProcessor', () => {
 
     it('should handle compilation errors gracefully', async () => {
       const options: CompilerOptions = {
-        source: '{invalid jsx}',
+        source: '<Component prop={unclosed',
         components: {},
       }
 
@@ -92,7 +92,7 @@ describe('MDXProcessor', () => {
 
       expect(result.content).toBeNull()
       expect(result.error).toBeDefined()
-      expect(result.error?.message).toContain('Could not parse')
+      expect(result.error?.message).toContain('Unexpected end of file')
     })
 
     it('should work with custom remark plugins', async () => {
@@ -177,7 +177,7 @@ describe('MDXProcessor', () => {
 
     it('should handle sync compilation errors gracefully', () => {
       const options: CompilerOptions = {
-        source: '{invalid jsx sync}',
+        source: '<Component prop={unclosed',
         components: {},
       }
 
@@ -185,7 +185,7 @@ describe('MDXProcessor', () => {
 
       expect(result.content).toBeNull()
       expect(result.error).toBeDefined()
-      expect(result.error?.message).toContain('Could not parse')
+      expect(result.error?.message).toContain('Unexpected end of file')
     })
 
     it('should share cache between async and sync methods', async () => {
