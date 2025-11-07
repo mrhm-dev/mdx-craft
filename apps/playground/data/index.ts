@@ -4,6 +4,7 @@ import { basicMarkdown } from './2-basic-markdown'
 import { components } from './4-components'
 import { codeBlocks } from './3-code-blocks'
 import { tablesLists } from './5-tables-lists'
+import { folderStructure } from './6-folder-structure'
 
 export const mdxExamples: Example[] = [
   introduction,
@@ -11,4 +12,5 @@ export const mdxExamples: Example[] = [
   components,
   codeBlocks,
   tablesLists,
+  folderStructure,
 ]
