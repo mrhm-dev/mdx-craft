@@ -1,5 +1,11 @@
 # mdx-craft
 
+## 2.1.0
+
+### Minor Changes
+
+- e0b39be: Fix MDX compilation error for special characters in text content
+
 ## 2.0.0
 
 ### Major Changes

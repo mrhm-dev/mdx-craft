@@ -1,5 +1,12 @@
 # my-app
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [e0b39be]
+  - mdx-craft@2.1.0
+
 ## 0.1.2
 
 ### Patch Changes
