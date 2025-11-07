@@ -29,6 +29,9 @@ import {
   VStack,
   HStack,
   Space,
+  FolderStructure,
+  Folder,
+  File,
 } from '../components/viewer/core/index.js'
 
 const CORE_COMPONENTS = {
@@ -53,6 +56,9 @@ const CORE_COMPONENTS = {
   VStack,
   HStack,
   Space,
+  FolderStructure,
+  Folder,
+  File,
 }
 
 export type UseComponentRegistryOptions = {
