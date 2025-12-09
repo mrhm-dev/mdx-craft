@@ -201,7 +201,8 @@ class ShikiHighlighter {
   }
 
   private createCacheKey(code: string, options: HighlightOptions) {
-    return `${options.language}_${options.theme || 'auto'}_${options.showLineNumbers || false}_${options.highlightLines || ''}_${options.startingLineNumber || 1}`
+    const codeHash = this.hashCode(code)
+    return `${codeHash}_${options.language}_${options.theme || 'auto'}_${options.showLineNumbers || false}_${options.highlightLines || ''}_${options.startingLineNumber || 1}`
   }
 
   private hashCode(str: string) {
