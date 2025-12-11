@@ -1,11 +1,32 @@
 'use client'
 
-import React, { FC, useState } from 'react'
+import React, { FC, useState, createContext, useContext, useMemo, useCallback } from 'react'
 import { cn } from '../../../utils/index.js'
 import { FolderIcon } from '../../icons/FolderIcon.js'
 import { FileIcon } from '../../icons/FileIcon.js'
 import { ImageIcon } from '../../icons/ImageIcon.js'
 import { ChevronIcon } from '../../icons/ChevronIcon.js'
+
+/**
+ * Context for managing folder collapsed states
+ */
+type FolderStateContextType = {
+  collapsedState: Record<string, boolean>
+  toggleFolder: (path: string) => void
+}
+
+const FolderStateContext = createContext<FolderStateContextType | null>(null)
+
+/**
+ * Hook to use folder state context
+ */
+const useFolderState = () => {
+  const context = useContext(FolderStateContext)
+  if (!context) {
+    throw new Error('useFolderState must be used within FolderStructure')
+  }
+  return context
+}
 
 /**
  * Props for the File component
@@ -45,6 +66,8 @@ interface FolderProps extends React.HTMLAttributes<HTMLDivElement> {
   isRoot?: boolean
   /** Whether the folder starts in a collapsed state */
   defaultCollapsed?: boolean
+  /** The path for tracking folder state (automatically provided) */
+  _folderPath?: string
 }
 
 /**
@@ -62,19 +85,24 @@ export const File: FC<FileProps> = ({
   image = false,
   className,
   depth = 0,
-  isLast, // Destructure to exclude from DOM props
+  isLast: _isLast,
   ...props
 }) => {
   const Icon = image ? ImageIcon : FileIcon
 
   return (
     <div
-      className={cn('flex items-center gap-2 py-1', className)}
-      style={{ paddingLeft: `${depth * 1.5}rem` }}
+      className={cn(
+        'relative flex items-center py-0.5 hover:bg-muted/30 rounded transition-colors',
+        className
+      )}
+      style={{ paddingLeft: `${depth * 1.25}rem` }}
       {...props}
     >
-      <Icon className={cn('h-4 w-4 shrink-0', image ? 'text-purple-500' : 'text-blue-500')} />
-      <span className="text-sm text-foreground font-mono">{name}</span>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <Icon className={cn('h-4 w-4 shrink-0', image ? 'text-purple-500' : 'text-blue-500')} />
+        <span className="text-sm text-foreground font-mono truncate">{name}</span>
+      </div>
     </div>
   )
 }
@@ -91,7 +119,7 @@ export const File: FC<FileProps> = ({
  *     <File name="Button.tsx" />
  *   </Folder>
  * </Folder>
- * 
+ *
  * // Collapsed by default
  * <Folder name="node_modules" defaultCollapsed>
  *   <File name="package1" />
@@ -104,56 +132,66 @@ export const Folder: FC<FolderProps> = ({
   children,
   className,
   depth = 0,
-  isLast = false,
+  isLast: _isLast = false,
   isRoot = false,
   defaultCollapsed = false,
+  _folderPath = '',
   ...props
 }) => {
   const hasChildren = React.Children.count(children) > 0
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed)
+  const { collapsedState, toggleFolder } = useFolderState()
+  const [isHovered, setIsHovered] = useState(false)
 
-  const toggleCollapsed = () => {
+  // Generate unique path for this folder
+  const folderPath = _folderPath ? `${_folderPath}/${name}` : name
+
+  // Get collapsed state from context, fallback to defaultCollapsed
+  const isCollapsed = collapsedState[folderPath] ?? defaultCollapsed
+
+  const handleToggle = useCallback(() => {
     if (hasChildren) {
-      setIsCollapsed(!isCollapsed)
+      toggleFolder(folderPath)
     }
-  }
+  }, [hasChildren, folderPath, toggleFolder])
 
   return (
     <div className={cn('relative', className)} {...props}>
       <div
         className={cn(
-          'flex items-center gap-2 py-1',
+          'relative flex items-center justify-between py-0.5 rounded transition-colors group',
           isRoot && 'font-semibold',
-          hasChildren && 'cursor-pointer hover:bg-muted/50 rounded-sm transition-colors'
+          hasChildren && 'cursor-pointer hover:bg-muted/30'
         )}
-        style={{ paddingLeft: isRoot ? '0' : `${depth * 1.5}rem` }}
-        onClick={toggleCollapsed}
+        style={{ paddingLeft: `${depth * 1.25}rem` }}
+        onClick={handleToggle}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Chevron icon for collapsible folders */}
-        {hasChildren && (
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <FolderIcon className="h-4 w-4 shrink-0 text-amber-500" />
+          <span className="text-sm text-foreground font-mono truncate">{name}</span>
+        </div>
+
+        {/* Chevron on the right - show on hover or when expanded */}
+        {hasChildren && (isHovered || !isCollapsed) && (
           <ChevronIcon
             className={cn(
-              'h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-200',
-              !isCollapsed && 'rotate-90'
+              'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-200 mr-2',
+              isCollapsed ? '-rotate-90' : 'rotate-0'
             )}
           />
         )}
-        {/* Spacer for folders without children to align with expandable folders */}
-        {!hasChildren && <div className="w-3" />}
-        
-        <FolderIcon className="h-4 w-4 shrink-0 text-amber-500" />
-        <span className="text-sm text-foreground font-mono">{name}</span>
       </div>
 
       {hasChildren && !isCollapsed && (
         <div className="relative">
-          {/* Vertical line for folder structure */}
-          {!isLast && depth > 0 && (
-            <div
-              className="absolute top-0 bottom-0 w-px bg-border"
-              style={{ left: `${(depth - 1) * 1.5 + 0.5}rem` }}
-            />
-          )}
+          {/* Vertical line connecting children - positioned at folder icon */}
+          <div
+            className="absolute top-0 bottom-0 w-px bg-border/30"
+            style={{
+              left: `${depth * 1.25 + 0.5}rem`,
+            }}
+          />
 
           {/* Children */}
           {React.Children.map(children, (child, index) => {
@@ -161,12 +199,15 @@ export const Folder: FC<FolderProps> = ({
               const childrenArray = React.Children.toArray(children)
               const isLastChild = index === childrenArray.length - 1
 
-              // Clone the child with depth information
+              // Preserve all original props and pass folder path for context
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const childProps = child.props as any
               return React.cloneElement(child as React.ReactElement<FolderProps | FileProps>, {
+                key: childProps.name || index,
                 depth: depth + 1,
                 isLast: isLastChild,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                className: cn((child.props as any).className),
+                className: cn(childProps.className),
+                _folderPath: folderPath,
               })
             }
             return child
@@ -213,33 +254,51 @@ interface FolderStructureProps extends React.HTMLAttributes<HTMLDivElement> {
  * </FolderStructure>
  * ```
  */
-export function FolderStructure({
-  children,
-  className,
-  ...props
-}: FolderStructureProps) {
+export function FolderStructure({ children, className, ...props }: FolderStructureProps) {
+  const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({})
+
+  const toggleFolder = useCallback((path: string) => {
+    setCollapsedState((prev) => ({
+      ...prev,
+      [path]: !prev[path],
+    }))
+  }, [])
+
+  const contextValue = useMemo(
+    () => ({
+      collapsedState,
+      toggleFolder,
+    }),
+    [collapsedState, toggleFolder]
+  )
+
   return (
-    <div
-      className={cn(
-        'rounded-lg border border-border bg-card p-4 my-4 overflow-x-auto',
-        className
-      )}
-      {...props}
-    >
-      <div className="font-mono text-sm">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            // Mark the root level folders
-            return React.cloneElement(child as React.ReactElement<FolderProps>, {
-              depth: 0,
-              isRoot: true,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              className: cn((child.props as any).className),
-            })
-          }
-          return child
-        })}
+    <FolderStateContext.Provider value={contextValue}>
+      <div
+        className={cn(
+          'rounded-lg border border-border bg-card p-4 my-4 overflow-x-auto',
+          className
+        )}
+        {...props}
+      >
+        <div className="font-mono text-sm">
+          {React.Children.map(children, (child, index) => {
+            if (React.isValidElement(child)) {
+              // Mark the root level folders and add key for React identity
+              return React.cloneElement(child as React.ReactElement<FolderProps>, {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                key: (child.props as any).name || index,
+                depth: 0,
+                isRoot: true,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                className: cn((child.props as any).className),
+                _folderPath: '',
+              })
+            }
+            return child
+          })}
+        </div>
       </div>
-    </div>
+    </FolderStateContext.Provider>
   )
 }
